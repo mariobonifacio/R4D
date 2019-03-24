@@ -11,15 +11,15 @@ output:
     df_print: paged
 css: /Users/hsubhash/Documents/R4D/Assets/custom.css
 ---
-**LEARNING OBJECTIVE**: Use *ggplot2* along with its *extensions* to make charts that are *publication ready*.
+**LEARNING OBJECTIVE**: Use *ggplot2* along with its *extensions* to make charts that are * work ready*.
 
 **Topics to cover**
 
 0. Recap + Factor correction
-1. Make simple charts
-    + Scatter plot
-    + Line charts
-    + Column chart
+1. ~~Make simple charts~~
+    + ~~Scatter plot~~
+    + ~~Line charts~~
+    + ~~Column chart~~
 2. Make facetted plots
 3. Draw multiple geoms in one plot
 4. Learn to make beautiful charts using
@@ -36,8 +36,83 @@ css: /Users/hsubhash/Documents/R4D/Assets/custom.css
 7. Build a complex chart together
 
 
-```{r}
+##Recap
+DONT USE THE LEVELS FUNCTION TO SET levels.
 
+##Make simple charts
+Lets scatter
+```{r, message=FALSE}
+library(tidyverse); library(nycflights13)
+
+hourlyDelay <- flights %>% 
+    group_by(hour) %>% 
+    summarise(meanDelay = mean(dep_delay, na.rm = T)) 
+
+ggplot(data = hourlyDelay, mapping = aes(x = hour, y = meanDelay)) +
+    geom_point()
+```
+Just checking the data to see if the hour variable was calculated correctly in the flights dataset.
+```{r}
+flights %>% 
+    mutate(newHour = lubridate::hour(time_hour)) %>% 
+    filter(newHour == 1)
+```
+
+```{r}
+ggplot(hourlyDelay, aes(x = hour, y = meanDelay)) +
+    geom_line()
+```
+
+Lets make a column chart (which in the real world is a bar chart).
+```{r}
+ggplot(hourlyDelay, aes(x = hour, y = meanDelay)) +
+    geom_col()
+```
+
+Now lets look at a histogram.
+
+```{r}
+ggplot(flights, aes(arr_delay)) +
+    geom_histogram(bins = 200)
+```
+
+Make a bar chart.
+```{r}
+ggplot(flights, aes(dest)) +
+    geom_bar()
+```
+
+
+##Lets facet
+
+```{r}
+hourlyOriginDelay <- flights %>% 
+    group_by(hour, origin) %>% 
+    summarise(meanDelay = mean(dep_delay, na.rm = T))
+hourlyOriginDelay
+```
+Lets make a facetted scatter plot
+```{r}
+ggplot(hourlyOriginDelay, aes(x = hour, y = meanDelay)) +
+    geom_point() +
+    facet_wrap(~ origin)
+```
+
+##Multiple geoms in a single plot
+
+```{r}
+ggplot(hourlyOriginDelay, aes(x = hour, y = meanDelay)) +
+    geom_point() +
+    geom_line() +
+    facet_wrap(~ origin)
+```
+
+
+```{r}
+ggplot(hourlyOriginDelay, aes(x = hour, y = meanDelay)) +
+    geom_point() +
+    geom_smooth() +
+    facet_wrap(~ origin)
 ```
 
 

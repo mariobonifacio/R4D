@@ -102,7 +102,7 @@ table(fctGender)
 
 DON'T DO THIS! This is a mistake. Don't run this code.
 ```{r}
-#levels(fctGender) <- c("Other", "F", "M")
+levels(fctGender) <- c("Other", "F", "M")
 ```
 The levels function does not reorder as expected, it simply renames the levels. Confusingly similar to what the labels argument does within the factor function. As you notice, the assigning values using this simply swaps the labels around i.e. (F changed to Other, M to F and, Other to M)
 
