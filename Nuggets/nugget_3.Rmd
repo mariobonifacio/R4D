@@ -33,26 +33,196 @@ output:
 
 ##Day 1
 1. Get the structure of the flights data set using the `str()` command.
+
+```{r}
+library(tidyverse); library(nycflights13)
+str(flights)
+```
+   
+
 2. The `$` notation is used in base R to pull out columns from a data frame. Its usage is as follows `df$columnName`, where df is the dataframe (or tibble) you are interested in pulling a column denoted by columnName from. Use this syntax to pull out the `carrier` column from the flights tibble and store it in a variable called `flightCarrier`.
+
+```{r}
+flightcarrier <- flights$carrier
+str(flightcarrier)
+```
+
+
 3. Get the length of the `flightCarrier` vector and compare it with the number of rows in the flights data using the `==` operator. It should return true. Search the internet for the function to find the number of rows of a dataframe.
+
+```{r}
+length(flightcarrier) == nrow(flights)
+```
+
+
 4. Use the `unique()` function on the `flightCarrier` variable you created in the previous step to find the unique list of carriers in the flights dataset. Replace the `flightCarrier` with this new vector of unique values.
+
+```{r}
+flightcarrier <- unique(flightcarrier)
+flightcarrier
+```
+
+
 5. Print the new length of the `flightCarrier` vector.
+
+```{r}
+length(flightcarrier)
+```
+
+
 6. Get the data type of the `flightCarrier` vector using `typeof()`, is it the same as the type denoted in `str()`. (The output from the `str()` function abbreviates the type so for instance integer is denoted as int.)
+
+```{r}
+typeof(flightcarrier)
+str(flightcarrier)
+print('Yes, the flightcarrier vector is a chr. vector')
+```
+
+
 7. Use pipes to combine steps 2 and 4. Like so `df$columnName %>% unique()`.
+
+```{r}
+flightcarrier <- flights$carrier %>%
+  unique()
+str(flightcarrier)
+```
+
 8. Use the `pull()` function instead of the `$` notation to achieve the same result as above. Save this as `pulledCarrier`
+
+```{r}
+pulledCarrier <- pull(.data = flights, var = carrier) %>%
+  unique()
+str(pulledCarrier)
+```
+
+
 9. Use this function `identical()` to establish that the `pulledCarrier` and `flightCarrier` are the same.
+
+```{r}
+identical(pulledCarrier,flightcarrier)
+```
+
 10. Now try the same step as 8 with `select()` instead of pull. Save this as `selectedCarrier`
+
+```{r}
+selectedCarrier <- flights %>%
+  select(.,carrier) %>%
+  unique()
+str(selectedCarrier)
+```
+
+
 11. Use the `identical()` function to establish that `selectedCarrier` and `flightCarrier` are not the same. 
+
+```{r}
+identical(selectedCarrier,flightcarrier)
+```
+
+
 12. Why aren't `selectedCarrier` and `flightCarrier` identical? Think about the data structure that `select()` returns compared to that for `pull()`/`$`
+
+```{r}
+print('select() returns a list while pull() returns a vector')
+```
+
+
 
 ##Day 2
 1. Arrange flights in the descending order of arrival delay and ascending order of departure delay.
+
+```{r}
+arrange(flights,desc(arr_delay),dep_delay)
+```
+
+
 2. Use three different ways of your choice to select the first 5 columns from the flights tibble. (using number indices, column names, a range, helper functions etc).
+
+```{r}
+library(nycflights13)
+library(tidyverse)
+str(flights)
+flights %>%
+  select(1:5)
+flights[,1:5]
+cbind(pull(flights,'year'),pull(flights,'month'),pull(flights,'day'),pull(flights,'dep_time'),pull(flights,'sched_dep_time'))
+```
+
+
 3. Which airports had the most number of flights that were delayed by more than 10 minute in 2013? (You can show a table with the counts of flights delayed by more than 10 minutes from each origin that is sorted in descending order of the count)
+
+```{r}
+
+library(nycflights13)
+
+origin_countdelays <- data.frame(origin_apt = c("EWR","JFK","LGA"),countdelays = c(nrow(filter(flights,origin=='EWR' & dep_delay>10)),nrow(filter(flights,origin=='JFK' & dep_delay>10)),nrow(filter(flights,origin=='LGA' & dep_delay>10))));
+
+origin_countdelays
+
+arrange(origin_countdelays,desc(countdelays)); print ("EWR had the most delays < 10 min")
+
+
+```
+
+
 4. Create a new variable `timeLostInAir` that is the difference between arrival delay and departure delay. Save this to a variable.
+
+```{r}
+dflights <- flights %>%
+  mutate(timeLostInAir = arr_delay - dep_delay) %>%
+  select(2:3,carrier,flight,timeLostInAir)
+
+select(dflights,timeLostInAir)
+
+
+```
+
 5. Use the tibble saved in task 4 to find the flight that lost the most amount of time while in air
+
+```{r}
+
+dflights %>%
+  filter(timeLostInAir == max(timeLostInAir,na.rm = T))
+```
+
+
 6. Use the tibble saved in task 4 to show the top 5 carriers in the terms of `timeLostInAir`
+
+```{r}
+dflights %>%
+  group_by(carrier) %>%
+  mutate(carrier_avg = mean(timeLostInAir,na.rm = T)) %>%
+  select(carrier,carrier_avg) %>%
+  unique() %>%
+  arrange(desc(carrier_avg)) %>%
+  head(5)
+
+```
+
+
 7. Do you think that `timeLostInAir` is a useful variable to continue exploring based on the last 3 tasks?
+
+It's fine. All carriers seem to have similar histograms
+
+```{r}
+ggplot(dflights,mapping = aes(timeLostInAir,na.rm=T)) +
+  geom_histogram()
+
+dflights %>%
+  group_by(carrier) %>%
+  mutate(carrier_avg = mean(timeLostInAir,na.rm = T)) %>%
+  select(carrier,carrier_avg) %>%
+  unique() %>%
+  arrange(desc(carrier_avg))
+
+dflights %>%
+  group_by(carrier) %>%
+  ggplot(aes(timeLostInAir)) +
+  geom_histogram() +
+  facet_wrap(~ carrier)
+
+```
+
+
 
 ##Day 3
 1. Convert the `dest` variable in the flights tibble to a factor using the `mutate()` and pipe it to an `str()` function to see that the `dest` variable is now marked as a factor. (The task is to change the `dest` variable, not add a new column to the tibble)
