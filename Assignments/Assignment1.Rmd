@@ -1,7 +1,7 @@
 ---
 title: "Assignment 1"
 author: ~~Hari Subhash~~ Mario B.
-date: 'Date created: `r http://Sys.Date()`'
+date: 'Date created: `r Sys.Date()`'
 output:
   html_document: default
   html_notebook:
@@ -31,7 +31,7 @@ output:
 
 ##Task set 1: Data types and structures
 1. List the 4 most common (data) types of atomic vectors.
-    + Answer: Logical, integer, numeric/double, and character
+    + Answer: Logical, integer, numeric or double, and character
 
 2. Create atomic vectors of the 4 common types covered in class. Print their length and type.
 
@@ -48,7 +48,7 @@ length(chr_vec); typeof(chr_vec)
 ```
 
 3. List the heirarchy of data types for coercion
-    + Answer: logical > integer > numeric/double > character
+    + Answer: logical > integer > numeric or double > character
 
 4. Explain why the output of following bits of code is TRUE (explain what is happening in terms of coercion): 
 
