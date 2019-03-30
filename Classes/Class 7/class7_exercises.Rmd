@@ -1,0 +1,87 @@
+---
+title: "Class 7 - In class exercises"
+author: Hari Subhash
+date: "Date created: `r Sys.Date()`"
+output:
+  html_notebook:
+    highlight: kate
+    smart: yes
+    theme: cosmo
+    code_folding: show
+    df_print: paged
+---
+**CHEATSHEETS**
+
+1. [Data visualization](https://github.com/rstudio/cheatsheets/blob/master/data-visualization-2.1.pdf)
+2. [Data Manipulation](https://github.com/rstudio/cheatsheets/blob/master/data-transformation.pdf)
+
+**KEYBOARD SHORTCUTS**:
+
+1. Assignment operator (<-) is `Alt+-` for Windows and `Option+-` for Mac
+2. Insert new code chunk `Ctrl+Alt+I` for Windows and `Command+Option+I` for Mac
+3. Run a line of code `Ctrl+Enter` for Windows and `Command+Enter` for Mac
+4. Run all the code within a chunk `Ctrl+Shift+Enter` for Windows and `Command+Shift+Enter` for Mac
+5. Insert a pipe operator (%>%) `Ctrl+Shift+M` for Windows and `Command+Shift+M` for Mac
+
+##Task set 1: RECAP
+0. Load the required libraries of `tidyverse` and `gapminder` using the `library()` function.
+1. The chunk below contains part of the code required to create a scatter plot. Complete it to create a scatter plot showing the relationship between population and gddPercap for latest year for every country
+
+```{r}
+gapminder %>% 
+    group_by(*) %>% 
+    filter(year == max(year, na.rm = T)) %>% 
+    ungroup() %>% 
+    ggplot(data = ., mapping = aes(x = pop, y = gdpPercap)) +
+    geom_*()
+```
+
+2. The previous scatter looks weird because there are a few population values that are really big that elongate the x-axis while most of the variation in the data happens on the left-side of this axis. The same things is happening on the y-axis. We can compress this chart by taking logs. A Log transformation is useful to highlight underlying patterns in highly skewed data (long tails). Set the x aesthetic as `log(pop)` instead of `pop` and `log(gdpPercap)` instead of `gdpPercap` for the y-aesthetic. Like so `mapping = aes(x = log(pop), y = log(gdpPercap))`.
+
+3. Now that we have a scatter plot that highlights the relationship between the two variables lets adding a line that characterizes this relationship. You can do this by adding `geom_smooth(method = "lm")` to your code. Bonus task: Change the colour of the confidence bands around the line to red and set its opacity (using alpha aesthetic) to 1.
+
+4. Now lets map an additional aesthetic. Inside the aesthetic mapping in the `ggplot()` function, set the colour of the dots to the continent.
+
+5. Finally let's also facet this plot by the continent. Use `facet_wrap(~continent, nrow = 1)` to facet this plot by `continent`
+
+6. **Hard**: Extend the chart above by adding labels using `geom_label()` indicating the names of the countries that have gdpPercap above 35000 USD. Hint: You will need to save the data separately and set it within different geoms differently.
+
+7. **Legendary**: Look up the `ggrepel` package and use `geom_label_repel()` from it instead of the `geom_label()`.
+
+
+##Task Set 2: Make an aesthetically appealing chart
+
+1. The code chunk below creates a multiline chart using the flights dataset that we are familiar with. Each line indicates an origin airport. Create a similar chart using the gapminder dataset that shows the trends in average yearly gdpPercap for each continent. The final chart should have one line with the dots for each continent showing the trend in gdpPercap over time.
+
+```{r}
+library(nycflights13)
+flights %>%
+    group_by(hour, origin) %>%
+    summarise(meanDelay = mean(dep_delay, na.rm = T)) %>%
+    ungroup() %>% 
+    ggplot(mapping = aes(x = hour, y = meanDelay, colour = origin)) +
+    geom_line(na.rm = T) +
+    geom_point(alpha = 0.5, size = 2.5, na.rm = T) +
+    labs(
+        x = "Hour of departure",
+        y = "Mean departure delay (in minutes)",
+        title = "Avoid evening flights out of NYC if possible"
+        ) +
+    theme_minimal()
+```
+
+2. Install the ggthemes package and load it using `library()`
+3. Replace `theme_minimal()` from the previous chart with a theme from the `ggthemes` package. See this [link](https://yutannihilation.github.io/allYourFigureAreBelongToUs/ggthemes/) to pick a theme you like.
+4. Save this plot using `ggsave()` as a png and share it on the class channel.
+5. **Hard**: Create a similar chart as step 1, however, instead of using continents to create the multiple lines, create a new variable called `incomeGroup` that categorizes countries into 5 groups based on the average `gdpPercap` over the entire set of years. Use this variable to create a multi-line chart. Make this chart pretty. Hint: First you will need to calculate (within a `mutate()`) the mean `gdpPercap` for each country and then use that to create the categories (see `?cut_number`).
+
+##Task Set 3: Extra time
+**Time**: 30 minutes
+
+1. If you haven't done so already, try creating the last chart from the previous task set.
+2. Update this chart by converting the `incomeGroup` to a factor variable (You will have to do to this in the data before you feed it to the chart) with appropriate labels.
+3. Apply these new factor labels as direct labels on the line using `geom_label()` and remove the legend from the plot (see class prep).
+4. Install the cowplots package.
+5. Create the same plot as above but this time save it to a variable. Create the exact same plot but for instead of showing the average `gdpPercap` show `pop`. Use `plot_grid()` from the cowplots package to show these two plots next to each other. Make sure to add the appropriate titles to each chart.
+
+

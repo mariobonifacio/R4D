@@ -1,0 +1,351 @@
+---
+title: "Class 7 - Prep"
+author: Hari Subhash
+date: "Date created: `r Sys.Date()`"
+output:
+  html_notebook:
+    highlight: kate
+    smart: yes
+    theme: cosmo
+    code_folding: show
+    df_print: paged
+---
+
+##Description
+This class prep notebook will introduce some of the material for the next class. There are some optional tasks at the end of this notebook that you can choose to complete if you would like to. We will use this as the starting point for the next class.
+
+##Let's make a beautiful chart
+We will be using the `tidyverse` and `nycflights13` packages for this prep. The first step as always is to load these from our library of packages using the `library()` function.
+```{r, message=FALSE}
+library(tidyverse)
+library(nycflights13)
+```
+
+We need a chart to improve upon. Let's create something to study the average hourly departure delay for the three airports in NYC. Let's start by creating the data for this plot. To do this, I need to group the flights data by the hour and origin variables and then summarise to calculate the *hourly* mean departure delay for *each origin* airport. See the code and output below. For every hour (with a flight) and origin data group we calculate the average departure delay.
+
+```{r}
+plotData <- flights %>%
+  group_by(hour, origin) %>%
+  summarise(meanDelay = mean(dep_delay, na.rm = T)) %>%
+  ungroup()
+
+plotData
+```
+
+The table shows the average delay for every hour and origin group combination. Keep the data above in your mind as we proceed through the class. 
+
+Now let's visualize the same data using a line chart. We do this using a `ggplot()` function that takes the `plotData` variable that we created in the earlier chunk as its data input. Notice how I am mapping the  aethetics within the `geom_line()` instead of the `ggplot()` (like we have done in the previous classes). ^[You can choose to map aesthetics within either the `ggplot()` or the different geom functions. When you set it within `ggplot()` those aesthetics cascade down to every geom function that comes after it.]
+```{r}
+ggplot(data = plotData) +
+  geom_line(mapping = aes(x = hour, y = meanDelay))
+```
+
+This does not look right. Let's decode this line from the [tidyverse portal for ggplot](https://ggplot2.tidyverse.org/reference/geom_path.html) to understand why.
+
+> geom_line() connects observations in the order of the variable on the x axis
+
+Connects obs. in order of the variable on the x -axis. This means that the `geom_line()` function is moving from the left-side of the x-axis to the right and looking for corresponding values of the y variable (meanDelay) to plot. 
+
+There are no values of meanDelay from 1:00 AM till 5:00 AM. ^[The value for hour 1 is NaN because there is a single flight that took from EWR at 1:00 AM, however, the dep_delay for that flight is missing i.e. NA and mean(NA, na.rm = T) returns NaN. As a result the the line chart is empty until hour 5.] When it gets to hour 5 on the x-axis it see 3 values for meanDelay (one for each origin airport LGA, EWR and JFK) so it plots those. All of these will appear in the same vertical line since x-axis value for all three values is the same i.e. 5. It similarly moves through all the x-axis values to plot all the y-variable values one after the other.
+
+We can see this more clearly by overlaying points to this chart.
+```{r}
+ggplot(data = plotData) +
+  geom_line(mapping = aes(x = hour, y = meanDelay)) +
+  geom_point(mapping = aes(x = hour, y = meanDelay, colour = origin))
+```
+
+Look at the code carefully. There are a few things to point out. 
+
+1. The mapping is applied within each geom function. Notice how that the x and y aesthetics are repeated across the two geoms. We will improve this in the next step by moving common aesthetics to the `ggplot()` function
+2. Notice the use of the colour aesthetic in the mapping argument for the `geom_point()` function. I have added this additional aesthetic and mapped it to the origin variable to group the dots by origin and give each origin value a different color. We wll use this to draw the line chart correctly later on.
+
+Let's improve our code before moving on and correcting the line chart. Notice that I have moved the common aesthetics that apply to both the geom function into the ggplot function. I have also mapped an additional aesthetic to the color variable within the `geom_point()` function. The chart from this code is the exact same as the previous step (but the code is better and less repetitive). As a rule of thumb if you have aesthetics that apply to multiple geom functions put it into the `ggplot()` function.
+
+```{r}
+ggplot(data = plotData, mapping = aes(x = hour, y = meanDelay)) +
+  geom_line() +
+  geom_point(mapping = aes(colour = origin))
+```
+
+
+Now let's correct the line chart. 
+
+> geom_line() connects observations in the order of the variable on the x axis
+
+The correct output that we want to see are three lines - one for each origin airport. So for instance, all the red dots for EWR should have a single line that goes through it and similarly for JFK and LGA dots. 
+
+So how do we tell `geom_line()` function to go in order of the variable on x-axis but *within each origin group*? We can do this by setting the `group` aesthetic in the mapping argument for `geom_line()`. Let's try that out.
+
+```{r}
+ggplot(data = plotData, mapping = aes(x = hour, y = meanDelay)) +
+  geom_line(mapping = aes(group = origin)) +
+  geom_point(mapping = aes(colour = origin))
+```
+
+Much better! Now we have three lines - one for each origin. But let's not stop here. What if we want each line to have a color of its own? We can do this easily by mapping the color aesthetic to the origin (just as we did for `geom_point()`). Let's try it.
+
+```{r}
+ggplot(data = plotData, mapping = aes(x = hour, y = meanDelay)) +
+  geom_line(mapping = aes(group = origin, colour = origin)) +
+  geom_point(mapping = aes(colour = origin))
+```
+
+Beautiful. The keen eyed amongst you might have already spotted how we can improve this code. The color  aesthetic is repeated for both the geoms and we can move it to the `ggplot()`. Let's mend that.
+
+```{r}
+ggplot(data = plotData, mapping = aes(x = hour, y = meanDelay, colour = origin)) +
+  geom_line(mapping = aes(group = origin)) +
+  geom_point()
+```
+
+We can improve our code a little bit more. Since we applied the color aesthetic to origin, `ggplot()` already knows that the data is grouped by origin. This means that the grouping aesthetic within `geom_line()` is redundant. Let's remove that.
+
+```{r}
+ggplot(data = plotData, mapping = aes(x = hour, y = meanDelay, colour = origin)) +
+  geom_line() +
+  geom_point()
+```
+
+Looking good fam! Now we are ready to give this this plot some pizzazz. 
+
+The first thing I want to do is remove those warning that are displayed at the top of the plot. These are telling us that we have one row that had a value that could not be plotted. Can you look at the data we printed out earlier to guess which row that might be?
+
+These warnings can be removed easily by adding a `na.rm = T` argument to the geom functions. This removes any data points that might be missing a value for an aesthetic that has been mapped. So in our case it removes those rows that are missing either a value for origin or for hour.
+
+```{r}
+ggplot(data = plotData, mapping = aes(x = hour, y = meanDelay, colour = origin)) +
+  geom_line(na.rm = T) +
+  geom_point(na.rm = T)
+```
+
+
+BOOM! Let's also change the characteristics of the dots by changing some of the default values of aesthetics that have not been mapped to a variable. So for instance, each dot has an opacity value that is controlled by the alpha aesthetic which defaults to 1, and a default radius that is controlled by size. Let's change these to adjust their look and feel. 
+
+```{r}
+ggplot(data = plotData, mapping = aes(x = hour, y = meanDelay, colour = origin)) +
+  geom_line(na.rm = T) +
+  geom_point(alpha = 0.5, size = 2.5, na.rm = T)
+```
+
+In the code above I reduced the opacity of the dots and increased their size. Notice how I haven't used an `aes()` function to set the values of alpha and size. This is because `aes()` is exclusively used to map data to aesthetics. In this case, I have reassigned the default values of the aesthetic instead of mapping these to variables i.e. I have set them to a constant value that is applied across all the dots.
+ 
+Now let's change the axis titles so that they are more useful to the viewer. You can do this using the `labs()` function.
+ 
+```{r}
+ggplot(data = plotData, mapping = aes(x = hour, y = meanDelay, colour = origin)) +
+  geom_line(na.rm = T) +
+  geom_point(alpha = 0.5, size = 2.5, na.rm = T) +
+  labs(
+    x = "Hour of departure",
+    y = "Mean departure delay (in minutes)"
+  )
+```
+ 
+Now that we have our axis titled correctly, let's add a title. A good title succinctly captures a key takeaway from a chart that then leads on to your next piece of analysis. A chart that does not have a key takeaway is a waste of everyone's time and should not be published! Let's look at a few examples.
+
+1. BAD title: "Hourly Vs. Mean departure delay". I am personally guilty of having spent most of my life making poor titles like these that provide zero insight.
+2. GOOD title: "Evening flights experience greater delays". This title clearly summarizes a takeaway from this chart. The subsequent analysis might look into why this might be the case.
+3. BAD title: "Departure delay by origin". Tells me nothing about whats happening in the chart.
+3. GOOD title: "On average EWR departures experience greater delays". Clearly summarizes a takeaway. Subsequent analysis might be on whats wrong with EWR.
+
+Let's keep this in mind and add a title to the labs function.
+
+```{r}
+ggplot(data = plotData, mapping = aes(x = hour, y = meanDelay, colour = origin)) +
+  geom_line(na.rm = T) +
+  geom_point(alpha = 0.5, size = 2.5, na.rm = T) +
+  labs(
+    x = "Hour of departure",
+    y = "Mean departure delay (in minutes)",
+    title = "Avoid evening flights out of NYC if possible"
+  )
+```
+
+
+Now let's change some of the styles that gets applied by default. For instance, the background to our plot is grey, there are gridlines, the axis title background is white, the legend is plotted on the right etc. We can change all these and much more using the [`theme()` function](https://ggplot2.tidyverse.org/reference/theme.html). For now, let's use it to change the font size of the axis text and title, and remove the minor gridlines.
+
+```{r}
+ggplot(data = plotData, mapping = aes(x = hour, y = meanDelay, colour = origin)) +
+  geom_line(na.rm = T) +
+  geom_point(alpha = 0.5, size = 2.5, na.rm = T) +
+  labs(
+    x = "Hour of departure",
+    y = "Mean departure delay (in minutes)",
+    title = "Avoid evening flights out of NYC if possible"
+  ) +
+  theme(
+    axis.text = element_text(size = 14),
+    axis.title = element_text(size = 16),
+    panel.grid.minor = element_blank()
+  )
+```
+
+Another alternative is to pick from a few [preconfigured themes](https://www.r-graph-gallery.com/192-ggplot-themes/) that ship with gggplot2. Let's try the minimal theme.
+
+```{r}
+ggplot(data = plotData, mapping = aes(x = hour, y = meanDelay, colour = origin)) +
+  geom_line(na.rm = T) +
+  geom_point(alpha = 0.5, size = 2.5, na.rm = T) +
+  labs(
+    x = "Hour of departure",
+    y = "Mean departure delay (in minutes)",
+    title = "Avoid evening flights out of NYC if possible"
+  ) +
+  theme(
+    axis.text = element_text(size = 14),
+    axis.title = element_text(size = 16),
+    panel.grid.minor = element_blank()
+  ) +
+  theme_minimal()
+```
+
+Notice how the `theme_minimal()` has removed the changes that we made using the `theme()` function in the previous step. Each latest application of a theme function resets all overlapping style defaults that might have been set before it. 
+
+So in our case, `theme_minimal()` overwrites the values we set for the minor gridlines and the axis text and title in `theme()`. Let's clean up our code and remove the `theme()` function since we don't need it anymore.
+
+```{r}
+ggplot(data = plotData, mapping = aes(x = hour, y = meanDelay, colour = origin)) +
+  geom_line(na.rm = T) +
+  geom_point(alpha = 0.5, size = 2.5, na.rm = T) +
+  labs(
+    x = "Hour of departure",
+    y = "Mean departure delay (in minutes)",
+    title = "Avoid evening flights out of NYC if possible"
+  ) +
+  theme_minimal()
+```
+
+Our chart is looking good but I'd like to make it better. 
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/EGlo9LzmOME" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> 
+I'd like to get rid of the legend and label the names of the origin right next to the lines themselves. To do this let's try using `geom_text()`. Let's also remove the legend from our plot by setting its position to "none" within the `theme()` function.
+
+Let's test this out.
+
+```{r}
+ggplot(data = plotData, mapping = aes(x = hour, y = meanDelay, colour = origin)) +
+  geom_line(na.rm = T) +
+  geom_point(alpha = 0.5, size = 2.5, na.rm = T) +
+  labs(
+    x = "Hour of departure",
+    y = "Mean departure delay (in minutes)",
+    title = "Avoid evening flights out of NYC if possible"
+  ) +
+  theme_minimal() +
+  geom_text(mapping = aes(label = origin, color = origin), na.rm = T) +
+  theme(
+    legend.position = "none"
+  )
+```
+
+AAAHHH! Thats not what we wanted. Since I have given the entire dataset to the `geom_text()` function it has plotted all those values on to the plot. What we want however, is a single value for each line that is plotted at the end of the line. Let's try feeding it data with only the most recent hour of data.
+
+```{r}
+ggplot(data = plotData, mapping = aes(x = hour, y = meanDelay, colour = origin)) +
+  geom_line(na.rm = T) +
+  geom_point(alpha = 0.5, size = 2.5, na.rm = T) +
+  labs(
+    x = "Hour of departure",
+    y = "Mean departure delay (in minutes)",
+    title = "Avoid evening flights out of NYC if possible"
+  ) +
+  theme_minimal() +
+  geom_text(
+    data = plotData %>%
+      filter(hour == max(hour, na.rm = T)),
+    aes(label = origin, colour = origin)
+  ) +
+  theme(
+    legend.position = "none"
+  )
+```
+
+Interesting. Now its plotting the labels for EWR and JFK at the end of the line but not for LGA. Let's look at the data a bit more closely. The table below is the original plot data that we have been using so far. We want to filter this to only include the last hour of the data.
+
+```{r}
+plotData
+```
+
+The table below is filtered to show only the rows with `hour == max(hour, na.rm = T)`. This shows that there were no flights that took of from LGA for the last hour in the data. This means that we need to update our code to filter the last hour for *each* origin (since the last hour for LGA is different from that for EWR and JFK).
+```{r}
+plotData %>%
+  filter(hour == max(hour, na.rm = T))
+```
+
+i.e. we need to group by origin and then filter.
+
+```{r}
+plotData %>%
+  group_by(origin) %>%
+  filter(hour == max(hour, na.rm = T))
+```
+Good. This is the data that should be used to plot the labels. Let's try this out.
+```{r}
+ggplot(data = plotData, mapping = aes(x = hour, y = meanDelay, colour = origin)) +
+  geom_line(na.rm = T) +
+  geom_point(alpha = 0.5, size = 2.5, na.rm = T) +
+  labs(
+    x = "Hour of departure",
+    y = "Mean departure delay (in minutes)",
+    title = "Avoid evening flights out of NYC if possible"
+  ) +
+  theme_minimal() +
+  geom_text(
+    data = plotData %>%
+      group_by(origin) %>%
+      filter(hour == max(hour, na.rm = T)),
+    aes(label = origin, colour = origin)
+  ) +
+  theme(
+    legend.position = "none"
+  )
+```
+
+Almost there! Let's now nudge the labels vertically and replace the `geom_text()` with `geom_label()`. Let's also make font bold.
+
+```{r}
+ggplot(data = plotData, mapping = aes(x = hour, y = meanDelay, colour = origin)) +
+  geom_line(na.rm = T) +
+  geom_point(alpha = 0.5, size = 2.5, na.rm = T) +
+  labs(
+    x = "Hour of departure",
+    y = "Mean departure delay (in minutes)",
+    title = "Avoid evening flights out of NYC if possible"
+  ) +
+  theme_minimal() +
+  geom_label(
+    data = plotData %>%
+      group_by(origin) %>%
+      filter(hour == max(hour, na.rm = T)),
+    aes(label = origin, colour = origin),
+    vjust = 1.5,
+    fontface = "bold",
+    alpha = 0.8
+  ) +
+  theme(
+    legend.position = "none"
+  )
+```
+
+![**Even he is impressed!**](applause.gif)
+
+Now the chart is publication ready. The final part is to save it. We can do this using the `ggsave()` function. Plots can saved in the following formats: "eps", "ps", "tex" (pictex), "pdf", "jpeg", "tiff", "png", "bmp", "svg" or "wmf" (windows only). If you use a filename that includes the extension, the ggsave will automatically infer the preferred format and use that. If you don't use the extension you can explicitly set it using the "device" argument. By default, `ggsave()` saves the last plot that was created in your notebook or script. The file is saved in the folder where you notebook is stored.
+
+```{r}
+ggsave(filename = "prettyLines.png", width = 7, height = 4)
+```
+
+
+
+
+##Optional tasks
+1. Calculate the average monthly departure delay for each origin and use that data to recreate the same chart as above (the only difference is that you will be using month instead of hour for x aesthetic)
+
+2. Install the `ggthemes` package and load it using `library()`
+
+3. Apply the `theme_fivethirtyeight()` from `ggthemes` instead of `theme_minimal()`
+
+4. Harder task: `theme_fivethirtyeight()` removes the axis titles that we created. Can you use google to find an answer for how to bring this back?
+
+5. Harder task: Use the correct scale function from ggplot to improve the chart that I have drawn (not the ones you drew in 1, 2, 3 or 4) by removing values on the x axis that are less than 5 hours.
