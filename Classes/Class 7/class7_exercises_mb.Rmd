@@ -124,12 +124,90 @@ flights %>%
         title = "Avoid evening flights out of NYC if possible"
         ) +
     theme_minimal()
+
+gapminder %>%
+    group_by(continent,year) %>%
+    summarise(mean_GDPpercap = mean(gdpPercap, na.rm = T)) %>%
+    ungroup() %>% 
+    ggplot(mapping = aes(x = year, y = mean_GDPpercap, colour = continent)) +
+    geom_line(na.rm = T) +
+    geom_point(alpha = 0.5, size = 2.5, na.rm = T) +
+    labs(
+        x = "year",
+        y = "mean gdp (USD)",
+        title = 'Oceania has just 2 countries'
+        ) +
+    theme_minimal()
 ```
 
 2. Install the ggthemes package and load it using `library()`
+
+install
+```{r}
+install.packages('ggthemes');library(ggthemes)
+```
+
 3. Replace `theme_minimal()` from the previous chart with a theme from the `ggthemes` package. See this [link](https://yutannihilation.github.io/allYourFigureAreBelongToUs/ggthemes/) to pick a theme you like.
+
+```{r}
+gapminder %>%
+    group_by(continent,year) %>%
+    summarise(mean_GDPpercap = mean(gdpPercap, na.rm = T)) %>%
+    ungroup() %>% 
+    ggplot(mapping = aes(x = year, y = mean_GDPpercap, colour = continent)) +
+    geom_line(na.rm = T) +
+    geom_point(alpha = 0.5, size = 2.5, na.rm = T) +
+    labs(
+        x = "year",
+        y = "mean gdp (USD)",
+        title = 'Oceania has just 2 countries'
+        ) +
+    theme_bw()
+```
+
+
 4. Save this plot using `ggsave()` as a png and share it on the class channel.
+
+```{r}
+ggsave(filename = 'first_gg.png')
+```
+
+
 5. **Hard**: Create a similar chart as step 1, however, instead of using continents to create the multiple lines, create a new variable called `incomeGroup` that categorizes countries into 5 groups based on the average `gdpPercap` over the entire set of years. Use this variable to create a multi-line chart. Make this chart pretty. Hint: First you will need to calculate (within a `mutate()`) the mean `gdpPercap` for each country and then use that to create the categories (see `?cut_number`).
+
+```{r}
+
+library(gapminder);library(nycflights13);library(tidyverse)
+
+gapminder %>%
+  group_by(country) %>%
+  mutate(mean_hist_gdppercap = mean(gdpPercap, na.rm = T)) %>%  
+  ungroup() %>%
+  select(year,mean_hist_gdppercap) %>%
+  mutate(incomeGroup = cut_number(mean_hist_gdppercap,5)) %>%
+  group_by(year) %>%
+  group_by(incomeGroup) %>%
+  arrange(year,incomeGroup) %>%
+  mutate(mean_of_group=mean(mean_hist_gdppercap,na.rm = T)) %>%
+  ungroup() %>%
+  ungroup() %>%
+  select(year,mean_of_group,incomeGroup) %>%
+  unique() %>%
+  ggplot(mapping = aes(x = year,y=mean_of_group,color = incomeGroup)) +
+  geom_line()
+
+
+  
+    geom_point(alpha = 0.5, size = 2.5, na.rm = T) +
+    labs(
+        x = "year",
+        y = "mean gdp (USD)",
+        title = 'Oceania has just 2 countries'
+        ) +
+    theme_bw()
+```
+
+
 
 ##Task Set 3: Extra time
 **Time**: 30 minutes
