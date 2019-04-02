@@ -201,7 +201,7 @@ dflights %>%
 
 7. Do you think that `timeLostInAir` is a useful variable to continue exploring based on the last 3 tasks?
 
-It's fine. All carriers seem to have similar histograms
+*It's fine. All carriers seem to have similar histograms, so I'd have to explore deeper to see whether they tell us much*
 
 ```{r}
 ggplot(dflights,mapping = aes(timeLostInAir,na.rm=T)) +
@@ -226,6 +226,9 @@ dflights %>%
 
 ##Day 3
 1. Convert the `dest` variable in the flights tibble to a factor using the `mutate()` and pipe it to an `str()` function to see that the `dest` variable is now marked as a factor. (The task is to change the `dest` variable, not add a new column to the tibble)
+
+
+
 2. Use `mutate()` along with `recode()` to recode the origin column as follows: JFK to John F Kennedy, LGA to La Guardia, leave EWR as is. Read the documentation for recode on tidyverse to understand its implementation. 
 3. Repeat task 2 but this time use `mutate()` along with `case_when()`. If you have further questions post on slack.
 4. Based on the flights 2013 data, which are the worst 5 destinations in terms of arrival delay?
