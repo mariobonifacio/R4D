@@ -227,10 +227,33 @@ dflights %>%
 ##Day 3
 1. Convert the `dest` variable in the flights tibble to a factor using the `mutate()` and pipe it to an `str()` function to see that the `dest` variable is now marked as a factor. (The task is to change the `dest` variable, not add a new column to the tibble)
 
+```{r}
+library(tidyverse);library(nycflights13)
+
+flights %>%
+  mutate(dest = as.factor(dest)) %>%
+  str()
+```
 
 
-2. Use `mutate()` along with `recode()` to recode the origin column as follows: JFK to John F Kennedy, LGA to La Guardia, leave EWR as is. Read the documentation for recode on tidyverse to understand its implementation. 
+2. Use `mutate()` along with `recode()` to recode the origin column as follows: JFK to John F Kennedy, LGA to La Guardia, leave EWR as is. Read the documentation for recode on tidyverse to understand its implementation.
+
+```{r}
+flights %>%
+  mutate(origin = recode(origin, 'JFK' = 'John F Kennedy','LGA' = 'La Guardia')) 
+  
+```
+
+
 3. Repeat task 2 but this time use `mutate()` along with `case_when()`. If you have further questions post on slack.
+
+```{r}
+flights %>%
+  mutate(origin = case_when()
+
+```
+
+
 4. Based on the flights 2013 data, which are the worst 5 destinations in terms of arrival delay?
 
 ##Day 4
