@@ -1,6 +1,6 @@
 ---
 title: "Week 3 - Daily R Nuggets"
-author: Hari Subhash
+author: ~Hari Subhash~ Mario Bonifacio
 date: "Date created: `r Sys.Date()`"
 output:
   html_notebook:
