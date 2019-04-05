@@ -56,23 +56,32 @@ Time to complete: 15 mins
 
 1. Complete the code below to see if there are any observations in the `flights` data that are not there in `planes`
 ```{r}
-anti_join() %>% 
+anti_join(flights,planes,by = "tailnum") %>% 
     distinct(tailnum, carrier)
+
 ```
 
 2. Replace the `anti_join()` with a `semi_join()` to see all the flights that have corresponding information in `planes`.
 
+```{r}
+semi_join(flights,planes,by = "tailnum") %>% 
+    distinct(tailnum, carrier)
+
+```
+
+
 3. Complete the code below to find the average departure delay by the year of the planes manufacture. Note that since both the flights and the planes data have a column called year they will be represented as year.x and year.y (x being the first table in the join and y the second). 
 
 ```{r}
-inner_join() %>% 
-    group_by() %>% 
-    ##only keep flights above a certain threshold
-    filter(n() > 30) %>% 
-    summarise(meanDelay = mean(dep_delay, na.rm = T)) %>% 
-    ggplot(mapping = aes(x = makeYear, y = meanDelay)) +
-    geom_point() +
-    geom_smooth(method = "lm")
+inner_join(flights,planes,by = "tailnum") %>% 
+      rename(makeYear = year.y) %>%
+      group_by(makeYear) %>% 
+##only keep flights above a certain threshold
+##filter(n() > 30) %>% 
+      summarise(meanDelay = mean(dep_delay, na.rm = T)) %>% 
+      ggplot(mapping = aes(x = makeYear, y = meanDelay, na.rm = T)) +
+      geom_point(na.rm = T) +
+      geom_smooth(method = "lm", na.rm = T)
 ```
 
 
@@ -80,6 +89,28 @@ inner_join() %>%
 Time to complete: 20 mins
 
 1. **Hard** As noted in the class prep, there are duplicate keys in the weather data. Remove these (read the two options in the prep) and then use a `left_join()` to join it to flights. Draw a chart of your choice (you can choose to summarise the data if you want) to show the relationship with precipitation (`precip`)
+
+```{r}
+str(weather)
+
+#nodup_weather <- #
+  
+weather %>%
+    group_by(month,day,hour,origin) %>%
+    summarise_all(mean) %>%
+    left_join(flights,by = c("month","day","hour","origin")) %>%
+    ggplot(mapping = aes(x = precip, y = dep_delay, na.rm = T)) +
+    geom_point(position = "jitter",na.rm = T)
+      
+  
+
+
+```
+
+```{r}
+
+```
+
 
 2. **Hard**: Use the `faa` code to combine the `flights` data with `airports` to study the effect of altitude on arrival delay. 
 
