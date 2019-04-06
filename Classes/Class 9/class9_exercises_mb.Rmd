@@ -114,4 +114,25 @@ weather %>%
 
 2. **Hard**: Use the `faa` code to combine the `flights` data with `airports` to study the effect of altitude on arrival delay. 
 
+```{r}
+library(tidyverse);library(nycflights13)
+flights %>%
+  inner_join(airports %>% mutate(dest = faa)) %>%
+  group_by(alt) %>%
+  summarize(mean_arrdelay = mean(arr_delay,na.rm = T)) %>%
+  ggplot(mapping = aes(x = alt, y=mean_arrdelay, na.rm = T)) +
+  geom_point(na.rm = T) +
+  geom_smooth(method = lm,na.rm = T) +
+  labs(title = 'I cannot say that altitude of destination airport affects arrival delay',
+       subtitle = 'Really just all over the place',
+       x = 'Altitude of destination airport in feet',
+       y = 'Mean arrival delay in minutes') +
+  ggthemes::theme_excel_new()
+
+
+
+head(flights)
+head(airports)
+
+```
 
