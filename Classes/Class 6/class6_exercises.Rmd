@@ -1,0 +1,93 @@
+---
+title: "Class 6 - In class exercises"
+author: Hari Subhash
+date: "Date created: `r Sys.Date()`"
+output:
+  html_notebook:
+    highlight: kate
+    smart: yes
+    theme: cosmo
+    code_folding: show
+    df_print: paged
+---
+
+##Task Set 1: Practice Practice Practice
+**Time**: 30 minutes
+
+1. Install the 'gapminder' package. If you are using the `install.packages()` function to do this, make sure to delete the function once the package is installed.
+2. Why should you delete the `install.packages()` function from your notebook once you run it?
+3. Use `?gapminder` to access the help file for the dataset called `gapminder` from the gapminder package. Copy and paste the description of the dataset below.
+4. Use `head()` to print the first 10 rows of the gapminder dataset.
+5. Use `tail()` to print the last 20 rows of the gapminder dataset.
+6. Use `str()` to see the structure of the gapminder dataset.
+7. Use `glimpse()` to see the structure of the gapminder dataset.
+8. Use `names()` to print the names of the columns in the gapminder dataset
+9. Draw a histogram of the `gdpPercap` variable in the gapminder dataset.
+
+```{r}
+names(gapminder)
+```
+
+```{r}
+library(tidyverse); library(gapminder)
+
+ggplot(data = gapminder, mapping = aes(gdpPercap)) +
+    geom_histogram()
+```
+
+
+10. Draw a histogram of the `gdpPercap` but this time add a binwidth argument to the histogram. Use a value of your choice.
+```{r}
+ggplot(data = gapminder, mapping = aes(gdpPercap)) +
+    geom_histogram(binwidth = 1000)
+
+ggsave("allYears.png")
+```
+
+
+11. Filter the gapminder dataset to show only the latest year for each country. (Hint: you will need to group the data and filter for the most recent year using year == `max(year, na.rm = T)`, figure out the variable you should group by.)
+
+This is a slightly more elaborate way to write this.
+```{r}
+gapminder %>% 
+    group_by(country) %>% 
+    mutate(minYear = min(year, na.rm = T)) %>% 
+    filter(year == minYear)
+```
+
+The better way to write this.
+
+```{r}
+gapminder %>% 
+    group_by(country) %>% 
+    filter(year == max(year, na.rm = T))
+```
+
+12. Do the same steps as in 11 but this time pipe to a ggplot function that plots a histogram.
+```{r}
+gapminder %>% 
+    group_by(country) %>% 
+    filter(year == max(year, na.rm = T)) %>% 
+    ggplot(aes(gdpPercap)) +
+    geom_histogram(binwidth = 1000)
+
+ggsave("mostRecentYear.png")
+```
+
+13. Observe the differences in the histogram from 12 and 10.
+14. Find the average population every year and show that on a column chart
+```{r}
+gapminder %>% 
+    group_by(year) %>% 
+    summarise(meanPop = mean(pop, na.rm = T))
+```
+
+15. Find the average population every year and show that on a line chart
+```{r}
+gapminder %>% 
+    group_by(year) %>% 
+    summarise(meanPop = mean(pop, na.rm = T)) %>% 
+    ggplot(aes(x = year, y = meanPop)) +
+    geom_line()
+```
+

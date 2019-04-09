@@ -1,0 +1,262 @@
+---
+title: "Assignment 1"
+author: Fahima Islam
+date: 03/22/19
+output:
+  html_notebook:
+    highlight: kate
+    smart: yes
+    theme: cosmo
+    code_folding: show
+    df_print: paged
+---
+
+**Due Date**: Sunday, March 24th
+
+**Keyboard Shortcuts**:
+
+1. Assignment operator (<-) is `Alt+-` for Windows and `Option+-` for Mac
+2. Insert new code chunk `Ctrl+Alt+I` for Windows and `Command+Option+I` for Mac
+3. Run a line of code `Ctrl+Enter` for Windows and `Command+Enter` for Mac
+4. Run all the code within a chunk `Ctrl+Shift+Enter` for Windows and `Command+Shift+Enter` for Mac
+5. Insert a pipe operator (%>%) `Ctrl+Shift+M` for Windows and `Command+Shift+M` for Mac
+
+**General Instructions**
+
+1. Use the cheatsheets and the keyboard shortcuts as you work through the assignment.
+2. Each task should be answered right below the question.
+3. The assignment should be submitted via a shareable github link on the assignments channel in Slack.
+4. Make sure the notebook is neatly formatted and looks good when you preview it.
+
+##Task set 1: Data types and structures
+1. List the 4 most common (data) types of atomic vectors.
+    + Answer:
+Character
+Logical
+Double
+Integer
+
+2. Create atomic vectors of the 4 common types covered in class. Print their length and type.
+
+```{r}
+plantNames <- c("orchid", "bamboo", "fern", "buttercup")
+plantAbundance <- c(50L, 60L, 85L, 25L)
+plantAge <- c(1.5, 2.3, 3.5, 2.4)
+female <- c(T, F, T, T)
+
+length(plantNames)
+length(plantAbundance)
+length(plantAge)
+length(female)
+typeof(plantNames)
+typeof(plantAbundance) 
+typeof(plantAge) 
+typeof(female)
+```
+
+3. List the heirarchy of data types for coercion
+    + Answer:
+    logical, integer, double, character
+
+4. Explain why the output of following bits of code is TRUE (explain what is happening in terms of coercion): 
+
+```{r}
+"1" == 1
+```
+Answer: R is coercing the right side of the equation into a character vector because that is lower on the hierarchy and acknowledging that both values are equal.
+
+```{r}
+FALSE == 0
+
+c(TRUE, FALSE, 1)
+```
+Answer:R is coercing the FALSE value to equal 0 because double is lower on the hierarchy. 
+
+3. Create a list that holds the 4 common types of atomic vectors you created in task 2.
+
+```{r}
+plantList <- list(plantNames, plantAbundance, plantAge, female)
+```
+
+4. Create a data frame with 3 columns and 5 rows using the `data.frame()` function
+
+```{r}
+plants <- data.frame(plantNames, plantAbundance, plantAge)
+
+plants
+```
+
+5. Create the same data frame as above using `tibble()` function
+
+```{r}
+library(tidyverse)
+
+tblPlants <- tibble(plants)
+
+tblPlants
+```
+
+6. Use the `str()`, `class()` and or `glimpse()` command to see the difference between the dataframe and tibble create in 4 and 5.
+
+```{r}
+str(tblPlants)
+glimpse(tblPlants)
+```
+
+7. Fill in the blanks. 
+
+    + A data frame is a two dimensionsional data structure in R that consists of ____ of ____ length.
+    I'm not sure what the blanks in this sentence are, but it's a heterogenous data structure and the length and width are determined by the number of atomic vectors and how much information is contained in each vector. 
+
+8. What is the difference between an atomic vector and a list?
+    + Answer: An atomic vector is a group of the same type of data and a list can contain multiple types of data.
+
+
+##Task set 2: Data manipulation using dplyr
+
+**INSTRUCTIONS**: You will be using the tidyverse and nycflights13 packages for the next set of tasks. Refer to the documentation on tidyverse.org or use the help pages if you do not understand a function fully.
+
+1. Load the tidyverse and nycflights13 packages.
+
+```{r}
+library(tidyverse); library(nycflights13)
+```
+
+2. Describe two ways in which you can use RStudio confirm that a package has been loaded into your current R session? (Hint: One of them is a dropdown menu and the other a list of checkboxes)
+
+    + Answer: The packages can be seen on the left in the Global Environment dropdown menu or in the packages tab as a list of checkboxes.
+
+3. Use the `distinct()` command to identify the unique combinations of airline carriers and origin airports in the flights data.
+
+```{r}
+flights %>%
+  distinct(carrier, origin)
+```
+
+4. Use the `one_of()` helper function to select the following columns -  year, month, day, dep_time, sched_dep_time, dep_delay, arr_time, from the flights data.
+
+```{r}
+flights
+```
+
+
+```{r}
+flights %>% 
+  one_of(c(year, month, day, dep_time, sched_dep_time, dep_delay, arr_time))
+```
+I couldn't figure out how to make this function work. I looked at the help section which said this: one_of(..., .vars = peek_vars())
+I didn't understand what that was asking and I googled it as well and didn't get much clarification. 
+
+5. Use the `slice()` function to slice the first 10 rows in the flights data.
+
+```{r}
+flights %>% 
+  slice(1:10)
+```
+
+6. Perform the same operation as the previous task but this time use `filter()`. (Hint: Search for how to get the row numbers of a tibble)
+
+```{r}
+add_column(flights, new = 1:336776) %>% 
+  filter(new >= 10)
+```
+
+7. Use the `top_n()` command to identify the top 5 flights out of NYC that experienced the greatest arrival delays in 2013.
+
+```{r}
+flights %>% 
+    top_n(., n = 5, wt = arr_delay)
+```
+
+8. Use `top_n()` along with `arrange()` and `slice()` to pull out the 50th most delayed departure from NYC in 2013 (Not all 50, just the 50th). 
+```{r}
+flights %>% 
+  top_n(., n = 50, wt = dep_delay) %>% 
+  arrange(desc(dep_delay)) %>% 
+  slice(50)
+```
+
+9. Do the same thing as the previous task using 
+    + `row_number()`
+    + and `dense_rank()`
+```{r}
+flights %>% 
+  filter(row_number(desc(dep_delay)) %in% 50)
+```
+
+```{r}
+flights %>% 
+  filter(dense_rank(desc(dep_delay)) %in% 50)
+```
+
+
+10. The result from `row_number()` and `top_n()` are the same, while that from `dense_rank()` is different. Why?
+
+    + Answer: The 'dense_rank()' function has a different result because it ranks numbers of the same value as the same rank.
+
+11. Find the top 10 airline carrier that had the highest average departure delays in 2013 using `group_by()`, `summarise()` and other functions you have learnt previously.
+```{r}
+flights %>% 
+  group_by(carrier) %>% 
+  summarise(meanDelay = mean(dep_delay, na.rm = T)) %>% 
+  arrange(desc(meanDelay)) %>% 
+  slice(1:10) %>% 
+  ungroup()
+```
+
+12. Use `group_by()` with `mutate()` to create a new variable called `comparativeDelay` which is the difference between departure delay and the average delay in each origin airport for every hour in 2013 (checkout the `time_hour` variable in the flights data). Store the result in a variable called `comparativeDelays`.
+```{r}
+flights %>% 
+  group_by(origin, time_hour) %>% 
+  mutate(meanDelay = mean(dep_delay, na.rm = T), 
+         comparativeDelays = dep_delay - meanDelay) %>% 
+  ungroup()
+```
+
+
+13. Now group the `comparativeDelays` tibble by carriers to print the top 10 airlines with the greatest average comparative delays.
+```{r}
+flights %>%
+  group_by(carrier) %>% 
+  arrange(desc(comparativeDelays)) %>% 
+  slice(1:10) %>% 
+  ungroup()
+```
+
+14. Use `group_by()` with filter to print the 5 most delayed flights from each origin. Your printed tibble should have 15 rows.
+```{r}
+flights %>% 
+  group_by(origin) %>% 
+  filter(dep_delay == desc(dep_delay)) %>% 
+  arrange(origin)
+```
+I'm not sure my dep_delay column only contains 0's.
+
+15. The air authority in NY wants to penalize carriers for departure delays. Which of the three metrics (task 1, 3 or 4) would you recommend they use to identify the airlines to penalize. Why?
+
+    + Answer: I would recommend the method from task 13 (even though I was not able to run it successfully) because this took into account the average delay from each origin airport and ranked the airlines by greatest average comparative delays.
+    
+##Task set 3: R markdown
+
+1. Modify the text below as per the prompt
+    + Underline me  
+    **Make me bold**  
+    > Make me a block quote  
+    *Make me italic*  
+    ~~Strike through me~~  
+
+2. Create a level three header called "My level 3 header" under this line 
+### My level 3 header
+
+3. Modify the content below so that the bullet points (unordered list) render correctly
+
+**Messy bullet points**
+    * one
+    * two
+    * three
+
+4. Use chunk options to hide the output and the code from the chunk below in the previewed notebook.
+
+```{r, results='hide', echo=FALSE}
+print("Hide me and the code that created me")
+```

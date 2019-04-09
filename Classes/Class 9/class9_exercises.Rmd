@@ -1,0 +1,160 @@
+---
+title: "Class 9 - In class exercises"
+author: Hari Subhash
+date: "Date created: `r Sys.Date()`"
+output:
+  html_notebook:
+    highlight: kate
+    smart: yes
+    theme: cosmo
+    code_folding: show
+    df_print: paged
+---
+
+##Task Set 1: dplyr recap
+Time to complete: 8 mins
+
+1. Complete the code below to select the first 3 columns, `dep_delay` and `carrier` columns from flights data and filter all flights that were delayed by more than 2 hours.
+```{r, message=FALSE}
+library(tidyverse); library(nycflights13)
+flights %>% 
+    select() %>% 
+    filter()
+```
+
+2. Complete the following code to create a new variable that is the difference between `dep_delay` and average monthly delay for each origin airport.
+```{r}
+flights %>% 
+    group_by() %>% 
+    mutate()
+```
+
+3. Explain how this code works. Why does it have 3 rows in its output? Answer below the table output.
+```{r}
+flights %>% 
+    group_by(origin) %>% 
+    filter(dep_delay == max(dep_delay, na.rm = T)) %>% 
+    ungroup()
+```
+
+##Task Set 2: Keys
+Time to complete: 10 mins
+
+Identify the keys in all the datasets included in the planes data (2 of these were discussed in the prep)
+
+1. airlines
+2. airports
+3. planes
+4. weather
+5. flights
+
+##Task Set 3: Joins
+Time to complete: 10 mins
+
+1. Complete the code below to see if there are any observations in the `flights` data that are not there in `planes`.
+```{r}
+flights
+```
+
+```{r}
+planes
+```
+
+The code below fails silently
+```{r}
+anti_join(flights, planes) %>% 
+    distinct(tailnum, carrier)
+```
+
+```{r}
+planes %>% 
+    filter(tailnum == "N3DUAA")
+```
+
+
+```{r}
+anti_join(flights, planes, by = "tailnum") %>% 
+    distinct(tailnum, carrier)
+```
+
+
+2. Replace the `anti_join()` with a `semi_join()` to see all the flights that have corresponding information in `planes`.
+
+```{r}
+semi_join(flights, planes, by = "tailnum") %>% 
+    distinct(tailnum, carrier)
+```
+
+```{r}
+planes %>% 
+    filter(tailnum == "N14228")
+```
+
+
+3. Complete the code below to find the average departure delay by the year of the planes manufacture. Note that since both the flights and the planes data have a column called year they will be represented as year.x and year.y (x being the first table in the join and y the second). 
+
+```{r}
+inner_join(flights, planes, by = "tailnum") %>% 
+    group_by(makeYear = year.y) %>% 
+    ##only keep flights above a certain threshold
+    filter(n() > 30) %>% 
+    summarise(meanDelay = mean(dep_delay, na.rm = T)) %>% 
+    ggplot(mapping = aes(x = makeYear, y = meanDelay)) +
+    geom_point() +
+    geom_smooth(method = "lm")
+```
+
+
+##Task Set 4
+Time to complete: 20 mins
+
+1. **Hard** As noted in the class prep, there are duplicate keys in the weather data. Remove these (read the two options in the prep) and then use a `left_join()` to join it to flights. Draw a chart of your choice (you can choose to summarise the data if you want) to show the relationship with precipitation (`precip`)
+
+So the problem is that we have duplicate keys in the weather data
+```{r}
+weather %>% 
+    group_by(month, day, hour, origin) %>% 
+    filter(n() > 1)
+```
+
+There are two ways to fix these duplicates. One you can arbitrarily filter out of one of these rows.
+```{r}
+filteredWeather <- weather %>% 
+    group_by(month, day, hour, origin) %>% 
+    filter(row_number() == 2)
+```
+
+Lets check if this worked.
+```{r}
+filteredWeather %>% 
+    filter(month == 11 & day == 3 & hour == 1)
+```
+
+Lets now try it with summarise
+```{r}
+summarisedWeather <- weather %>% 
+    group_by(month, day, hour, origin) %>% 
+    summarise_all(mean)
+```
+
+```{r}
+keys <- c("month", "day", "hour", "origin")
+typeof(keys)
+```
+
+
+```{r}
+left_join(flights, summarisedWeather, by = c("month", "day", "hour", "origin")) %>% 
+    mutate(tempGroups = cut_interval(temp, n = 5)) %>% 
+    group_by(precip, tempGroups) %>% 
+    summarise(meanDelay = mean(dep_delay, na.rm = T)) %>% 
+    ggplot(aes(x = precip, y = meanDelay)) +
+    geom_point() +
+    geom_smooth(method = "lm") +
+    facet_wrap(~tempGroups, scales = "free_x") +
+    ggthemes::theme_fivethirtyeight()
+```
+
+2. **Hard**: Use the `faa` code to combine the `flights` data with `airports` to study the effect of altitude on arrival delay. 
+
+

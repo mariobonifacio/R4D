@@ -1,0 +1,122 @@
+---
+title: "Class 8 - Lecture"
+author: Hari Subhash
+date: "Date created: `r Sys.Date()`"
+output:
+  html_notebook:
+    highlight: kate
+    smart: yes
+    theme: cosmo
+    code_folding: show
+    df_print: paged
+css: /Users/hsubhash/Documents/R4D/Assets/custom.css
+---
+**LEARNING OBJECTIVE**: Revise content that we have covered so far.
+
+**Topics to cover**
+
+1. Common errors
+    + Syntax errors
+    + Conceptual errors
+2. Groups
+
+
+##Common Syntax errors
+
+Incomplete expression
+```{r}
+library(tidyverse); library(nycflights13)
+
+flights %>% 
+    group_by(origin) %>% 
+    summarise(
+        meanDelay = mean(dep_delay, na.rm = T),
+        maxDelay = max(dep_delay, na.rm = T)
+```
+
+```{r}
+flights %>% 
+    group_by(origin) %>% 
+    summarise(meanDelay = mean(dep_delay), na.rm = T)
+```
+
+The way to correct the code is below
+```{r}
+flights %>% 
+    group_by(origin) %>% 
+    summarise(meanDelay = mean(dep_delay, na.rm = T))
+```
+This is an incorrect assignment pattern.
+```{r}
+flights %>% 
+    filter(dep_delay > 0) <- delayedFlights
+```
+
+The correct assignment pattern is as follows
+```{r}
+delayedFlights <- flights %>% 
+    filter(dep_delay > 0)
+```
+
+This is not advised
+```{r}
+flights %>% 
+    filter(dep_delay > 0) -> delayedFlights2
+```
+
+This will not work when I rerun this file because I have created the object after the line of code that is using it.
+```{r}
+sum(x)
+x <- 1:100
+```
+
+##Conceptual errors
+
+```{r}
+sum(x, narm = T)
+```
+
+Resetting .data argument within a set of pipes.
+```{r}
+flights %>% 
+    filter(dep_time < 1200) %>% 
+    filter(.data = flights, dep_delay > 0) 
+
+%>% 
+    group_by(origin) %>% 
+    summarise(meanDelay = mean(dep_delay, na.rm = T))
+```
+
+Another 
+
+```{r}
+flights %>% 
+    filter("carrier" == "AA")
+```
+
+```{r}
+flights %>% 
+    filter("carrier" > "AA")
+```
+
+WAT!?
+
+
+
+##Lets revise grouping
+```{r}
+flights %>% 
+    filter(carrier %in% c("AA", "DL", "9E", "EV")) %>% 
+    group_by(month) %>% 
+    sample_n(size = 2) %>% 
+    select(1:3, dep_delay, carrier) %>% 
+    group_by(month, carrier) %>% 
+    summarise(meanDelay = mean(dep_delay, na.rm = T))
+```
+
+
+
+
+
+
+

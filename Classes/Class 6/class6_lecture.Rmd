@@ -1,0 +1,54 @@
+---
+title: "Class 6 - Lecture"
+author: Hari Subhash
+date: "Date created: `r Sys.Date()`"
+output:
+  html_notebook:
+    highlight: kate
+    smart: yes
+    theme: cosmo
+    code_folding: show
+    df_print: paged
+css: /Users/hsubhash/Documents/R4D/Assets/custom.css
+---
+**LEARNING OBJECTIVE**: : Use *ggplot2* along with its *extensions* to make charts that are *work ready*.
+
+**TOPICS**
+
+1. ~~Housekeeping~~
+    + ~~Learning plan for the next two weeks~~
+    + ~~Thoughts on assignment and daily tasks~~
+    + ~~Posting errors and issues~~
+    + ~~Taking notes in class~~
+
+
+
+##Recap on ggplot
+
+```{r}
+library(tidyverse); library(nycflights13); library(gapminder); library(ggthemes)
+
+flights %>% 
+    group_by(hour, origin) %>% 
+    summarise(meanDelay = mean(dep_delay, na.rm = T)) %>% 
+    ungroup() %>% 
+    ggplot(aes(x = hour, y = meanDelay, colour = origin)) +
+    geom_line() +
+    geom_point() +
+    labs(x = "Hour the flight took off",
+         y = "Mean Departure delay for that hour",
+         title = "Departure delay is greatest in the evenings") +
+    theme_bw() +
+    theme(
+        legend.position = "none",
+        axis.title = element_text(size = 34)
+    )
+    
+
+ggsave(filename = "testPlot.png")
+
+```
+
+    
+
+

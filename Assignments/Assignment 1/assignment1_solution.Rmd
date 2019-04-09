@@ -1,0 +1,327 @@
+---
+title: "Assignment 1"
+author: Hari Subhash
+date: "Date created: `r Sys.Date()`"
+output:
+  html_notebook:
+    highlight: kate
+    smart: yes
+    theme: cosmo
+    code_folding: show
+    df_print: paged
+---
+
+**Due Date**: Sunday, March 24th
+
+**Keyboard Shortcuts**:
+
+1. Assignment operator (<-) is `Alt+-` for Windows and `Option+-` for Mac
+2. Insert new code chunk `Ctrl+Alt+I` for Windows and `Command+Option+I` for Mac
+3. Run a line of code `Ctrl+Enter` for Windows and `Command+Enter` for Mac
+4. Run all the code within a chunk `Ctrl+Shift+Enter` for Windows and `Command+Shift+Enter` for Mac
+5. Insert a pipe operator (%>%) `Ctrl+Shift+M` for Windows and `Command+Shift+M` for Mac
+
+**General Instructions**
+
+1. Use the cheatsheets and the keyboard shortcuts as you work through the assignment.
+2. Each task should be answered right below the question.
+3. The assignment should be submitted via a shareable github link on the assignments channel in Slack.
+4. Make sure the notebook is neatly formatted and looks good when you preview it.
+
+##Task set 1: Data types and structures
+1. List the 4 most common (data) types of atomic vectors.
+    + Answer: Character, double, integer, logical
+
+2. Create atomic vectors of the 4 common types covered in class. Print their length and type.
+You can find the type of a vector using `typeof()` and the length using `length()`. I also combine these two using `paste()` to create a nice output.
+```{r}
+chrVec <- c("apple", "oranges", "grapes", "banana", "cantelope")
+dblVec <- c(1, 2.4, 4, .75, 2.5)
+intVec <- 5:9
+logVec <- c(T, F, F, T, T)
+
+paste("The length of the", typeof(chrVec), "vector is", length(chrVec))
+paste("The length of the", typeof(dblVec), "vector is", length(dblVec))
+paste("The length of the", typeof(intVec), "vector is", length(intVec))
+paste("The length of the", typeof(logVec), "vector is", length(logVec))
+
+```
+
+3. List the heirarchy of data types for coercion
+    + Answer: logical -> integer -> double -> character
+
+4. Explain why the output of following bits of code is TRUE (explain what is happening in terms of coercion): 
+
+```{r}
+"1" == 1
+```
+Answer: The value on the right side of comparison operator is coerced into a character since it is being compared with a character. As a result we get `"1" == "1"`, which returns TRUE.
+
+```{r}
+FALSE == 0
+```
+Answer: Logical values TRUE and FALSE are coerced as 1 and 0 respectively. Since the logical is being compared to a numeric value here it gets coerced into 0 yielding `0 == 0` which return TRUE.
+
+3. Create a list that holds the 4 common types of atomic vectors you created in task 2.
+
+You can create an unnamed list using the `list()` and simply assigning the names of the vectors we created earlier.
+```{r}
+unnamedList <- list(chrVec, dblVec, intVec, logVec)
+
+unnamedList
+```
+You can also create a list that is named. Notice the differences in the output when I print the named list compared to the unnamed list.
+```{r}
+namedList <- list(fruits = chrVec,
+                  prices = dblVec,
+                  daysToExpiry = intVec,
+                  organic = logVec)
+
+namedList
+```
+
+4. Create a data frame with 3 columns and 5 rows using the `data.frame()` function
+
+I use the vectors we created earlier to create this dataframe.
+```{r}
+sampleDF <- data.frame(fruits = chrVec,
+                       prices = dblVec,
+                       organic = logVec)
+
+sampleDF
+```
+5. Create the same data frame as above using `tibble()` function
+
+Since the tibble function is not loaded as part of the base package, I need to load it to our environment to access it. I can do this in two ways: I can either load the `tibble` package that has the `tibble()` function or I can load it individually using the `packageName::functionName` syntax. I use the latter here.
+```{r}
+sampleTibble <- tibble::tibble(fruits = chrVec,
+                       prices = dblVec,
+                       organic = logVec)
+
+sampleTibble
+```
+
+6. Use the `str()`, `class()` and or `glimpse()` command to see the difference between the dataframe and tibble create in 4 and 5.
+
+`str()` and `class()` are functions that are preloaded when you open RStudio. However, `glimpse()` which is a part of the `tibble()` package is not. This time I am going to load this using the `library()` function to load it. 
+
+**Note** that the `tibble` package is a core tidyverse package so it is loaded by default when you load the tidyverse package.
+```{r}
+library(tibble)
+glimpse(sampleDF)
+```
+
+```{r}
+glimpse(sampleTibble)
+```
+
+There is only one difference that I can notice between the two - the character vector fruits was loaded as a factor variable when we use `data.frame()` while it is loaded as a character when using tibble. This is a key difference between the `data.frame()` and `tibble()` functions. The `data.frame()` function by default treats all character inputs as factor. You can turn this off by setting the `stringsAsFactors` argument in the `data.frame()` function as F. This feature of `data.frame()` is a legacy from the time when factors were a more memory efficient way to store data compared to characters. However, improvements in storage capacity and the underlying architecture of data storage in R has meant that these savings in memory are a thing of the past.
+
+7. Fill in the blanks. 
+
+    + A data frame is a 2 dimensionsional data structure in R that consists of vectors of equal length
+
+8. What is the difference between an atomic vector and a list?
+    + Answer: An atomic vector can only hold data of one type i.e. it is homogeneous. A list can hold multiple types of data and is therefore heterogenous.
+
+##Task set 2: Data manipulation using dplyr
+**INSTRUCTIONS**: You will be using the tidyverse and nycflights13 packages for the next set of tasks. Refer to the documentation on tidyverse.org or use the help pages if you do not understand a function fully.
+
+1. Load the tidyverse and nycflights13 packages.
+
+```{r, message=FALSE}
+library(tidyverse); library(nycflights13)
+```
+
+2. Describe two ways in which you can use RStudio confirm that a package has been loaded into your current R session? (Hint: One of them is a dropdown menu and the other a list of checkboxes)
+
+You can do this using the "Global Environment" dropdown menu on the environment pane to see if the package is listed there or by checking if there is a check mark against the package name on the packages tab. 
+
+3. Use the `distinct()` command to identify the unique combinations of airline carriers and origin airports in the flights data.
+
+The `distinct()` command selects unique rows for the combination of variables that you give it. 
+
+```{r}
+flights %>% 
+    distinct(carrier, origin)
+```
+
+4. Use the `one_of()` helper function to select the following columns -  year, month, day, dep_time, sched_dep_time, dep_delay, arr_time, from the flights data.
+
+The `one_of()` is a helper function for the `select()` verb that takes a character vector of column names as its input and uses that to select the columns. The columns are selected in the order they are specified in the `one_of()` function.
+
+```{r}
+flights %>% 
+    select(one_of(c("year", "month", "day", "dep_time", "sched_dep_time", "dep_delay", "arr_time")))
+```
+
+5. Use the `slice()` function to slice the first 10 rows in the flights data.
+
+`slice()` is a function that is used to filter rows based on their row number. 
+```{r}
+slicedTibble <- flights %>% 
+    slice(1:10)
+
+slicedTibble
+```
+
+6. Perform the same operation as the previous task but this time use `filter()`. (Hint: Search for how to get the row numbers of a tibble)
+
+The `row_number()` function returns the row numbers of a tibble when you call it without an input argument. If you provide it a continous variable as an argument, it will return it based on its sorted rank. Here I use the `row_number()` without an input to select the first 10 rows
+```{r}
+filteredTibble <- flights %>% 
+    filter(row_number() <= 10)
+
+filteredTibble
+```
+
+Lets check to see if the filtered tibble is the same as the sliced one.
+```{r}
+identical(slicedTibble, filteredTibble)
+```
+
+7. Use the `top_n()` command to identify the top 5 flights out of NYC that experienced the greatest arrival delays in 2013.
+
+`top_n()` filters the rows based on the ranking variable you specify. In our case we would like to see the flights with the greatest departure delays, so we will use `dep_delay` as the ranking variable to filter the top 5 most delayed flights and then use `arrange()` to sort them in descending order.
+```{r}
+flights %>% 
+    top_n(n = 5, dep_delay) %>% 
+    arrange(desc(dep_delay))
+```
+
+8. Use ~~`top_n()` along with~~ `arrange()` and `slice()` to pull out the 50th most delayed departure from NYC in 2013 (Not all 50, just the 50th). 
+
+As Jordan correctly pointed out on Slack, you don't need `top_n()` to do this task. You can simply use `arrange()` to sort the flights data in descending order of departure delay and then use `slice()` to pull out the 50th row of that data.
+
+**Note**: This is not the recommended method to filter based on a rank. We should instead use a ranking function like `dense_rank()` or `row_number()` to do this.
+```{r}
+flights %>% 
+    arrange(desc(dep_delay)) %>% 
+    slice(50)
+```
+
+9. Do the same thing as the previous task using 
+    + `row_number()`
+    + and `dense_rank()`
+    
+As mentioned earlier `row_number()` can be used to generate ranks for a numeric variable in your data. The `desc()` function makes it so that the most delayed flight is ranked 1.
+
+```{r}
+flights %>% 
+    filter(row_number(desc(dep_delay)) == 50)
+```
+
+Here is the same operation using `dense_rank()`.
+```{r}
+flights %>% 
+    filter(dense_rank(desc(dep_delay)) == 50)
+```
+
+10. The result from `row_number()` and ~~`top_n()`~~, `arrange()` are the same, while that from `dense_rank()` is different. Why?
+
+`row_number()` and `dense_rank()` differ from each other based on the method they use to break ties. A tie occurs when there are two values of a variable that are the exact same. Lets look at an example using the following vector [5, 4, 2, 2, 1] to see how this works in practice.
+
+The value 2 repeats itself in the vector we have created. When we use `row_number()` the first two that appears in the vector (the one in the 3rd position) gets assigned a rank first followed by the next 2 which appears in the 4th position. These will also be the same as if we sorted this vector as a way to rank the values.
+```{r}
+x <- c(5, 4, 2, 2, 1)
+
+row_number(x)
+```
+
+In the case of `dense_rank()` both the 2s are assigned the same rank irrespective of their position in the vector. This means that we end with a highest rank of 4 instead of 5 that we saw in the previous vector (since we are in effect collapsing two values into a single rank). 
+```{r}
+dense_rank(x)
+```
+
+In the code below I create two different ranks for departure delay, one for `dense_rank()` and another for `row_number()`. I know from having looked at the data previously that the 3 flights have the same departure delay of 853. Lets see how the ranks are applied to these three flights below.
+```{r}
+flights %>% 
+    mutate(denseRank = dense_rank(desc(dep_delay)),
+           rowRank = row_number(desc(dep_delay))) %>% 
+    filter(dep_delay == 853) %>% 
+    select(1:3, dep_delay, origin, carrier, denseRank, rowRank)
+```
+As expected, `row_number()` breaks ties by assigning ranks in the order in which the values appear in the data while `dense_rank()` applies the same rank to all three. As a result if we filter this data by `rank == 50` we end up getting a different row if we base it on `row_number()` compared to `dense_rank()`.
+
+11. Find the top 10 airline carrier that had the highest average departure delays in 2013 using `group_by()`, `summarise()` and other functions you have learnt previously.
+```{r}
+flights %>% 
+    group_by(carrier) %>% 
+    summarise(meanDelay = mean(dep_delay, na.rm = T)) %>% 
+    ungroup() %>% 
+    top_n(n = 10, meanDelay) %>% 
+    arrange(desc(meanDelay))
+```
+
+12. Use `group_by()` with `mutate()` to create a new variable called `comparativeDelay` which is the difference between departure delay and the average delay in each origin airport for every hour in 2013 (checkout the `time_hour` variable in the flights data). Store the result in a variable called `comparativeDelays`.
+
+The purpose of this calculation is to see the difference between the departure delay for every flight and the average departure delay experienced by a particular origin airport during that hour. We can do this by grouping the data by hour and origin. Now each group in the data contains all the flights that took off during that hour for each origin. When we take the `mean()` of `dep_delay` of this grouped tibble we are looking at the values for departure delay for each origin for ever hour and using those to calculate the mean delay for that hour at that origin airport.
+```{r}
+comparativeDelays <- flights %>% 
+    group_by(origin, time_hour) %>% 
+    mutate(comparativeDelay = dep_delay - mean(dep_delay, na.rm = T)) %>% 
+    select(origin, time_hour, carrier, dep_delay, comparativeDelay) %>% 
+    ungroup()
+comparativeDelays
+```
+
+13. Now group the `comparativeDelays` tibble by carriers to print the top 10 airlines with the greatest average comparative delays.
+
+This is pretty much the same steps as task 11 except with the newly created comparativeDelay column.
+```{r}
+comparativeDelays %>% 
+    group_by(carrier) %>% 
+    summarise(meanCompDelay = mean(comparativeDelay, na.rm = T)) %>% 
+    ungroup() %>% 
+    top_n(n = 10, meanCompDelay) %>% 
+    arrange(desc(meanCompDelay))
+```
+
+14. Use `group_by()` with filter to print the 5 most delayed flights from each origin. Your printed tibble should have 15 rows.
+
+I have used `top_n()` to pull out the top 5 rows within each group. This works because the data is grouped by origin and therefore `top_n()` is applied within each group.
+```{r}
+flights %>% 
+    group_by(origin) %>% 
+    top_n(n = 5, dep_delay) %>% 
+    select(1:3, origin, dep_delay) %>% 
+    arrange(origin, desc(dep_delay))
+```
+
+15. The air authority in NY wants to penalize carriers for departure delays. Which of the three metrics ~~(task 1, 3 or 4)~~ would you recommend they use to identify the airlines to penalize. Why?
+
+Apologies for a terribly phrased question!!!
+
+There is no right or wrong answer for this. The aim is to understand the merits and demerits of each method that was tried over the last 3 tasks. I will provide an assessment within your individual assignment solutions.
+
+    
+##Task set 3: R markdown
+
+1. Modify the text below as per the prompt
+    + <u>Underline me</u>: Markdown doesn't allow for underlining as an option! However you can easily do this with a `<u></u>` html tag around the text you would like to underline.
+    + **Make me bold**
+    
+    > Make me a block quote
+    
+    + *Make me italic*
+    + ~~Strike through me~~
+
+2. Create a level three header called "My level 3 header" under this line 
+
+###My level 3 header
+
+3. Modify the content below so that the bullet points (unordered list) render correctly
+
+**Messy bullet points**
+
+* one
+* two
+* three
+
+4. Use chunk options to hide the output and the code from the chunk below in the previewed notebook.
+
+```{r, results='hide', echo=FALSE}
+print("Hide me and the code that created me")
+```
+
+

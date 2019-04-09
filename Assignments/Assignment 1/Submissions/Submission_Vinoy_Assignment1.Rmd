@@ -1,0 +1,260 @@
+---
+title: "Assignment 1"
+author: VinPhil
+date: "Date created: `r Sys.Date()`"
+output:
+  html_notebook:
+    highlight: kate
+    smart: yes
+    theme: cosmo
+    code_folding: show
+    df_print: paged
+---
+
+**Due Date**: Sunday, March 24th
+
+**Keyboard Shortcuts**:
+
+1. Assignment operator (<-) is `Alt+-` for Windows and `Option+-` for Mac
+2. Insert new code chunk `Ctrl+Alt+I` for Windows and `Command+Option+I` for Mac
+3. Run a line of code `Ctrl+Enter` for Windows and `Command+Enter` for Mac
+4. Run all the code within a chunk `Ctrl+Shift+Enter` for Windows and `Command+Shift+Enter` for Mac
+5. Insert a pipe operator (%>%) `Ctrl+Shift+M` for Windows and `Command+Shift+M` for Mac
+
+**General Instructions**
+
+1. Use the cheatsheets and the keyboard shortcuts as you work through the assignment.
+2. Each task should be answered right below the question.
+3. The assignment should be submitted via a shareable github link on the assignments channel in Slack.
+4. Make sure the notebook is neatly formatted and looks good when you preview it.
+
+##Task set 1: Data types and structures
+1. List the 4 most common (data) types of atomic vectors.
+    + Answer: CHar, Int, Double, Logical
+
+2. Create atomic vectors of the 4 common types covered in class. Print their length and type.
+
+```{r}
+vChar <- c("Hello", "Test")
+vInt <- c(1L, 3L)
+vDoub <- c(14, 15)
+vLog <- c(T,F)
+
+typeof(vChar)
+typeof(vInt)
+typeof(vDoub)
+typeof(vLog)
+
+length(vChar)
+length(vInt)
+length(vDoub)
+length(vLog)
+```
+
+3. List the heirarchy of data types for coercion
+    + Answer: character, double, integer, logical
+
+4. Explain why the output of following bits of code is TRUE (explain what is happening in terms of coercion): 
+
+```{r}
+"1" == 1
+```
+Answer: == does a comparison and returns T/F. 
+For coercion, 1 is converted to character.
+
+```{r}
+FALSE == 0
+```
+Answer: FALSE is converted to 0
+
+3. Create a list that holds the 4 common types of atomic vectors you created in task 2.
+
+```{r}
+lVectors <- list(vChar, vDoub, vInt, vLog)
+lVectors
+```
+4. Create a data frame with 3 columns and 5 rows using the `data.frame()` function
+
+```{r}
+dfTest <- data.frame(x=c(1:5), y=c(11:15), z=c(16:20))
+dfTest
+```
+5. Create the same data frame as above using `tibble()` function
+
+```{r}
+tbTest <- tibble(x = 1:5, y = 11:15, z = 16:20)
+tbTest
+```
+
+6. Use the `str()`, `class()` and or `glimpse()` command to see the difference between the dataframe and tibble create in 4 and 5.
+
+```{r}
+str(dfTest)
+str(tbTest)
+
+class(dfTest)
+class(tbTest)
+
+glimpse(dfTest)
+glimpse(tbTest)
+```
+
+7. Fill in the blanks. 
+
+    + A data frame is a _2___ dimensionsional data structure in R that consists of _list___ of _equal__ length
+
+8. What is the difference between an atomic vector and a list?
+    + Answer: atomic verctor is a 1 dimensional array of a single data type - homogeneous. List is also 1d but can be a combimation of different data types - heterogeneous.
+
+
+##Task set 2: Data manipulation using dplyr
+
+**INSTRUCTIONS**: You will be using the tidyverse and nycflights13 packages for the next set of tasks. Refer to the documentation on tidyverse.org or use the help pages if you do not understand a function fully.
+
+1. Load the tidyverse and nycflights13 packages.
+
+```{r}
+library(tidyverse)
+library(nycflights13)
+```
+
+2. Describe two ways in which you can use RStudio confirm that a package has been loaded into your current R session? (Hint: One of them is a dropdown menu and the other a list of checkboxes)
+
+    + Answer: 1. Global enviroment dropdown. 2. installed.packages()
+
+3. Use the `distinct()` command to identify the unique combinations of airline carriers and origin airports in the flights data.
+
+```{r}
+flights
+distinct(flights, carrier, origin ) %>%
+  arrange(carrier, origin)
+```
+
+4. Use the `one_of()` helper function to select the following columns -  year, month, day, dep_time, sched_dep_time, dep_delay, arr_time, from the flights data.
+
+```{r}
+flights %>% 
+  select(one_of(c("year", "month", "day", "dep_time", "sched_dep_time", "dep_delay", "arr_time")))
+
+```
+
+5. Use the `slice()` function to slice the first 10 rows in the flights data.
+
+```{r}
+flights %>% 
+  slice(1:10)
+```
+
+6. Perform the same operation as the previous task but this time use `filter()`. (Hint: Search for how to get the row numbers of a tibble)
+
+```{r}
+flights %>% 
+  filter(between(row_number(), 1, 10))
+```
+
+7. Use the `top_n()` command to identify the top 5 flights out of NYC that experienced the greatest arrival delays in 2013.
+
+```{r}
+flights %>% 
+  top_n(5, arr_delay) %>% 
+  arrange(desc(arr_delay))
+```
+
+8. Use `top_n()` along with `arrange()` and `slice()` to pull out the 50th most delayed departure from NYC in 2013 (Not all 50, just the 50th). 
+```{r}
+flights %>% 
+  top_n(50, dep_delay) %>% 
+  arrange(desc(dep_delay)) %>% 
+  slice(50)
+```
+
+9. Do the same thing as the previous task using 
+    + `row_number()`
+    + and `dense_rank()`
+```{r}
+flights %>% 
+  arrange(desc(dep_delay)) %>% 
+  filter(row_number() == 50)
+```
+
+```{r}
+flights %>% 
+  filter(dense_rank(desc(dep_delay)) == 50)
+```
+
+
+10. The result from `row_number()` and `top_n()` are the same, while that from `dense_rank()` is different. Why?
+
+    + Answer: dense rank assigns the same rank for the same value of dep_delay, whereas the others are sequentially ranked
+
+11. Find the top 10 airline carrier that had the highest average departure delays in 2013 using `group_by()`, `summarise()` and other functions you have learnt previously.
+```{r}
+flights %>% 
+  group_by(carrier) %>% 
+  summarise(avgDepDelay = mean(dep_delay, na.rm = T)) %>% 
+  top_n(10, avgDepDelay) %>% 
+  arrange(desc(avgDepDelay)) 
+  
+```
+
+12. Use `group_by()` with `mutate()` to create a new variable called `comparativeDelay` which is the difference between departure delay and the average delay in each origin airport for every hour in 2013 (checkout the `time_hour` variable in the flights data). Store the result in a variable called `comparativeDelays`.
+```{r}
+flights %>% 
+  group_by(origin, hour) %>% 
+  mutate(avgDelay = mean(dep_delay, na.rm = T), 
+         comparativeDelay = dep_delay - mean(dep_delay, na.rm = T)) %>% 
+  select(1:3, carrier, hour, flight, tailnum, dep_delay, avgDelay, comparativeDelay)
+
+```
+
+13. Now group the `comparativeDelays` tibble by carriers to print the top 10 airlines with the greatest average comparative delays.
+```{r}
+flights %>% 
+  group_by(origin, hour) %>% 
+  mutate(avgDelay = mean(dep_delay, na.rm = T), 
+         comparativeDelay = dep_delay - mean(dep_delay, na.rm = T)) %>% 
+  select(1:3, carrier, hour, flight, tailnum, dep_delay, avgDelay, comparativeDelay) %>% 
+  group_by(carrier) %>% 
+  summarise(avgComparativeDelay = mean(comparativeDelay, na.rm = T)) %>% 
+  top_n(10, avgComparativeDelay) %>% 
+  arrange(desc(avgComparativeDelay))
+```
+
+14. Use `group_by()` with filter to print the 5 most delayed flights from each origin. Your printed tibble should have 15 rows.
+```{r}
+flights %>%
+  group_by(origin) %>% 
+  filter(between(dense_rank(desc(dep_delay)),1, 5)) %>% 
+  arrange(origin, desc(dep_delay))
+
+```
+
+15. The air authority in NY wants to penalize carriers for departure delays. Which of the three metrics (task 1, 3 or 4) would you recommend they use to identify the airlines to penalize. Why?
+
+    + Answer: Average Comparative Delay seems to be the best, as it summarises by origin and hour 
+    
+##Task set 3: R markdown
+
+1. Modify the text below as per the prompt
+    + Underline me
+    + **Make me bold**
+    + >Make me a block quote
+    + *Make me italic*
+    + ~~Strike through me~~
+
+2. Create a level three header called "My level 3 header" under this line 
+###My level 3 header
+
+3. Modify the content below so that the bullet points (unordered list) render correctly
+
+**Messy bullet points**
+
+- one
+- two
+- three
+
+4. Use chunk options to hide the output and the code from the chunk below in the previewed notebook.
+
+```{r, results='hide', echo=FALSE}
+print("Hide me and the code that created me")
+```

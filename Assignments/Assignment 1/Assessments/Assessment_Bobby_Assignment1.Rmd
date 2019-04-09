@@ -1,0 +1,328 @@
+---
+title: "Assignment 1 - Assessment"
+author: "Bobby Mammen"
+date: 'Date created: `r Sys.Date()`'
+output:
+  html_notebook:
+    code_folding: show
+    df_print: paged
+    highlight: kate
+    smart: yes
+    theme: cosmo
+  html_document:
+    df_print: paged
+---
+
+#Overall Comments
+The section below provides overall feedback on the notebook. Specific comments are provided inline for each question.
+
+1. Was the assignement submitted on time? 
+
+**YES!** Good job Bobby!
+    
+2. Was it posted as an online link? 
+
+**YES!** [Submission Link](https://bobbymammen.github.io/BobbyR4d/Assignments/Assignment1.nb.html)
+    
+3. Does the code follow [recommended style conventions](http://adv-r.had.co.nz/Style.html)? 
+
+**Mixed.** The indentation of code is an issue when using pipes. Try using snakecase instead of camelCase while naming variables i.e. don't pick up my habits. Get into the habit of placing a pipe and hitting enter. This should automatically indent your code (if not look at your settings/preferences to see why that is not happening.)
+    
+4. Does the notebook compile completely?
+
+**NO.** Line 136 of the notebook returns an error. In general, comment out the code using `#` when it returns an error. You should be able to run all the code in a notebook using the `Run All` option in the `Run` dropdown menu.
+
+6. Overall effectiveness of the code?
+
+In general, there seems to be a tendency to try things out just for the sake of seeing if it works or not. While this is good, be careful to take time to understand why a piece of code works and what it is doing. Each time you write something try and explain why it worked (or didn't) before moving on.
+
+
+##Task set 1: Data types and structures
+1. List the 4 most common (data) types of atomic vectors.
+    + Answer:Chr, int,num,log
+    + **Feedback from Hari**: Character, integer, double and logical. Numeric stands for both integer and double.
+
+2. Create atomic vectors of the 4 common types covered in class. Print their length and type.
+```{r}
+charVec <- "Bobby"
+numericVec <- 1:10
+logicalVec <- c(T,F,T)
+intVec <- 1:10
+length(charVec)
+length(numericVec)
+length(intVec)
+length(logicalVec)
+typeof(charVec)
+typeof(numericVec)
+
+```
+
+**Feedback from Hari**: Almost there. The character, logical and integer vectors are correct. However, you haven't created a vector of type double (see below). Good job on using the `:` shorthand for creating the integer vector. However, remember that the shorthand creates an integer vector and not a double.
+```{r}
+dblVec <- c(1, 2, 3, 4)
+
+length(dblVec)
+typeof(dblVec)
+```
+
+
+3. List the heirarchy of data types for coercion
+    + Answer:logical < integer < numeric < character
+
+4. Explain why the output of following bits of code is TRUE (explain what is happening in terms of coercion): 
+
+```{r}
+"1" == 1
+```
+Answer: 
+**Feedback from Hari**: See the solution for correct answer.
+
+```{r}
+FALSE == 0
+```
+Answer:
+
+**Feedback from Hari**: See the solution for correct answer.
+
+3. Create a list that holds the 4 common types of atomic vectors you created in task 2.
+
+```{r}
+sampleList <- list(charVec,numericVec,intVec,logicalVec)
+```
+4. Create a data frame with 3 columns and 5 rows using the `data.frame()` function
+
+```{r}
+salesRegions <- c("North America","Europe","Asia Pacific","South America","Japan")
+widgetUnits <- c(100,200,300,400,500)
+salesManager <- c("Bobby","Vinoy","Hari","John","Smith")
+
+globalSales <- data.frame(salesRegions,widgetUnits,salesManager)
+view(globalSales)
+globalSales
+
+```
+
+**Feedback from Hari**: Good job! A few suggestions. 
+    + The `view()` function displays the data frame in a browser tab. In general, this is not recommended when running code via a notebook (or any other R script). Instead, if you would like to view the data, either click on the name in your list of object in the environment, use `view()` in the console, or print it as an output of your chunk. 
+    + You can create the data frame with a single command without having to create the vectors individually outside the function. This has the benefit of not creating too many unnecessary objects in our environment i.e. it keeps it clean and organized. See below.
+    
+```{r}
+globalSalesHari <- data.frame(salesRegions = c("North America","Europe","Asia Pacific","South America","Japan"),
+                              widgetUnits = c(100,200,300,400,500),
+                              salesManager = c("Bobby","Vinoy","Hari","John","Smith"))
+
+globalSalesHari
+
+```
+
+Lets test to make sure the data frame I created is the same as yours using the `identical()` function.
+
+```{r}
+identical(globalSales, globalSalesHari)
+```
+
+5. Create the same data frame as above using `tibble()` function
+
+```{r}
+install.packages("tibble")
+library("tibble")
+worldwideSales <- tibble(salesRegions,widgetUnits,salesManager)
+worldwideSales
+```
+
+**Feedback from Hari**: Good job!
+    + You should never have `install.packages()` in a notebook or script. Each time this notebook is run R downloads the package files and installs the package. This is unnecessary since a package needs to be installed only once!
+
+6. Use the `str()`, `class()` and or `glimpse()` command to see the difference between the dataframe and tibble create in 4 and 5.
+
+```{r}
+str (globalSales)
+str (worldwideSales)
+
+class (globalSales)
+class (worldwideSales)
+
+```
+
+7. Fill in the blanks. 
+
+    + A data frame is a __2__ dimensionsional data structure in R that consists of _rows___ of _equal___ length
+    + **Feedback from Hari**: Rows or columns? See solutions for correct answer.
+
+8. What is the difference between an atomic vector and a list?
+    + Answer: Atomic vector is homogenous and list is hetrogenous 1 D
+    + **Feedback from Hari**: Correct!
+
+
+##Task set 2: Data manipulation using dplyr
+
+**INSTRUCTIONS**: You will be using the tidyverse and nycflights13 packages for the next set of tasks. Refer to the documentation on tidyverse.org or use the help pages if you do not understand a function fully.
+
+1. Load the tidyverse and nycflights13 packages.
+
+```{r}
+
+library(tidyverse)
+library(nycflights13)
+```
+
+2. Describe two ways in which you can use RStudio confirm that a package has been loaded into your current R session? (Hint: One of them is a dropdown menu and the other a list of checkboxes)
+
+    + Answer:Show Packages and look at Packages 
+    + **Feedback from Hari**: See solutions
+
+3. Use the `distinct()` command to identify the unique combinations of airline carriers and origin airports in the flights data.
+
+```{r}
+flights %>% 
+  distinct(origin,carrier)
+```
+**Feedback from Hari**: Excellent!
+
+4. Use the `one_of()` helper function to select the following columns -  year, month, day, dep_time, sched_dep_time, dep_delay, arr_time, from the flights data.
+
+```{r}
+flights %>% 
+one_of(,year, month, day, dep_time, sched_dep_time, dep_delay, arr_time)
+```
+
+**Feedback from Hari**: This was a slightly difficult question. See the documentation for `one_of` (`?one_of`). `one_of()` takes as its input a character vector of names. You have provided it a list of object names. See solutions.
+
+
+5. Use the `slice()` function to slice the first 10 rows in the flights data.
+
+```{r}
+
+  slice(flights,1:10)
+```
+
+**Feedback from Hari**: Good Job! Make sure your code is formatted correctly.
+
+6. Perform the same operation as the previous task but this time use `filter()`. (Hint: Search for how to get the row numbers of a tibble)
+
+```{r}
+
+
+filter(newFlights, 1:10,.preserve=FALSE)
+
+```
+**Feedback from Hari**: See solution
+
+
+7. Use the `top_n()` command to identify the top 5 flights out of NYC that experienced the greatest arrival delays in 2013.
+
+```{r}
+flights %>% 
+  group_by(origin="NYC") %>% 
+  arrange(desc(dep_delay)) %>% 
+top_n(5)
+```
+**Feedback from Hari**: There are several errors in this code. See assignment solution for correct version of this code. When you set `group_by(origin = "NYC")` it mutates the origin column and changes all of the values, which were previously JFK, EWR and LGA to "NYC" and groups on just a single value of "NYC". This means that your grouping yields a single group i.e. "NYC". In general, don't mutate values within a `group_by()` since it can yield silent failures like this. And is arguable bad function design (on Hadley Wickham's part). 
+
+Finally, grouping is unnecessary to solve this problem. See solution.
+
+8. Use `top_n()` along with `arrange()` and `slice()` to pull out the 50th most delayed departure from NYC in 2013 (Not all 50, just the 50th). 
+```{r}
+flights %>% 
+  group_by(origin="NYC") %>% 
+  arrange(desc(dep_delay)) %>% 
+    slice(50,) %>% 
+top_n(-1)
+
+```
+See solution.
+
+9. Do the same thing as the previous task using 
+    + `row_number()`
+    + and `dense_rank()`
+```{r}
+
+```
+
+```{r}
+
+```
+
+
+10. The result from `row_number()` and `top_n()` are the same, while that from `dense_rank()` is different. Why?
+
+    + Answer:
+
+11. Find the top 10 airline carrier that had the highest average departure delays in 2013 using `group_by()`, `summarise()` and other functions you have learnt previously.
+```{r}
+flights %>% 
+  group_by(carrier) %>% 
+  summarise(avgDelay=mean(dep_delay,na.rm=T)) %>% 
+  arrange(desc(avgDelay)) %>% 
+  top_n(10)
+
+
+```
+
+See solutions.
+
+12. Use `group_by()` with `mutate()` to create a new variable called `comparativeDelay` which is the difference between departure delay and the average delay in each origin airport for every hour in 2013 (checkout the `time_hour` variable in the flights data). Store the result in a variable called `comparativeDelays`.
+```{r}
+comparitiveDelays <- flights %>% 
+  group_by(origin,hour) %>% 
+ mutate(avgDelay=mean(dep_delay,na.rm=T)) %>% 
+  mutate(comparativeDelay=dep_delay-avgDelay) 
+```
+See solution
+
+13. Now group the `comparativeDelays` tibble by carriers to print the top 10 airlines with the greatest average comparative delays.
+```{r}
+comparitiveDelays%>% 
+  group_by(carrier) %>% 
+   summarise(avgcomparitiveDelay=mean(comparativeDelay,na.rm=T)) %>% 
+  arrange(desc(avgcomparitiveDelay)) %>% 
+  top_n(10)
+  
+```
+
+
+14. Use `group_by()` with filter to print the 5 most delayed flights from each origin. Your printed tibble should have 15 rows.
+```{r}
+flights %>% 
+    group_by(origin) %>% 
+
+  
+```
+
+15. The air authority in NY wants to penalize carriers for departure delays. Which of the three metrics (task 1, 3 or 4) would you recommend they use to identify the airlines to penalize. Why?
+
+    + Answer:avgcomparitiveDelay
+    
+##Task set 3: R markdown
+
+1. Modify the text below as per the prompt
+    
+    <u>+ Underline me</u>
+    
+    
+   **+Make me bold**
+   
+    + >Make me a block quote
+    
+    * Make me italic*
+    + ~~Strike through me~~
+
+2. Create a level three header called "My level 3 header" under this line 
+
+### My level 3 header
+
+3. Modify the content below so that the bullet points (unordered list) render correctly
+
+**Messy bullet points**
+
+ - one
+ - two
+ - three
+
+4. Use chunk options to hide the output and the code from the chunk below in the previewed notebook.
+
+```{r, results='hide', echo=FALSE}
+print("Hide me and the code that created me")
+```
+
+

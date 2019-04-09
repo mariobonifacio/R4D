@@ -1,0 +1,353 @@
+---
+title: "Week 3 - Daily R Nuggets"
+author: "~Hari Subhash~ Mario Bonifacio"
+date: 'Date created: `r Sys.Date()`'
+output:
+  html_document:
+    df_print: paged
+  html_notebook:
+    code_folding: show
+    df_print: paged
+    highlight: kate
+    smart: yes
+    theme: cosmo
+---
+**CHEATSHEETS**
+
+1. [Data visualization](https://github.com/rstudio/cheatsheets/blob/master/data-visualization-2.1.pdf)
+2. [Data Manipulation](https://github.com/rstudio/cheatsheets/blob/master/data-transformation.pdf)
+
+**KEYBOARD SHORTCUTS**:
+
+1. Assignment operator (<-) is `Alt+-` for Windows and `Option+-` for Mac
+2. Insert new code chunk `Ctrl+Alt+I` for Windows and `Command+Option+I` for Mac
+3. Run a line of code `Ctrl+Enter` for Windows and `Command+Enter` for Mac
+4. Run all the code within a chunk `Ctrl+Shift+Enter` for Windows and `Command+Shift+Enter` for Mac
+5. Insert a pipe operator (%>%) `Ctrl+Shift+M` for Windows and `Command+Shift+M` for Mac
+
+**INSTRUCTIONS**: 
+
+1. Use the cheatsheets, shortcuts, help files and the internet to solve these tasks. If nothing works post your error on the Questions channel on Slack using a code snippet with the error message as the title.
+2. You can complete these as daily tasks or in bulk. Each task set should take you about 30 to 45 minutes to complete. You will be using the nycflights13 and tidyverse packages for these tasks.
+3. Provide the answers to each question under it. 
+
+**DEADLINE**: Wed 27th, 2019
+
+##Day 1
+1. Get the structure of the flights data set using the `str()` command.
+
+```{r}
+library(tidyverse); library(nycflights13)
+str(flights)
+```
+   
+
+2. The `$` notation is used in base R to pull out columns from a data frame. Its usage is as follows `df$columnName`, where df is the dataframe (or tibble) you are interested in pulling a column denoted by columnName from. Use this syntax to pull out the `carrier` column from the flights tibble and store it in a variable called `flightCarrier`.
+
+```{r}
+flightcarrier <- flights$carrier
+str(flightcarrier)
+```
+
+
+3. Get the length of the `flightCarrier` vector and compare it with the number of rows in the flights data using the `==` operator. It should return true. Search the internet for the function to find the number of rows of a dataframe.
+
+```{r}
+length(flightcarrier); length(flightcarrier) == nrow(flights)
+```
+
+
+4. Use the `unique()` function on the `flightCarrier` variable you created in the previous step to find the unique list of carriers in the flights dataset. Replace the `flightCarrier` with this new vector of unique values.
+
+```{r}
+flightcarrier <- unique(flightcarrier)
+flightcarrier 
+```
+
+
+5. Print the new length of the `flightCarrier` vector.
+
+```{r}
+length(flightcarrier)
+```
+
+
+6. Get the data type of the `flightCarrier` vector using `typeof()`, is it the same as the type denoted in `str()`. (The output from the `str()` function abbreviates the type so for instance integer is denoted as int.)
+
+```{r}
+typeof(flightcarrier)
+str(flightcarrier)
+```
+It's a character vector
+
+
+7. Use pipes to combine steps 2 and 4. Like so `df$columnName %>% unique()`.
+
+```{r}
+flightcarrier <- flights$carrier %>%
+  unique()
+str(flightcarrier)
+```
+
+8. Use the `pull()` function instead of the `$` notation to achieve the same result as above. Save this as `pulledCarrier`
+
+```{r}
+pulledCarrier <- flights %>%
+  pull(.,var = carrier) %>%
+  unique()
+str(pulledCarrier)
+```
+
+
+9. Use this function `identical()` to establish that the `pulledCarrier` and `flightCarrier` are the same.
+
+```{r}
+identical(pulledCarrier,flightcarrier)
+```
+
+10. Now try the same step as 8 with `select()` instead of pull. Save this as `selectedCarrier`
+
+```{r}
+selectedCarrier <- flights %>%
+  select(carrier) %>%
+  unique()
+str(selectedCarrier)
+```
+
+
+11. Use the `identical()` function to establish that `selectedCarrier` and `flightCarrier` are not the same. 
+
+```{r}
+identical(selectedCarrier,flightcarrier)
+
+
+```
+
+
+12. Why aren't `selectedCarrier` and `flightCarrier` identical? Think about the data structure that `select()` returns compared to that for `pull()`/`$`
+
+```{r}
+typeof(selectedCarrier);typeof(flightcarrier)
+```
+Select returns a list and pull returns a vector
+
+
+##Day 2
+1. Arrange flights in the descending order of arrival delay and ascending order of departure delay.
+
+```{r}
+flights %>%
+   arrange(desc(arr_delay),dep_delay)
+```
+
+
+2. Use three different ways of your choice to select the first 5 columns from the flights tibble. (using number indices, column names, a range, helper functions etc).
+
+```{r}
+library(nycflights13)
+library(tidyverse)
+str(flights)
+select(flights,1:5);flights[,1:5];
+
+flights %>%
+  select(year:sched_dep_time)
+```
+
+
+3. Which airports had the most number of flights that were delayed by more than 10 minute in 2013? (You can show a table with the counts of flights delayed by more than 10 minutes from each origin that is sorted in descending order of the count)
+
+```{r}
+
+library(nycflights13)
+flights %>%
+  filter(dep_delay>10) %>%
+  group_by(origin) %>%
+  count() %>%
+  arrange(desc(n))
+
+
+```
+
+
+4. Create a new variable `timeLostInAir` that is the difference between arrival delay and departure delay. Save this to a variable.
+
+```{r}
+timelostflights <- flights %>%
+  mutate(timeLostInAir = arr_delay - dep_delay) %>%
+  select(2,3,carrier,flight,timeLostInAir)
+
+select(timelostflights,timeLostInAir)
+
+
+```
+
+5. Use the tibble saved in task 4 to find the flight that lost the most amount of time while in air
+
+```{r}
+
+dflights %>%
+  filter(timeLostInAir == max(timeLostInAir,na.rm = T))
+```
+
+
+6. Use the tibble saved in task 4 to show the top 5 carriers in the terms of `timeLostInAir`
+
+```{r}
+dflights %>%
+  group_by(carrier) %>%
+  mutate(carrier_avg = mean(timeLostInAir,na.rm = T)) %>%
+  select(carrier,carrier_avg) %>%
+  unique() %>%
+  arrange(desc(carrier_avg)) %>%
+  head(5)
+
+```
+
+
+7. Do you think that `timeLostInAir` is a useful variable to continue exploring based on the last 3 tasks?
+
+*It's fine. All carriers seem to have similar histograms, so I'd have to explore deeper to see whether they tell us much*
+
+```{r}
+ggplot(dflights,mapping = aes(timeLostInAir,na.rm=T)) +
+  geom_histogram()
+
+dflights %>%
+  group_by(carrier) %>%
+  mutate(carrier_avg = mean(timeLostInAir,na.rm = T)) %>%
+  select(carrier,carrier_avg) %>%
+  unique() %>%
+  arrange(desc(carrier_avg))
+
+dflights %>%
+  group_by(carrier) %>%
+  ggplot(aes(timeLostInAir)) +
+  geom_histogram() +
+  facet_wrap(~ carrier)
+
+```
+
+
+
+##Day 3
+1. Convert the `dest` variable in the flights tibble to a factor using the `mutate()` and pipe it to an `str()` function to see that the `dest` variable is now marked as a factor. (The task is to change the `dest` variable, not add a new column to the tibble)
+
+```{r}
+library(tidyverse);library(nycflights13)
+
+flights %>%
+  mutate(dest = as.factor(dest)) %>%
+  str()
+```
+
+
+2. Use `mutate()` along with `recode()` to recode the origin column as follows: JFK to John F Kennedy, LGA to La Guardia, leave EWR as is. Read the documentation for recode on tidyverse to understand its implementation.
+
+```{r}
+flights %>%
+  mutate(origin = recode(origin, 'JFK' = 'John F Kennedy','LGA' = 'La Guardia')) 
+  
+```
+
+
+3. Repeat task 2 but this time use `mutate()` along with `case_when()`. If you have further questions post on slack.
+
+```{r}
+flights %>%
+  mutate(origin = case_when(origin == 'JFK' ~ 'John F Kennedy'
+                            ,origin == 'LGA' ~ 'La Guardia'
+                            ,origin == 'EWR' ~ 'EWR'))
+
+```
+
+
+4. Based on the flights 2013 data, which are the worst 5 destinations in terms of arrival delay?
+
+```{r}
+flights %>%
+  group_by(dest) %>%
+  summarise(mean_arr_delay = mean(arr_delay,na.rm = T)) %>%
+  arrange(desc(mean_arr_delay)) %>%
+  top_n(5)
+```
+
+
+##Day 4
+1. Use a ggplot chart(s) (of your choice) to show the carriers that made up the most of amount of time in terms of departure delays. Say a flight is departs 10 minutes late but lands only 2 minutes late then `timeMadeUp`  = 8, similarly if a flight that departs 20 minutes late but lands say 10 minutes early, then `timeMadeUp` = 30. (Only look at flights that were delayed for this, we are not interested in flights that departed early or on time.)
+
+```{r}
+flights %>%
+  filter(dep_delay > 0) %>%
+  mutate(timeMadeUp = dep_delay - arr_delay) %>%
+  group_by(carrier) %>%
+  summarize(mean_timemadeup = mean(timeMadeUp,na.rm = T)) %>%
+  ggplot(mapping = aes(x=carrier,y=mean_timemadeup,na.rm=T)) +
+  geom_col()
+  
+  
+  
+  
+```
+
+
+2. Use a ggplot chart(s) (of your choice) to show the relationship between flight distance and arrival delay. (The flight distances are about the same for every flight, so you could consider using it as a group to summarise the data)
+
+```{r}
+flights %>%
+  filter(dep_delay > 0) %>%
+  group_by(origin,dest) %>%
+  summarize(meanDist = mean(distance,na.rm = T),mean_arr_delay = mean(arr_delay,na.rm = T)) %>%
+  ggplot(mapping = aes(x=meanDist,y=mean_arr_delay,na.rm=T)) +
+  geom_point() +
+  geom_smooth(method = lm)
+```
+
+
+##Day 5
+1. Look at the documentation of `facet_grid()` and create a histogram for departure delay each combination of origin and carrier.
+
+```{r}
+flights %>%
+##  group_by(origin,carrier) %>%
+  ggplot(aes(dep_delay,na.rm = T)) +
+  geom_histogram() +
+  facet_grid(rows = vars(carrier),cols = vars(origin))
+
+?facet_grid
+```
+
+
+##Day 6
+1. Pick any chart you have made so far and make it publication ready
+    + Add labels and titles
+    + Add the following subtitle to it: "A chart I made for the daily tasks"
+    + Try out a new theme from the ggthemes package
+
+```{r}
+flights %>%
+  filter(dep_delay > 0) %>%
+  group_by(origin,dest) %>%
+  summarize(meanDist = mean(distance,na.rm = T),mean_arr_delay = mean(arr_delay,na.rm = T)) %>%
+  ggplot(mapping = aes(x=meanDist,y=mean_arr_delay,na.rm=T)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  labs(title = 'Pack one less sudoku for your Australia flight than planned',
+       subtitle = 'A chart I made for the daily tasks',
+       x = 'Flight distance in miles',y = 'Mean arrival delay in minutes') +
+  ggthemes::theme_economist()
+
+
+```
+    
+
+2. Save this chart and share it on #general channel on slack
+
+```{r}
+ggsave('a_saved_chart.png')
+```
+
+
+3. Preview this notebook and push your changes to github. Share the link with me (personally on Slack) before 6:00 PM EST, Tuesday, April 2nd
+
+
+

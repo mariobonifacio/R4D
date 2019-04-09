@@ -1,0 +1,235 @@
+---
+title: "Class 4 Notes and Exercises"
+author: ZN
+date: "Date created: `r Sys.Date()`"
+output: html_notebook
+---
+
+
+**Due Date**: Sunday, March 24th
+
+**Keyboard Shortcuts**:
+
+1. Assignment operator (<-) is `Alt+-` for Windows and `Option+-` for Mac
+2. Insert new code chunk `Ctrl+Alt+I` for Windows and `Command+Option+I` for Mac
+3. Run a line of code `Ctrl+Enter` for Windows and `Command+Enter` for Mac
+4. Run all the code within a chunk `Ctrl+Shift+Enter` for Windows and `Command+Shift+Enter` for Mac
+5. Insert a pipe operator (%>%) `Ctrl+Shift+M` for Windows and `Command+Shift+M` for Mac
+
+**General Instructions**
+
+1. Use the cheatsheets and the keyboard shortcuts as you work through the assignment.
+2. Each task should be answered right below the question.
+3. The assignment should be submitted via a shareable github link on the assignments channel in Slack.
+4. Make sure the notebook is neatly formatted and looks good when you preview it.
+
+##Task set 1: Data types and structures
+1. List the 4 most common (data) types of atomic vectors.
+    + Answer: Character, numeric, integer and logical.
+
+2. Create atomic vectors of the 4 common types covered in class. Print their length and type.
+
+```{r}
+Fish <- c("Salmon", "Cod", "Tuna")
+str(Fish)
+PriceDouble <- c(5.1, 7.2, 6.4)
+str(PriceDouble)
+PriceInteger <- c(1L, 3L, 8L, 10L)
+str(PriceInteger)
+Male <- c(T,F)
+str(Male)
+```
+
+3. List the heirarchy of data types for coercion
+    + Answer: In coercion, Values are converted to the least common denominator. The least common denominator data type is a character, then numeric, then integer and then logical. So if I understand correctly, coercion will try to make values logical first, then integer/numeric and then character.
+
+4. Explain why the output of following bits of code is TRUE (explain what is happening in terms of coercion): 
+
+```{r}
+"1" == 1
+```
+Answer: The numeric 1 on the right side is being forced to a character "1", which are equivalent
+
+
+```{r}
+FALSE == 0
+```
+Answer:The logical FALSE takes value zero, TRUE takes one. Therefore coercision converts the left side into a numeric and equivalence is established
+
+3. Create a list that holds the 4 common types of atomic vectors you created in task 2.
+
+```{r}
+Fishlist <- list(Fish, PriceDouble, PriceInteger, Male)
+Fishlist
+```
+4. Create a data frame with 3 columns and 5 rows using the `data.frame()` function
+
+```{r}
+Newdataframe <- data.frame(Names = c("A", "B", "C", "D", "E"), Age = c(1, 2, 3, 4, 5), Male = c(1, 0, 1, 0, 0))
+str(Newdataframe)
+```
+5. Create the same data frame as above using `tibble()` function
+
+```{r}
+Newtibble <- tibble(Names = c("A", "B", "C", "D", "E"), Age = c(1, 2, 3, 4, 5), Male = c(1, 0, 1, 0, 0))
+str(Newtibble)
+```
+
+6. Use the `str()`, `class()` and or `glimpse()` command to see the difference between the dataframe and tibble create in 4 and 5.
+
+```{r}
+str(Newdataframe)
+str(Newtibble)
+```
+
+7. Fill in the blanks. 
+
+    + A data frame is a _2___ dimensionsional data structure in R that consists of _columns___ of __equal__ length
+
+8. What is the difference between an atomic vector and a list?
+    + Answer: An atomic vector is one-dimensional such that all elements of the vector are of the same data type. A list can contain multiple vectors of different data types or even other lists so they can be multi-dimensional.
+
+
+##Task set 2: Data manipulation using dplyr
+
+**INSTRUCTIONS**: You will be using the tidyverse and nycflights13 packages for the next set of tasks. Refer to the documentation on tidyverse.org or use the help pages if you do not understand a function fully.
+
+1. Load the tidyverse and nycflights13 packages.
+
+```{r}
+library(tidyverse); library(nycflights13)
+```
+
+2. Describe two ways in which you can use RStudio confirm that a package has been loaded into your current R session? (Hint: One of them is a dropdown menu and the other a list of checkboxes)
+
+    + Answer: 1) Look in the global environment to see if the package appears & 2) Check the 'Packages' tab to see if the package appears?
+
+3. Use the `distinct()` command to identify the unique combinations of airline carriers and origin airports in the flights data.
+
+```{r}
+flights %>%
+  distinct(carrier, origin)
+```
+
+
+
+4. Use the `one_of()` helper function to select the following columns -  year, month, day, dep_time, sched_dep_time, dep_delay, arr_time, from the flights data.
+
+```{r}
+flights %>% 
+  select(one_of("year", "month", "day", "dep_time", "sched_dep_time", "dep_delay", "arr_time"))
+#Not sure why the code only runs when the columns are in quotes
+```
+
+5. Use the `slice()` function to slice the first 10 rows in the flights data.
+
+```{r}
+flights %>% 
+  slice(1:10)
+```
+
+6. Perform the same operation as the previous task but this time use `filter()`. (Hint: Search for how to get the row numbers of a tibble)
+
+```{r}
+flights %>% 
+  filter(between(row_number(), 1, 10))
+#Or alternatively the following code also works. But it would be helpful to understand syntax for both ways a little better#
+ # tibble::rownames_to_column() %>% 
+ # filter(rowname == 1:10)
+```
+
+
+7. Use the `top_n()` command to identify the top 5 flights out of NYC that experienced the greatest arrival delays in 2013.
+
+```{r}
+flights %>% 
+  top_n(., n = 5, arr_delay) # n is 5 is giving you top 5
+```
+
+8. Use `top_n()` along with `arrange()` and `slice()` to pull out the 50th most delayed departure from NYC in 2013 (Not all 50, just the 50th). 
+```{r}
+flights %>% 
+  top_n(n = 50, dep_delay) %>% 
+  arrange(desc(dep_delay)) %>% 
+  slice(1)
+```
+
+9. Do the same thing as the previous task using 
+    + `row_number()`
+    + and `dense_rank()`
+    
+```{r}
+flights %>%
+  arrange(desc(dep_delay)) %>% 
+  filter(row_number() == 50) ##The answer doesnt match the top_n - I'm not sure it's doing the right thing
+```
+
+```{r}
+flights %>% 
+  arrange(desc(dep_delay)) %>% 
+  filter(dense_rank(dep_delay) %in% 50) ##This isn't doing what I want it to
+
+```
+
+
+10. The result from `row_number()` and `top_n()` are the same, while that from `dense_rank()` is different. Why?
+
+    + Answer: Can't tell because I'm getting errors for task 8 & 9. but I assume if it worked correctly, the answers would be different because topn and denserank are ranking in different ways.
+
+11. Find the top 10 airline carrier that had the highest average departure delays in 2013 using `group_by()`, `summarise()` and other functions you have learnt previously.
+```{r}
+flights %>% 
+  group_by(carrier) %>%
+  summarize(meanDepDelay = mean(dep_delay, na.rm = T)) %>% 
+  arrange(desc(meanDepDelay)) %>% 
+  slice(1:10)
+```
+
+12. Use `group_by()` with `mutate()` to create a new variable called `comparativeDelay` which is the difference between departure delay and the average delay in each origin airport for every hour in 2013 (checkout the `time_hour` variable in the flights data). Store the result in a variable called `comparativeDelays`.
+```{r}
+flights %>% 
+  group_by(origin, time_hour) %>% 
+  summarise(meanDelay = mean(dep_delay, na.rm = T)) %>% 
+  mutate(comparativeDelay = dep_delay - meanDelay) # Keep getting error that depdelay doesnt exist
+```
+
+13. Now group the `comparativeDelays` tibble by carriers to print the top 10 airlines with the greatest average comparative delays.
+```{r}
+
+```
+
+14. Use `group_by()` with filter to print the 5 most delayed flights from each origin. Your printed tibble should have 15 rows.
+```{r}
+
+```
+
+15. The air authority in NY wants to penalize carriers for departure delays. Which of the three metrics (task 1, 3 or 4) would you recommend they use to identify the airlines to penalize. Why?
+
+    + Answer:  Could not understand which tasks you are referring to
+    
+##Task set 3: R markdown
+
+1. Modify the text below as per the prompt
+    + Underline me
+    + **Make me bold**
+    + > Make me a block quote
+    + *Make me italic*
+    + ~~Strike through me~~
+
+2. Create a level three header called "My level 3 header" under this line 
+###My Level 3 Header
+3. Modify the content below so that the bullet points (unordered list) render correctly
+ans: I used the asterisk as shown in markdown cheatsheet but it doesnt seem to generate bullets.
+
+Messy bullet points  
+* one  
+* two  
+* three  
+
+4. Use chunk options to hide the output and the code from the chunk below in the previewed notebook.
+ans: I believe you already formatted it that way with results=hide and echo=false?
+
+```{r, results='hide', echo=FALSE}
+print("Hide me and the code that created me")
+```
+
