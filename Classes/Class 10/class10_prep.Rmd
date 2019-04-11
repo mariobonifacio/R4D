@@ -1,0 +1,135 @@
+---
+title: "Class 10 - Prep"
+author: Hari Subhash
+date: "Date created: `r Sys.Date()`"
+output:
+  html_notebook:
+    highlight: kate
+    smart: yes
+    theme: cosmo
+    code_folding: show
+    df_print: paged
+---
+
+##Description
+This class prep note is a refresher on left joins. Make sure you read the previous class prep before this one.
+
+##Data joins
+Data joins are used to combine relational tables using common keys. Instead of having all your data in a single table, relational databases split them into multiple related tables, thereby reducing repetition of information across rows. This has the benefits of reducing size and making it easier to maintain. We use keys to bring these tables back together when we need to combine them.
+
+##A basic join
+The `left_join()` is the most commonly used type of join and is defined as follows: 
+
+>return all rows from x, and all columns from x and y. Rows in x with no match in y will have NA values in the new columns. If there are multiple matches between x and y, all combinations of the matches are returned.
+
+The `flights` table in the `nycflights13` package contains several keys that combine it with other tables. One of these is the `carrier` column that contains the two letter abbrevated code for the operating carrier for each flights. 
+
+Let's say we want to add a new column with the names of the carriers instead of their abbreviated names. We can use a `left_join()` for this. But before we do that we need to identify the table that contains the carrier names. This is the `airlines` table. 
+
+The `airlines` table has 16 rows with two columns. The first column is `carrier` and the second the name of the carrier. We are interested in adding this `name` column to the flights data.
+```{r, message=FALSE}
+## Load the libraries I will use for this prep note
+library(tidyverse); library(nycflights13)
+airlines
+```
+
+The next task is identify the common key that can combine `flights` with `airlines` and add the `name` column from `airlines` into `flights`. This common key is the `carrier` column. Below, I have selected the first three columns along with the `carrier` column from the `flights` data.
+```{r}
+flights %>% 
+    select(1:3, carrier)
+```
+
+Our task is to add the `name` column from `airlines` to the table above. We can do this using a `left_join()` with the common key `carrier` being specified using the `by` argument in the `left_join()` function.
+```{r}
+flights %>% 
+    select(1:3, carrier) %>% 
+    left_join(x = ., y = airlines, by = "carrier")
+```
+In the code above, the table x is the piped data (with only a few columns along with the key) while y is the `airlines` data and the common key is `carrier`. As you notice the tibble above still has the same number of rows (336,776) as in the flights data i.e. all the rows in table x have been preserved (as per the definition of a `left_join()`).
+
+##With duplicated keys
+Now let's look at a case where there might be **duplicated keys**. In this case all the rows in x will be kept but new rows that reflect data from the duplicated rows in y will also be added.
+
+Let's create a new version of the `airlines` table with a duplicated key for "UA" to see how this works.
+```{r}
+airlinesDuplicated <- bind_rows(airlines, 
+                                tibble(carrier = "UA",
+                                       name = "Duplicated United"))
+
+tail(airlinesDuplicated) %>% 
+    arrange(carrier)
+```
+As you can see above, there are two names for UA - "United Air Lines Inc." and "Duplicated United".
+
+Now let's see what happens when we use this duplicated version of airlines to join the names of the airline carriers to `flights`.
+```{r}
+flights %>% 
+    select(1:3, carrier) %>% 
+    left_join(x = ., y = airlinesDuplicated, by = "carrier")
+```
+The number of rows in the output is now 395,441 instead of 336,776. These additional `r 395441 - 336776` rows are because every UA flight (`r sum(flights$carrier == "UA")`) in the `flights` data now has two rows instead of 1.
+
+As a data analysts one of your tasks would be to determine what to do when there are duplicated keys. If you encountered the `airlinesDuplicated` tibble how would you decide which value of UA to pick? 
+
+You have two options usually. 
+1. Keep one and remove the rest. We could decide that one of the rows is the correct one and filter out those that are duplicate. 
+2. Summarise all the duplicate keys into a single value.
+
+The choice usually varies based on the context, however, you should always have a clear reason for choosing one over the other. 
+
+##Combination keys
+What if we need to join data from tables that use **multiple columns to create a key**? \
+
+For instance, the `weather` table contains weather data for every origin for every hour. In the last prep we used the following variables - `origin`, `month`, `day` and `hour` to create the key. The `weather` table also contains a `time_hour` variable that is in a data format. We can use this instead of combining `month`, `day` and `hour` to create a key.^[This variable captures additional characteristics of a date such as time zones and day light savings. This means that we don't have to worry about overlapping hours dur to day light savings.]
+
+`flights` similarly has a `time_hour` column that we can use along with the `origin` column to add the weather data. 
+
+Let's say we want to add the precipitation at each origin airport in the flights data. Let's add this using a `left_join()`. But first let's create a smaller version of the weather data with only the `precip` data along with the keys.
+```{r}
+weatherSmall <- weather %>% 
+    select(origin, time_hour, precip)
+
+weatherSmall
+```
+
+Now let's join this with `flights`.
+```{r}
+flights %>% 
+    select(1:3, origin, time_hour, dep_delay) %>% 
+    left_join(x = ., 
+              y = weatherSmall, 
+              by = c("origin", "time_hour"))
+```
+
+Voila! We can write this a bit more succinctly (like below) to get the exact same result.
+```{r}
+flights %>% 
+    select(1:3, origin, time_hour, dep_delay) %>% 
+    left_join(x = ., 
+              y = weather %>% 
+                  select(origin, time_hour, precip), 
+              by = c("origin", "time_hour"))
+
+```
+
+##Keys with different names
+What if the **keys have different names**? For instance, look at the `airports` data.
+```{r}
+airports
+```
+The key for the `airports` table is the `faa` variable that identifies each airport using a 3 letter combo. The corresponding common key in the `flights` data is the `dest` (or the `origin`) variable.
+```{r}
+flights %>% 
+    select(1:3, dest, dep_delay)
+```
+
+Let's say we would like to add the altitude of each airport from the `airports` table to the `flights` data. We can do this using a named character vector to specify the key. The basic syntax for specifying the keys within `left_join()` is as follows `by = c("keyname.x" = "keyname.y")`. See below.
+```{r}
+flights %>% 
+    select(1:3, dest, dep_delay) %>% 
+    left_join(x = .,
+              y = airports %>% 
+                  select(faa, alt), 
+              by = c("dest" = "faa"))
+```
+Now we have flights data with the altitude also added to it.
