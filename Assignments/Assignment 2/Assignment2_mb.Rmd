@@ -1,0 +1,49 @@
+---
+title: "Assignment 2"
+author: ~~Hari Subhash~~ Mario 
+date: "Date created: `r Sys.Date()`"
+output:
+  html_notebook:
+    highlight: kate
+    smart: yes
+    theme: cosmo
+    code_folding: show
+    df_print: paged
+---
+
+**Due Date**: Sunday, April 28th
+
+**Keyboard Shortcuts**:
+
+1. Assignment operator (<-) is `Alt+-` for Windows and `Option+-` for Mac
+2. Insert new code chunk `Ctrl+Alt+I` for Windows and `Command+Option+I` for Mac
+3. Run a line of code `Ctrl+Enter` for Windows and `Command+Enter` for Mac
+4. Run all the code within a chunk `Ctrl+Shift+Enter` for Windows and `Command+Shift+Enter` for Mac
+5. Insert a pipe operator (%>%) `Ctrl+Shift+M` for Windows and `Command+Shift+M` for Mac
+
+**General Instructions**
+
+1. Create a new notebook (copy parts of the YAML header you are interested in keeping) to work on your assignment.
+2. The assignment should be submitted via a shareable github link that points to your notebook (.nb.html) file to me on Slack.
+3. Make sure the notebook is neatly formatted, and that all the charts and tables and look good when you preview it.
+
+**Task**: Explore at least 5 different causes for departure and arrival delays. Its not necessary that you find a definitive answer for what causes a delay, instead I want you to showcase your ability to explore the data with a combination of analytical text, tables and charts. The final output should be something you can show a prospective employer or client as proof of you ability to work with data in R.
+
+
+```{r}
+## install.packages('tidyverse');install.packages('skimr')  ## Install packages, if necessary
+library(tidyverse); library(skimr); library(nycflights13)
+
+weather %>%
+  left_join(flights,by = c('origin','time_hour')) %>%
+  select(6:14,dep_delay) %>%
+  cor(use = 'pairwise.complete.obs') %>%
+  round(2) 
+
+
+
+
+
+
+```
+
