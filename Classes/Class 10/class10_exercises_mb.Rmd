@@ -130,3 +130,37 @@ weather %>%
   geom_smooth(method = loess)
 ```
 
+##Bonus task! Explore a relatioship between two independent variables
+
+```{r}
+library(nycflights13);library(tidyverse);library(skimr)
+
+weather %>%
+  select(visib,precip) %>%
+  group_by(visib) %>%
+  summarize(mean_precip = mean(precip)) %>%
+  ggplot(aes(visib,mean_precip)) +
+  geom_point() +
+  geom_smooth()
+
+weather %>%
+  select(visib,precip) %>%
+  group_by(visib) %>%
+  summarize(mean_precip = mean(precip)) %>%
+  ggplot(aes(visib,mean_precip)) +
+  geom_point() +
+  geom_smooth()
+
+weather %>%
+  select(time_hour,origin,visib,precip) %>%
+  inner_join(delayed_flights, by = c('time_hour','origin')) %>%
+  group_by(visib) %>%
+  mutate(mean_delay = mean(dep_delay,na.rm = T)) %>%
+  ggplot(aes(visib,mean_delay,colors=precip)) +
+  geom_point() +
+  geom_smooth(method = loess)
+
+
+
+```
+
