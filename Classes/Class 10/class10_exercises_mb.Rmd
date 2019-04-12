@@ -153,14 +153,30 @@ weather %>%
 
 weather %>%
   select(time_hour,origin,visib,precip) %>%
-  inner_join(delayed_flights, by = c('time_hour','origin')) %>%
+  inner_join(flights, by = c('time_hour','origin')) %>%
   group_by(visib) %>%
-  mutate(mean_delay = mean(dep_delay,na.rm = T)) %>%
-  ggplot(aes(visib,mean_delay,colors=precip)) +
+  summarize(mean_delay = mean(dep_delay,na.rm = T),is_precip = median(if_else(precip>0,T,F))) %>%
+  ggplot(aes(visib,mean_delay)) +
   geom_point() +
-  geom_smooth(method = loess)
+  geom_smooth(method=lm) +
+  facet_wrap(~is_precip)
+
+weather %>%
+  select(time_hour,origin,temp,precip) %>%
+  inner_join(flights, by = c('time_hour','origin')) %>%
+  filter(dep_delay >0) %>%
+  mutate(is_precip = if_else(precip>0,T,F)) %>%
+  ggplot(aes(temp,dep_delay)) +
+  geom_point() +
+  geom_smooth(method=loess) +
+  facet_wrap(~is_precip) 
+  
+
+
 
 
 
 ```
+
+
 
