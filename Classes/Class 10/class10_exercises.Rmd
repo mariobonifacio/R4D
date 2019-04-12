@@ -1,0 +1,37 @@
+---
+title: "Class 10 - In class exercises"
+author: Hari Subhash
+date: "Date created: `r Sys.Date()`"
+output:
+  html_notebook:
+    highlight: kate
+    smart: yes
+    theme: cosmo
+    code_folding: show
+    df_print: paged
+---
+
+##Task 1: Examine the weather data
+1. Use the `skim()` function from the `skimr` package to visually display all the variables in weather
+
+2. Use `nrow()` to display the number of rows in the weather data
+
+3. Use `dim()` to display the rows and columns of the weather data
+
+4. Use `names()` to display the column names of the weather data
+
+5. Display the `head()` of the weather data
+
+6. Display the `tail()` of the weather data
+
+7. Display a random 10 rows from the weather data using `sample_n()`
+
+8. What are the primary keys of the weather data? i.e. which column(s) can be used to uniquely identify each observation in the weather data? Hint: `group_by()` with `filter(n() > 1)` to check if there are more than one observation per group.
+
+##Task 2: Explore the indepedent variable
+Use a combination of text, tables and charts to explore the nature of the independent variable
+
+##Task 3. Explore a relationship
+Explore the relationship between departure delay and a variable of your choice.
+
+

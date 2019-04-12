@@ -1,0 +1,52 @@
+---
+title: "Class 11 - Lecture"
+author: Hari Subhash
+date: "Date created: `r Sys.Date()`"
+output:
+  html_notebook:
+    highlight: kate
+    smart: yes
+    theme: cosmo
+    code_folding: show
+    df_print: paged
+css: /Users/hsubhash/Documents/R4D/Assets/custom.css
+---
+
+
+**TOPICS TO COVER**
+
+1. Subset atomic vectors in base R
+    + Using `$`
+    + Using `[]`
+2. Subset data frames in R
+    + Using `[]`
+
+
+
+
+```{r}
+unique(flights$carrier[flights$dep_delay > 540])
+```
+
+```{r}
+unique(flights[flights$dep_delay > 540, ])
+```
+
+```{r}
+mtcars[mtcars$cyl == 4, ]
+mtcars[-(1:4), ]
+mtcars[mtcars$cyl <= 5, ]
+mtcars[mtcars$cyl == 4 | mtcars$cyl == 6, ]
+```
+
+```{r}
+x <- 1:5; x[NA]
+
+x[NA_real_]
+```
+
+
+```{r}
+FALSE == NA
+```
+

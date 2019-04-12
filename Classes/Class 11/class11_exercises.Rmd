@@ -1,0 +1,41 @@
+---
+title: "Class 11 - In class exercises"
+author: Hari Subhash
+date: "Date created: `r Sys.Date()`"
+output:
+  html_notebook:
+    highlight: kate
+    smart: yes
+    theme: cosmo
+    code_folding: show
+    df_print: paged
+---
+
+##Task Set 1: Subset vectors
+
+1. Use `$` notation to pull out the `arr_delay` column from `flights` and assign it to a variable called `delay`.
+
+2. Remove the NA values from `delay` and reassign that to the `delay` variable. 
+
+3. Print delay to confirm there are no NA values in it now.
+
+4. Identify and print the values of `delay` that are greater than 540. No need to reassign here.
+
+5. Repeat steps 1, 2 and 4 with a single line of code and without creating a new variable
+
+
+##Task Set 2: Subset data frames using []
+
+1. Select the first three columns from `flights` using `[]`
+
+2. Select all but the first 3 columns in flights (i.e. remove the first three columns from flights)
+
+3. Select the carrier column from flights. Your output should be a tibble/dataframe as well.
+
+4. Filter all rows that have arrival delays that are greater than 540 mins. Make sure you remove the rows that are missing arrival delay values.
+
+5. Repeat 4 using dplyr syntax.
+
+6. **Hard**: Filter rows that have arrival delays greater than 540 mins and select the first three, arrival delay and carrier columns.
+
+7. Repeat 6 using dplyr syntax.
