@@ -21,7 +21,7 @@ output:
 
 **GOAL:** My ultimate goal is to be able to best predict a flight's departure delay. In an ideal world, all flights would simply leave on time. In a second-best world, each airline would contact travelers directly with flight delay information that was accurate and timely enough to be actionable. Alas, neither of those are the case and so in the world we live in, my goal is to better predict delay using weather and flight data.
 
-**HYPOTHESIS:** 
+**HYPOTHESIS:** I'll hypothesize that these data 
 
 
 ## Setting up
@@ -31,8 +31,9 @@ output:
 # install.packages('tidyverse') 
 # install.packages('skimr') 
 # install.package('lubridate')
+# install.packages('Hmisc')
 
-library(tidyverse); library(skimr); library(nycflights13); library(lubridate)
+library(tidyverse); library(skimr); library(nycflights13); library(lubridate); library(Hmisc)
 
 flt_wx <- flights %>%
   left_join(weather,by = c('origin','time_hour')) %>%
@@ -43,7 +44,34 @@ flt_wx <- flights %>%
   group_by(mo_day) %>%
   mutate(day_flt = length(mo_day)) %>%
   ungroup() %>%
-  select(dep_delay,temp:visib,wkday,decness,midness,day_flt)
+  group_by(carrier) %>%
+  mutate(carr_effect = mean(dep_delay,na.rm = T)) %>%
+  ungroup() %>%
+  group_by(wkday) %>%
+  mutate(wkday_effect = mean(dep_delay,na.rm = T)) %>%
+  ungroup() %>%
+  mutate(carr_effect = carr_effect - mean(carr_effect,na.rm=T)
+        ,wkday_effect = wkday_effect - mean(wkday_effect,na.rm=T)) %>%
+  select(dep_delay,temp:decness,day_flt:wkday_effect)
+
+flt_wx
+
+flt_wx %>%
+  cor(use = 'pairwise.complete.obs',method = 'pearson') %>%
+  round(2) %>%
+  as.data.frame() %>%
+  select(1) %>%
+  cbind(rownames(.),.) %>%
+  filter(dep_delay > 0 & dep_delay < 1) %>%
+  arrange(desc(dep_delay))
+
+flights %>%
+  mutate(diff_20 = abs(hour-20)) %>% 
+  select(dep_delay,hour,diff_20) %>%
+  cor(use = 'pairwise.complete.obs',method = 'pearson')
+  ggplot(data = .,mapping = aes(x=hour,y=mean_delay)) +
+  geom_line()
+
   
 ```
 
