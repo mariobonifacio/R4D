@@ -77,6 +77,19 @@ md  <- function(x){flights %>%
   cor(use = 'pairwise.complete.obs',method = 'pearson')}
 
 
+flights %>%
+  filter(dep_delay>0) %>%
+  group_by(time_hour) %>%
+  summarise(hr_flt = length(sched_dep_time),mean_delay = mean(dep_delay,na.rm = T)) %>%
+  select(hr_flt,mean_delay) %>%
+  ggplot(data = .,mapping = aes(x=hr_flt,y=mean_delay)) +
+  geom_point() +
+  geom_smooth(method = lm)
+
+  
+    cor(use = 'pairwise.complete.obs',method = 'pearson')
+
+
 
 #
   ggplot(data = .,mapping = aes(x=wkday,y=mean_delay)) +
