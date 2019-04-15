@@ -10,7 +10,6 @@ output:
     code_folding: show
     df_print: paged
 ---
-
 **Due Date**: Sunday, April 28th
 
 **Keyboard Shortcuts**:
@@ -27,6 +26,6 @@ output:
 2. The assignment should be submitted via a shareable github link that points to your notebook (.nb.html) file to me on Slack.
 3. Make sure the notebook is neatly formatted, and that all the charts and tables and look good when you preview it.
 
-**Task**: Explore at least 5 different causes for departure and arrival delays. Its not necessary that you find a definitive answer for what causes a delay, instead I want you to showcase your ability to explore the data with a combination of analytical text, tables and charts. The final output should be something you can show a prospective employer or client as proof of you ability to work with data in R.
+**Task**: Explore at least 5 different causes for departure and arrival delays (combined - not 5 each). Its not necessary that you find a definitive answer for what causes a delay, instead I want you to showcase your ability to explore the data with a combination of analytical text, tables and charts. The final output should be something you can show a prospective employer or client as proof of you ability to work with data in R.
 
 

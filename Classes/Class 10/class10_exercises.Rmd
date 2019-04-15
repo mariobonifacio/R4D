@@ -34,4 +34,8 @@ Use a combination of text, tables and charts to explore the nature of the indepe
 ##Task 3. Explore a relationship
 Explore the relationship between departure delay and a variable of your choice.
 
+##Taask 4: Explore a multivariate relationship
+
+
+
 

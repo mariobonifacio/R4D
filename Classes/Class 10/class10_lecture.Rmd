@@ -91,8 +91,16 @@ weather %>%
     filter(n() > 1)
 ```
 
-##Examine the variables of interest for your question
+What are the keys for the flights data?
 
+h/t to Mario and team the keys are as below.
+```{r}
+flights %>% 
+    group_by(time_hour, flight, carrier) %>% 
+    filter(n() > 1)
+```
+
+##Examine the variables of interest for your question
 The first variable that we would like to explore is the dependent variable, which in this case is departure delay.
 ```{r}
 summary(flights$dep_delay)
@@ -130,22 +138,41 @@ ggplot(data = weather, aes(wind_gust)) +
     geom_histogram(bins = 60)
 ```
 
-I am interested in seeing the unique values that wind gust takes.
+I am interested in seeing the unique values that wind gust takes. h/t mehrnoosh
 ```{r}
 unique(weather$wind_gust)
 ```
 
 ##Explore a relationship
+Let's create a cut of the flights data that we are interested in.
+
+```{r}
+delayedFlights <- flights %>% 
+    filter(dep_delay > 0)
+```
+
 
 We would like to explore the relationship between departure delay and wind gust. Our first task is to join in the weather data.
 
 ```{r}
-weatheredFlights <- flights %>% 
+weatheredFlights <- delayedFlights %>% 
     select(origin, time_hour, dep_delay) %>% 
     left_join(x = ., 
               y = weather, 
               by = c("origin", "time_hour"))
 ```
+
+Segue to a duplicate left join.
+
+```{r}
+left_join(x = weather, y = flights, by = c("origin", "time_hour"))
+```
+
+```{r}
+weather
+```
+
+
 
 Next lets do a few simple plots.
 
@@ -157,9 +184,10 @@ weatheredFlights
 weatheredFlights %>% 
     filter(dep_delay > 0) %>% 
     group_by(wind_gust) %>% 
-    summarise(meanDelay = mean(dep_delay, na.rm = T)) %>% 
+    summarise(meanDelay = mean(dep_delay, na.rm = T))%>% 
     ggplot(aes(x = wind_gust, y = meanDelay)) +
-    geom_point()
+    geom_point() +
+    geom_smooth(method = "lm")
 ```
 
 This chart looks interesting/funky. Lets explore the number of observations within each of these groups.
@@ -171,10 +199,61 @@ weatheredFlights %>%
               nObs = n())
 ```
 
+Lets consolidate some of the smaller groups and make a plot.
+```{r}
+plotData <- weatheredFlights %>% 
+    filter(dep_delay > 0) %>% 
+    mutate(wind_gust = if_else(wind_gust > 40, 40, wind_gust)) %>% 
+    group_by(wind_gust) %>% 
+    # ##setting a threshold of 20 obs within each group
+    summarise(meanDelay = mean(dep_delay, na.rm = T),
+              nObs = n())
+
+ggplot(plotData, aes(x = wind_gust, y = meanDelay)) +
+    geom_point() +
+    geom_smooth(method = "lm")
+```
+
+
+Lets group by origin and the wind_gust variable. However, since we are looking at smaller groups lets also set a Nobs threshold
+```{r}
+plotData <- weatheredFlights %>% 
+    mutate(wind_gust = if_else(wind_gust > 40, 40, wind_gust)) %>% 
+    group_by(wind_gust, origin) %>% 
+    # ##setting a threshold of 20 obs within each group
+    summarise(meanDelay = mean(dep_delay, na.rm = T),
+              nObs = n())
+    
 
 
 
+```
 
+```{r, width=12}
+ggplot(plotData, aes(x = wind_gust, y = meanDelay)) +
+    geom_point() +
+    geom_smooth(method = "lm") +
+    facet_wrap(~ origin, nrow = 1)
+```
+
+Hari's way
+
+```{r, width = 12}
+weatheredFlights %>% 
+    group_by(origin, wind_gust) %>% 
+    filter(n() > 20) %>% 
+    summarise(meanDelay = mean(dep_delay, na.rm = T)) %>% 
+    ggplot(aes(x = wind_gust, y = meanDelay)) +
+    geom_point() +
+    geom_smooth(method = "lm") +
+    facet_wrap(~origin)
+```
+
+
+
+```{r}
+flights
+```
 
 
 

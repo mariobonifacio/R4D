@@ -11,31 +11,13 @@ output:
     df_print: paged
 ---
 
-```{r}
-allEmos <- emo::jis
-
-allEmos %>% 
-    distinct(group, subgroup)
-```
-
 #Overall Comments
 
-1. Was the assignement submitted on time? 
-**YES!**
-    
-2. Was it posted as an online link? 
-    
-3. Does the code follow [recommended style conventions](http://adv-r.had.co.nz/Style.html)? 
-
-**Mixed.** The indentation of code is an issue when using pipes. Try using snakecase instead of camelCase while naming variables i.e. don't pick up my habits. Get into the habit of placing a pipe and hitting enter. This should automatically indent your code (if not look at your settings/preferences to see why that is not happening.)
-    
-4. Does the notebook compile completely?
-
-**NO.** Line 146 of the notebook returns an error.
-
-6. Overall effectiveness of the code?
-
-In general, there seems to be a tendency to try things out just for the sake of seeing if it works or not. While this is good, be careful to take time to understand why a piece of code works and what it is doing. Each time you write something try and explain why it worked (or didn't) before moving on.
+1. Was the assignement submitted on time? `r emo::ji("thumbsup")`
+2. Was it posted as an online link? `r emo::ji("thumbsup")`
+3. Does the code follow [recommended style conventions](http://adv-r.had.co.nz/Style.html)? `r emo::ji("thumbsup")`. Only suggestion would be to start using snake_case instead of camelCase to name your variables.
+4. Does the notebook compile completely? `r emo::ji("thumbsdown")` You have an error that stops the entire notebook from compiling in one go.
+6. Overall effectiveness of the code? `r emo::ji("man tipping hand")`: You are almost there. There are some places where you didn't use the appropriate dplyr verb to perform your task. I am guessing that a lot of these are sorted out by now.
 
 ##Task set 1: Data types and structures
 1. List the 4 most common (data) types of atomic vectors.
@@ -127,7 +109,7 @@ The data frame is always two dimensional. It has columns and rows. And all the c
     
 8. What is the difference between an atomic vector and a list?
     + Answer: An atomic vector is a group of the same type of data and a list can contain multiple types of data.
-
+`r emo::ji("check")`: See solution as well.
 
 ##Task set 2: Data manipulation using dplyr
 
@@ -141,7 +123,7 @@ library(tidyverse); library(nycflights13)
 
 2. Describe two ways in which you can use RStudio confirm that a package has been loaded into your current R session? (Hint: One of them is a dropdown menu and the other a list of checkboxes)
 
-    + Answer: The packages can be seen on the left in the Global Environment dropdown menu or in the packages tab as a list of checkboxes.
+    + Answer: The packages can be seen on the left in the Global Environment dropdown menu or in the packages tab as a list of checkboxes. `r emo::ji("check")`
 
 3. Use the `distinct()` command to identify the unique combinations of airline carriers and origin airports in the flights data.
 
@@ -149,6 +131,7 @@ library(tidyverse); library(nycflights13)
 flights %>%
   distinct(carrier, origin)
 ```
+`r emo::ji("check")`
 
 4. Use the `one_of()` helper function to select the following columns -  year, month, day, dep_time, sched_dep_time, dep_delay, arr_time, from the flights data.
 
@@ -164,12 +147,15 @@ flights %>%
 I couldn't figure out how to make this function work. I looked at the help section which said this: one_of(..., .vars = peek_vars())
 I didn't understand what that was asking and I googled it as well and didn't get much clarification. 
 
+`r emo::ji("cross mark")` See Solution
+
 5. Use the `slice()` function to slice the first 10 rows in the flights data.
 
 ```{r}
 flights %>% 
   slice(1:10)
 ```
+`r emo::ji("check")`
 
 6. Perform the same operation as the previous task but this time use `filter()`. (Hint: Search for how to get the row numbers of a tibble)
 
@@ -177,6 +163,7 @@ flights %>%
 add_column(flights, new = 1:336776) %>% 
   filter(new >= 10)
 ```
+`r emo::ji("cross mark")` `emo::ji("person gesturing NO")`: A few mistakes here. The correct way to add new columns of data is the `mutate()` command. `1:336776` is hardcoded, which we want to avoid at all times, instead `row_number()` when used without any inputs gives the row number of a tibble. If it is a grouped tibble it will give you the row number within each group. You can either use `row_number()` within a mutate to create a new column and then use that to filter rows **<=** (not >=) to 10. Or you could use it directly within the filter command (`filter(row_number() > 10))`). See solution.
 
 7. Use the `top_n()` command to identify the top 5 flights out of NYC that experienced the greatest arrival delays in 2013.
 
@@ -184,6 +171,7 @@ add_column(flights, new = 1:336776) %>%
 flights %>% 
     top_n(., n = 5, wt = arr_delay)
 ```
+`r emo::ji("check")`
 
 8. Use `top_n()` along with `arrange()` and `slice()` to pull out the 50th most delayed departure from NYC in 2013 (Not all 50, just the 50th). 
 ```{r}
@@ -192,6 +180,7 @@ flights %>%
   arrange(desc(dep_delay)) %>% 
   slice(50)
 ```
+`r emo::ji("check")`
 
 9. Do the same thing as the previous task using 
     + `row_number()`
@@ -200,16 +189,19 @@ flights %>%
 flights %>% 
   filter(row_number(desc(dep_delay)) %in% 50)
 ```
+`r emo::ji("check")` `r emo::ji("man tipping hand")` This works but use `==` instead of `%in%` if you have a single value that you want to compare against.
 
 ```{r}
 flights %>% 
   filter(dense_rank(desc(dep_delay)) %in% 50)
 ```
-
+`r emo::ji("check")` `r emo::ji("man tipping hand")` See above.
 
 10. The result from `row_number()` and `top_n()` are the same, while that from `dense_rank()` is different. Why?
 
     + Answer: The 'dense_rank()' function has a different result because it ranks numbers of the same value as the same rank.
+
+`r emo::ji("check")`
 
 11. Find the top 10 airline carrier that had the highest average departure delays in 2013 using `group_by()`, `summarise()` and other functions you have learnt previously.
 ```{r}
@@ -220,6 +212,7 @@ flights %>%
   slice(1:10) %>% 
   ungroup()
 ```
+`r emo::ji("check")`. This works but I recommend using `top_n()` instead of arrange + slice combo.
 
 12. Use `group_by()` with `mutate()` to create a new variable called `comparativeDelay` which is the difference between departure delay and the average delay in each origin airport for every hour in 2013 (checkout the `time_hour` variable in the flights data). Store the result in a variable called `comparativeDelays`.
 ```{r}
@@ -229,7 +222,7 @@ flights %>%
          comparativeDelays = dep_delay - meanDelay) %>% 
   ungroup()
 ```
-
+`r emo::ji("check")`: Excellent!
 
 13. Now group the `comparativeDelays` tibble by carriers to print the top 10 airlines with the greatest average comparative delays.
 ```{r}
@@ -239,6 +232,7 @@ flights %>%
   slice(1:10) %>% 
   ungroup()
 ```
+`r emo::ji("cross mark")`: You needed to store the result of the previous chunk in a variable called `comparativeDelays`. You are getting an object not found error because R is trying to look fro the `comparativeDelays` column first within the flights data and it can't find it, and then it probably checked for the `comparativeDelays` object in the environment outside and couldn't find it there either. 
 
 14. Use `group_by()` with filter to print the 5 most delayed flights from each origin. Your printed tibble should have 15 rows.
 ```{r}
@@ -249,21 +243,58 @@ flights %>%
 ```
 I'm not sure my dep_delay column only contains 0's.
 
+`r emo::ji("cross mark")` `emo::ji("person gesturing NO")`: Once we have grouped by origin, all operations (until we ungroup the data) are performed within each group. So the easiest way to find the most delayed flights is using `top_n()` after you group. See solution. 
+
+The reason why the output contains 0's for `dep_delay` is a bit complicated to explain here. But I will try. The function `desc()` is really only adds a minue sign in front of every value to revert its sort order. It by itself does not create a sorted vector. You have to use `arrange()` or `sort()` along with `desc()` to create a sorted vector. 
+
+Lets look at an illustration. Below I am creating a vector that picks values within -10 and 10 in random order.
+```{r}
+x <- sample(x = -10:10, size = 21)
+x
+```
+And here is the print out when I apply `desc()` to this vector. Notice how this is the exact same order as the output above but only with the signs flipped.
+```{r}
+desc(x)
+```
+
+Now lets see what happens when we try to apply the `==` to these two vectors.
+```{r}
+x == desc(x)
+```
+Now lets try a comparison using the match operator `%in%` where we are asking if the each value in x exists in desc(x).
+```{r}
+x %in% desc(x)
+```
+Here the answer is TRUE for all cases. Compare the outputs to manually check if every value in x is contained in desc(x) (this is only true because the vector x is symmetric around zero). 
+
+
+Now lets try to replicate your filter comparison. Notice how the middle value (i.e. zero) matches between the two. Lets use vector subsetting to pull this value out.
+```{r}
+x[x == desc(x)]
+```
+While this is not exactly what is happening in the filter, it is similar.
+
+
+
 15. The air authority in NY wants to penalize carriers for departure delays. Which of the three metrics (task 1, 3 or 4) would you recommend they use to identify the airlines to penalize. Why?
 
-    + Answer: I would recommend the method from task 13 (even though I was not able to run it successfully) because this took into account the average delay from each origin airport and ranked the airlines by greatest average comparative delays.
+    + Answer: I would recommend the method from task 13 (even though I was not able to run it successfully) because this took into account the average delay from each origin airport and ranked the airlines by greatest average comparative delays. `r emo::ji("check")`
     
 ##Task set 3: R markdown
 
 1. Modify the text below as per the prompt
-    + Underline me  
+    + Underline me  (See solution)
     **Make me bold**  
     > Make me a block quote  
     *Make me italic*  
     ~~Strike through me~~  
 
+`r emo::ji("man tipping hand")`: See solution. You need new line before and after for blockqoute.
+
 2. Create a level three header called "My level 3 header" under this line 
 ### My level 3 header
+
+`r emo::ji("cross mark")`: Missing a new line before.
 
 3. Modify the content below so that the bullet points (unordered list) render correctly
 
@@ -271,6 +302,8 @@ I'm not sure my dep_delay column only contains 0's.
     * one
     * two
     * three
+
+`r emo::ji("cross mark")`: Missing a new line before the start of the bullets.
 
 4. Use chunk options to hide the output and the code from the chunk below in the previewed notebook.
 
