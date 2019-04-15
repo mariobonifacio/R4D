@@ -13,15 +13,17 @@ output:
     toc_depth: 2
 ---
 
-**Due Date**: Sunday, April 28th
+## Abstract
+
+Unpredictable flight delays are a costly problem, forcing travelers to choose between . In 2013, flights from the three New York area airports alone saw aggregate delays of half a million minutes.
 
 ## Background
 
-**PROBLEM:** Here, the problem is that flight delays are unpredictable. Not only that, mis-timing your ride to the airport could be costly; Arrive late and you may miss your flight altogether, but arrive early and you'll spend even more uncomportable, unproductive time at the gate
+**PROBLEM:** Here, the problem is that flight delays are unpredictable. Not only that, mis-timing your ride to the airport could be costly; Arrive late and you may miss your flight altogether, but arrive early and you'll spend even more uncomfortable, unproductive time at the gate
 
 **GOAL:** My ultimate goal is to be able to best predict a flight's departure delay. In an ideal world, all flights would simply leave on time. In a second-best world, each airline would contact travelers directly with flight delay information that was accurate and timely enough to be actionable. Alas, neither of those are the case and so in the world we live in, my goal is to better predict delay using weather and flight data.
 
-**HYPOTHESIS:** I'll hypothesize that these data 
+**HYPOTHESIS:** In looking for a relationship that helps estimate the departure delay of a given flight, I'll effectively be looking to disprove the converse -- namely, that *no* available weather or flight data shares a relationship with flight delay. 
 
 
 ## Setting up
