@@ -23,10 +23,16 @@ Unpredictable flight delays are a costly problem, forcing travelers to choose be
 
 **GOAL:** My ultimate goal is to be able to best predict a flight's departure delay. In an ideal world, all flights would simply leave on time. In a second-best world, each airline would contact travelers directly with flight delay information that was accurate and timely enough to be actionable. Alas, neither of those are the case and so in the world we live in, my goal is to better predict delay using weather and flight data.
 
-**HYPOTHESIS:** In looking for a relationship that helps estimate the departure delay of a given flight, I'll effectively be looking to disprove the converse -- namely, that *no* available weather or flight data shares a relationship with flight delay. 
+**HYPOTHESIS:** My null hypothesis is that *no* available weather or flight data shares a relationship with flight delay. 
 
 
 ## Setting up
+
+To set up, I'll do the following:
+
+1. Install and enable the packages that will help explore, manipulate, and analyze the data
+2. Join flight data with corresponding weather data 
+3. 
 
 ```{r}
 ### Install packages, as needed 
@@ -35,18 +41,42 @@ Unpredictable flight delays are a costly problem, forcing travelers to choose be
 # install.package('lubridate')
 # install.packages('Hmisc')
 
-library(tidyverse); library(skimr); library(nycflights13); library(lubridate); library(Hmisc)
+# This line enables relevant packages
+library(tidyverse); library(skimr); library(nycflights13); library(lubridate); library(Hmisc) 
 
+### This joins flight and weather data, storing it in the new data frame we'll work with
 flt_wx <- flights %>%
   left_join(weather,by = c('origin','time_hour')) %>%
-  mutate(wkday = wday(as.Date(time_hour)) 
-        ,near_20 = abs(hour-20)
-		    ,decness = abs(month.x-5.99)
-		    ,mo_day = mdy(paste(month.x,day.x,2013))) %>%
-  group_by(mo_day) %>%
-  mutate(day_flt = length(mo_day)) %>%
+  group_by(carrier) %>%
+  mutate(is_wkend = if_else(wday(as.Date(time_hour)) == 1 
+            | wday(as.Date(time_hour)) == 7,1,0)
+        ,near_20 = abs(hour.x - 20)
+		    ,decness = abs(month.x - 6)
+		    ,dep_delay = if_else(dep_delay<0,0,dep_delay)
+        ,carr_delay = mean(dep_delay,na.rm = T)-mean(flights$dep_delay,na.rm = T)) %>%
   ungroup() %>%
-  select(dep_delay,temp:decness,day_flt:wkday_effect)
+  select(dep_delay,temp:carr_delay)
+
+flt_wx
+
+```
+
+```{r}
+flt_wx %>%
+  cor(use = 'pairwise.complete.obs', method = 'pearson') %>%
+  round(2) %>%
+  as.data.frame() %>%
+  select(1) %>%
+  cbind(rownames(.),.) %>%
+  filter(dep_delay > -1 & dep_delay < 1) %>%
+  arrange(desc(abs(dep_delay)))
+
+
+flt_wx
+
+skim(flights$dep_delay)
+skim(flights$dep_delay[flights$dep_delay>0])
+
 
 
 
@@ -73,20 +103,7 @@ flights %>%
   geom_point() +
   geom_smooth(method = lm)
 
-md  <- function(x){flights %>%
-  mutate(mthness = abs(x-month(time_hour))) %>%
-  select(dep_delay,mthness) %>%
-  cor(use = 'pairwise.complete.obs',method = 'pearson')}
 
-
-flights %>%
-  filter(dep_delay>0) %>%
-  group_by(time_hour) %>%
-  summarise(hr_flt = length(sched_dep_time),mean_delay = mean(dep_delay,na.rm = T)) %>%
-  select(hr_flt,mean_delay) %>%
-  ggplot(data = .,mapping = aes(x=hr_flt,y=mean_delay)) +
-  geom_point() +
-  geom_smooth(method = lm)
 
   
     cor(use = 'pairwise.complete.obs',method = 'pearson')
