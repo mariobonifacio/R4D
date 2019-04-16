@@ -4,31 +4,29 @@ author: ZN
 date: "Date created: `r Sys.Date()`"
 output: html_notebook
 ---
+##Legend
+`r emo::ji("check")`: Correct (there might be some improvements I note even with these)
 
+`r emo::ji("man tipping hand")`: Partially correct
 
-**Due Date**: Sunday, March 24th
+`r emo::ji("cross mark")`: Incorrect answer
 
-**Keyboard Shortcuts**:
+`r emo::ji("person gesturing NO")`: Conceptual error that should be avoided.
 
-1. Assignment operator (<-) is `Alt+-` for Windows and `Option+-` for Mac
-2. Insert new code chunk `Ctrl+Alt+I` for Windows and `Command+Option+I` for Mac
-3. Run a line of code `Ctrl+Enter` for Windows and `Command+Enter` for Mac
-4. Run all the code within a chunk `Ctrl+Shift+Enter` for Windows and `Command+Shift+Enter` for Mac
-5. Insert a pipe operator (%>%) `Ctrl+Shift+M` for Windows and `Command+Shift+M` for Mac
+##Overall Comments
 
-**General Instructions**
-
-1. Use the cheatsheets and the keyboard shortcuts as you work through the assignment.
-2. Each task should be answered right below the question.
-3. The assignment should be submitted via a shareable github link on the assignments channel in Slack.
-4. Make sure the notebook is neatly formatted and looks good when you preview it.
+1. Was the assignement submitted on time? `r emo::ji("check")`
+2. Was it posted as an online link? `r emo::ji("check")`
+3. Does the code follow [recommended style conventions](http://adv-r.had.co.nz/Style.html)? `r emo::ji("man tipping hand")`. Use snake_case instead of titleCase for naming variables.
+4. Does the notebook compile completely? `r emo::ji("check")`
+6. Overall effectiveness of the code? `r emo::ji("man tipping hand")`: Almost there!
 
 ##Task set 1: Data types and structures
-1. List the 4 most common (data) types of atomic vectors.
+1. List the 4 most common (data) types of atomic vectors. `r emo::ji("check")`
     + Answer: Character, numeric, integer and logical.
 
-2. Create atomic vectors of the 4 common types covered in class. Print their length and type.
-
+2. Create atomic vectors of the 4 common types covered in class. Print their length and type. `r emo::ji("man tipping hand")`
+<div style = "background-color:rgba(244, 155, 53, 0.5)">**Hari**: You haven't printed the length and type usine (`length()` and `type()`)</div>
 ```{r}
 Fish <- c("Salmon", "Cod", "Tuna")
 str(Fish)
@@ -40,10 +38,10 @@ Male <- c(T,F)
 str(Male)
 ```
 
-3. List the heirarchy of data types for coercion
+3. List the heirarchy of data types for coercion `r emo::ji("check")`
     + Answer: In coercion, Values are converted to the least common denominator. The least common denominator data type is a character, then numeric, then integer and then logical. So if I understand correctly, coercion will try to make values logical first, then integer/numeric and then character.
 
-4. Explain why the output of following bits of code is TRUE (explain what is happening in terms of coercion): 
+4. Explain why the output of following bits of code is TRUE (explain what is happening in terms of coercion): `r emo::ji("check")`
 
 ```{r}
 "1" == 1
@@ -56,55 +54,56 @@ FALSE == 0
 ```
 Answer:The logical FALSE takes value zero, TRUE takes one. Therefore coercision converts the left side into a numeric and equivalence is established
 
-3. Create a list that holds the 4 common types of atomic vectors you created in task 2.
+3. Create a list that holds the 4 common types of atomic vectors you created in task 2. `r emo::ji("check")`
 
 ```{r}
 Fishlist <- list(Fish, PriceDouble, PriceInteger, Male)
 Fishlist
 ```
-4. Create a data frame with 3 columns and 5 rows using the `data.frame()` function
+4. Create a data frame with 3 columns and 5 rows using the `data.frame()` function `r emo::ji("check")`
 
 ```{r}
 Newdataframe <- data.frame(Names = c("A", "B", "C", "D", "E"), Age = c(1, 2, 3, 4, 5), Male = c(1, 0, 1, 0, 0))
 str(Newdataframe)
 ```
-5. Create the same data frame as above using `tibble()` function
+5. Create the same data frame as above using `tibble()` function `r emo::ji("check")`
 
 ```{r}
 Newtibble <- tibble(Names = c("A", "B", "C", "D", "E"), Age = c(1, 2, 3, 4, 5), Male = c(1, 0, 1, 0, 0))
 str(Newtibble)
 ```
 
-6. Use the `str()`, `class()` and or `glimpse()` command to see the difference between the dataframe and tibble create in 4 and 5.
+6. Use the `str()`, `class()` and or `glimpse()` command to see the difference between the dataframe and tibble create in 4 and 5. `r emo::ji("check")`
 
 ```{r}
 str(Newdataframe)
 str(Newtibble)
 ```
 
-7. Fill in the blanks. 
-
+7. Fill in the blanks. `r emo::ji("check")`
     + A data frame is a _2___ dimensionsional data structure in R that consists of _columns___ of __equal__ length
-
-8. What is the difference between an atomic vector and a list?
+    + <div style = "background-color:rgba(244, 155, 53, 0.5)">**Hari**: Vectors of equal length. Columns works too.</div>
+    
+8. What is the difference between an atomic vector and a list? `r emo::ji("check")`
     + Answer: An atomic vector is one-dimensional such that all elements of the vector are of the same data type. A list can contain multiple vectors of different data types or even other lists so they can be multi-dimensional.
+    
+<div style = "background-color:rgba(244, 155, 53, 0.5)">**Hari**: Atomic vectors are homogenous (i.e. data of one type) and one dimensional.</div>
 
 
 ##Task set 2: Data manipulation using dplyr
 
 **INSTRUCTIONS**: You will be using the tidyverse and nycflights13 packages for the next set of tasks. Refer to the documentation on tidyverse.org or use the help pages if you do not understand a function fully.
 
-1. Load the tidyverse and nycflights13 packages.
+1. Load the tidyverse and nycflights13 packages. `r emo::ji("check")`
 
 ```{r}
 library(tidyverse); library(nycflights13)
 ```
 
-2. Describe two ways in which you can use RStudio confirm that a package has been loaded into your current R session? (Hint: One of them is a dropdown menu and the other a list of checkboxes)
-
+2. Describe two ways in which you can use RStudio confirm that a package has been loaded into your current R session? (Hint: One of them is a dropdown menu and the other a list of checkboxes) `r emo::ji("check")`
     + Answer: 1) Look in the global environment to see if the package appears & 2) Check the 'Packages' tab to see if the package appears?
 
-3. Use the `distinct()` command to identify the unique combinations of airline carriers and origin airports in the flights data.
+3. Use the `distinct()` command to identify the unique combinations of airline carriers and origin airports in the flights data. `r emo::ji("check")`
 
 ```{r}
 flights %>%
@@ -113,23 +112,24 @@ flights %>%
 
 
 
-4. Use the `one_of()` helper function to select the following columns -  year, month, day, dep_time, sched_dep_time, dep_delay, arr_time, from the flights data.
+4. Use the `one_of()` helper function to select the following columns -  year, month, day, dep_time, sched_dep_time, dep_delay, arr_time, from the flights data. `r emo::ji("check")`
 
+<div style = "background-color:rgba(244, 155, 53, 0.5)">**Hari**: The `one_of()` takes column names as characters, when you specify them as unqouted inputs you get will likely get object not found errors because unlike other tidyverse functions R does not search within the data input to search for the columns before looking for them in the environment.</div>
 ```{r}
 flights %>% 
   select(one_of("year", "month", "day", "dep_time", "sched_dep_time", "dep_delay", "arr_time"))
 #Not sure why the code only runs when the columns are in quotes
 ```
 
-5. Use the `slice()` function to slice the first 10 rows in the flights data.
+5. Use the `slice()` function to slice the first 10 rows in the flights data. `r emo::ji("check")`
 
 ```{r}
 flights %>% 
   slice(1:10)
 ```
 
-6. Perform the same operation as the previous task but this time use `filter()`. (Hint: Search for how to get the row numbers of a tibble)
-
+6. Perform the same operation as the previous task but this time use `filter()`. (Hint: Search for how to get the row numbers of a tibble) `r emo::ji("check")`
+<div style = "background-color:rgba(244, 155, 53, 0.5)">**Hari**: There are a few different ways to do this. `filter(row_number() <= 10)` or `filter(row_number() %in% 1:10)` `r emo::ji("person gesturing NO")`, while your commented out code will work there are a few issues with it (i.e. its not the correct the way to do it). The correct way to see if values in a vector exist in another is to use the `%in%` operator and not the `==`. This is a topic I haven't been able to cover earlier (eventhough we should have done this earlier.) </div>
 ```{r}
 flights %>% 
   filter(between(row_number(), 1, 10))
@@ -138,15 +138,16 @@ flights %>%
  # filter(rowname == 1:10)
 ```
 
-
-7. Use the `top_n()` command to identify the top 5 flights out of NYC that experienced the greatest arrival delays in 2013.
+7. Use the `top_n()` command to identify the top 5 flights out of NYC that experienced the greatest arrival delays in 2013. `r emo::ji("check")`
 
 ```{r}
 flights %>% 
   top_n(., n = 5, arr_delay) # n is 5 is giving you top 5
 ```
 
-8. Use `top_n()` along with `arrange()` and `slice()` to pull out the 50th most delayed departure from NYC in 2013 (Not all 50, just the 50th). 
+8. Use `top_n()` along with `arrange()` and `slice()` to pull out the 50th most delayed departure from NYC in 2013 (Not all 50, just the 50th). `r emo::ji("cross mark")`
+
+<div style = "background-color:rgba(244, 155, 53, 0.5)">**Hari**: You have pulled the top most delayed value and not the 50th.</div>
 ```{r}
 flights %>% 
   top_n(n = 50, dep_delay) %>% 
@@ -154,16 +155,18 @@ flights %>%
   slice(1)
 ```
 
-9. Do the same thing as the previous task using 
+9. Do the same thing as the previous task using `r emo::ji("man tipping hand")`
     + `row_number()`
     + and `dense_rank()`
-    
+
+<div style = "background-color:rgba(244, 155, 53, 0.5)">**Hari**: You don't need to use the arrange command here. `row_number()` is a ranking function just like `dense_rank()`. So you can do this `filter(row_number(desc(dep_delay)) == 50)` this would use the `dep_delay` as the variable to generate the row numbers on.</div>
 ```{r}
 flights %>%
   arrange(desc(dep_delay)) %>% 
   filter(row_number() == 50) ##The answer doesnt match the top_n - I'm not sure it's doing the right thing
 ```
 
+<div style = "background-color:rgba(244, 155, 53, 0.5)">**Hari**: You are almost there. Correct answer is `flights %>% filter(dense_rank(desc(dep_delay)) == 50)`. Because you need to rank the departure delay from the descending order (i.e. the highest delay is rank 1).</div>
 ```{r}
 flights %>% 
   arrange(desc(dep_delay)) %>% 
@@ -171,12 +174,10 @@ flights %>%
 
 ```
 
-
-10. The result from `row_number()` and `top_n()` are the same, while that from `dense_rank()` is different. Why?
-
+10. The result from `row_number()` and `top_n()` are the same, while that from `dense_rank()` is different. Why? `r emo::ji("cross mark")` See solution.
     + Answer: Can't tell because I'm getting errors for task 8 & 9. but I assume if it worked correctly, the answers would be different because topn and denserank are ranking in different ways.
 
-11. Find the top 10 airline carrier that had the highest average departure delays in 2013 using `group_by()`, `summarise()` and other functions you have learnt previously.
+11. Find the top 10 airline carrier that had the highest average departure delays in 2013 using `group_by()`, `summarise()` and other functions you have learnt previously. `r emo::ji("check")`
 ```{r}
 flights %>% 
   group_by(carrier) %>%
@@ -185,7 +186,9 @@ flights %>%
   slice(1:10)
 ```
 
-12. Use `group_by()` with `mutate()` to create a new variable called `comparativeDelay` which is the difference between departure delay and the average delay in each origin airport for every hour in 2013 (checkout the `time_hour` variable in the flights data). Store the result in a variable called `comparativeDelays`.
+12. Use `group_by()` with `mutate()` to create a new variable called `comparativeDelay` which is the difference between departure delay and the average delay in each origin airport for every hour in 2013 (checkout the `time_hour` variable in the flights data). Store the result in a variable called `comparativeDelays`. `r emo::ji("cross mark")`
+
+<div style = "background-color:rgba(244, 155, 53, 0.5)">**Hari**: `dep_delay` does not exist because `summarise()` has collapsed the tibble to only show only the meanDelay for origin + time_hour groups. See solution for correct implementation.</div>
 ```{r}
 flights %>% 
   group_by(origin, time_hour) %>% 
@@ -193,32 +196,35 @@ flights %>%
   mutate(comparativeDelay = dep_delay - meanDelay) # Keep getting error that depdelay doesnt exist
 ```
 
-13. Now group the `comparativeDelays` tibble by carriers to print the top 10 airlines with the greatest average comparative delays.
+13. Now group the `comparativeDelays` tibble by carriers to print the top 10 airlines with the greatest average comparative delays. `r emo::ji("cross mark")`
 ```{r}
 
 ```
 
-14. Use `group_by()` with filter to print the 5 most delayed flights from each origin. Your printed tibble should have 15 rows.
+14. Use `group_by()` with filter to print the 5 most delayed flights from each origin. Your printed tibble should have 15 rows. `r emo::ji("cross mark")`
 ```{r}
 
 ```
 
-15. The air authority in NY wants to penalize carriers for departure delays. Which of the three metrics (task 1, 3 or 4) would you recommend they use to identify the airlines to penalize. Why?
+15. The air authority in NY wants to penalize carriers for departure delays. Which of the three metrics (task 1, 3 or 4) would you recommend they use to identify the airlines to penalize. Why? `r emo::ji("cross mark")`
 
     + Answer:  Could not understand which tasks you are referring to
     
 ##Task set 3: R markdown
 
-1. Modify the text below as per the prompt
-    + Underline me
+1. Modify the text below as per the prompt `r emo::ji("check")`
+    + Underline me (See solution)
     + **Make me bold**
     + > Make me a block quote
     + *Make me italic*
     + ~~Strike through me~~
 
-2. Create a level three header called "My level 3 header" under this line 
+2. Create a level three header called "My level 3 header" under this line `r emo::ji("cross mark")`
 ###My Level 3 Header
-3. Modify the content below so that the bullet points (unordered list) render correctly
+
+<div style = "background-color:rgba(244, 155, 53, 0.5)">**Hari**: You need to add a new line before the heading (since the content above it is a list item.</div>
+
+3. Modify the content below so that the bullet points (unordered list) render correctly `r emo::ji("cross mark")`
 ans: I used the asterisk as shown in markdown cheatsheet but it doesnt seem to generate bullets.
 
 Messy bullet points  
@@ -226,7 +232,9 @@ Messy bullet points
 * two  
 * three  
 
-4. Use chunk options to hide the output and the code from the chunk below in the previewed notebook.
+<div style = "background-color:rgba(244, 155, 53, 0.5)">**Hari**: You need to add a new line before the start of the list.</div>
+
+4. Use chunk options to hide the output and the code from the chunk below in the previewed notebook. `r emo::ji("check")`
 ans: I believe you already formatted it that way with results=hide and echo=false?
 
 ```{r, results='hide', echo=FALSE}

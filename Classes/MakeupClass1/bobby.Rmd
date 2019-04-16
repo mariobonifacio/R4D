@@ -1,0 +1,109 @@
+---
+title: "Bobby"
+author: Hari Subhash
+date: "Date created: `r Sys.Date()`"
+output:
+  html_notebook:
+    highlight: kate
+    smart: yes
+    theme: cosmo
+    code_folding: show
+    df_print: paged
+---
+
+```{r}
+library(tidyverse); library(nycflights13)
+
+skimr::skim(flights)
+```
+
+```{r}
+skimr::skim(weather)
+```
+
+
+##Effect of temp on delay
+
+```{r}
+ggplot(weather, aes(x = temp)) +
+    geom_histogram()
+```
+
+Lets see how many distinct values there are in the temperature column
+```{r}
+n_distinct(weather$temp)
+```
+
+So there don't seem to be too many unique values in temp. Lets print those out to just see them.
+```{r}
+unique(weather$temp)
+```
+
+lets aqlso look at the number of missing values in temp
+```{r}
+sum(is.na(weather$temp))
+```
+
+Since there are only 174 unique values of temp it is not unreasonable to group based on temp.
+```{r}
+flights %>% 
+    filter(dep_delay > 20) %>%
+    select(origin, time_hour, dep_delay) %>% 
+    left_join(weather, by = c("origin", "time_hour")) %>% 
+    group_by(temp) %>% 
+    summarise(meanDelay = mean(dep_delay, na.rm = T),
+              nObs = n()) %>% 
+    ggplot(aes(x = temp, y = meanDelay)) +
+    geom_point() +
+    geom_smooth(method = "lm")
+```
+
+Lets now mark the low observation values.
+```{r}
+flights %>% 
+    filter(dep_delay > 20) %>%
+    select(origin, time_hour, dep_delay) %>% 
+    left_join(weather, by = c("origin", "time_hour")) %>% 
+    group_by(temp) %>% 
+    summarise(meanDelay = mean(dep_delay, na.rm = T),
+              nObs = n(),
+              smallSample = if_else(n() < 15, "small sample", "large sample")) %>% 
+    ggplot(aes(x = temp, y = meanDelay)) +
+    geom_point(aes(colour = smallSample)) +
+    geom_smooth(method = "lm")
+```
+
+Some of the variation seems to be driven by small samples. So lets remove those.
+```{r}
+flights %>% 
+    filter(dep_delay > 20) %>%
+    select(origin, time_hour, dep_delay) %>% 
+    left_join(weather, by = c("origin", "time_hour")) %>% 
+    group_by(temp) %>% 
+    #only keep groups with more than 15 obs.
+    filter(n() > 15) %>% 
+    summarise(meanDelay = mean(dep_delay, na.rm = T)) %>% 
+    ggplot(aes(x = temp, y = meanDelay)) +
+    geom_point(aes()) +
+    geom_smooth(method = "lm")
+```
+
+Lets show you how to cut.
+
+```{r}
+flights %>% 
+    filter(dep_delay > 20) %>%
+    select(origin, time_hour, dep_delay) %>% 
+    left_join(weather, by = c("origin", "time_hour")) %>% 
+    mutate(tempGroup = cut_number(temp, n = 10)) %>% 
+    ggplot(aes(x = tempGroup, y = dep_delay)) +
+    geom_jitter(alpha = 0.1, aes(colour = origin)) +
+    geom_boxplot(outlier.shape = NA) +
+    coord_flip() +
+    scale_y_continuous(limits = c(0, 200))
+```
+
+
+
+
+
