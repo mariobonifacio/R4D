@@ -46,7 +46,8 @@ library(tidyverse); library(skimr); library(nycflights13); library(lubridate); l
 
 ### This joins flight and weather data, storing it in the new data frame we'll work with
 flt_wx <- flights %>%
-  left_join(weather,by = c('origin','time_hour'))
+  left_join(weather,by = c('origin','time_hour')) %>%
+  mutate(dep_delay = if_else(dep_delay<0, 0, dep_delay))
 
 flt_wx
 ```
@@ -62,8 +63,8 @@ Here's what I'll look at for each variable:
 Doing this will expose:
 
 * Fields that would be unlikely related to departure delay,
-* Fields with too few observations or with too many missing observations to be representative, and
-* Fields that will require transformation
+* Fields that will require transformation, and
+* Fields with too few observations or with too many missing observations to be representative
 
 ```{r}
 skim(flt_wx)
@@ -80,8 +81,9 @@ The following fields are either unlikely to be related to departure time or dupl
 * Air time
 * Arrival delay
 * Departure time
+* Distance
 
-Only one field among those remaining, **wind gust**, is concerning due to the number of entries in which it's missing. The following fields will need to be transformed in the succeeding ways:
+The following fields will need to be transformed in the succeeding ways:
 
 * Carrier -- Use difference with mean delay to determine carrier effect
 * Origin --  Use difference with mean delay to determine origin effect
@@ -89,7 +91,49 @@ Only one field among those remaining, **wind gust**, is concerning due to the nu
 * Scheduled departure time -- Use difference with the hour of day of peak delays
 * Month -- Use difference with the month of peak delays
 
+Only one field among those remaining, **wind gust**, is concerning due to the number of entries missing, so I'll check that 
+
+
 ```{r}
+flt_wx %>%
+  select(wind_gust,dep_delay) %>%
+  filter(is.na(dep_delay) == F) %>%
+  cut(dep_delay)
+
+length() %>%
+  mutate(na_gust = if_else(is.na(wind_gust), 0, 1)) %>%
+  group_by(na_gust) %>%
+  summarise(mean_del = mean(dep_delay,na.rm = T)
+     ,mean_del  = mean(dep_delay,na.rm = T)         
+     ,stdev_del = sd(dep_delay,na.rm = T)
+     ,min_del   = min(dep_delay,na.rm = T)
+     ,del_25qile= quantile(dep_delay,probs = 0.25,na.rm = T)
+     ,mdn_del   = median(dep_delay,na.rm = T)
+     ,del_75qile= quantile(dep_delay,probs = 0.75,na.rm = T)
+     ,max_del   = max(dep_delay,na.rm = T)) %>%
+  round(2)
+```
+
+
+
+```{r}
+flt_wx %>%
+  select(wind_gust,dep_delay) %>%
+  filter(is.na(dep_delay) == T) %>%
+  mutate(na_gust = if_else(is.na(wind_gust), 0, 1)) %>%
+  ggplot(aes(dep_delay)) +
+  geom_density() +
+  facet_wrap(~na_gust)
+
+
+
+```
+
+
+```{r}
+
+
+
 
 
  %>%
@@ -168,4 +212,3 @@ flights %>%
 
     
 ```
-
