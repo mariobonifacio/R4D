@@ -46,7 +46,53 @@ library(tidyverse); library(skimr); library(nycflights13); library(lubridate); l
 
 ### This joins flight and weather data, storing it in the new data frame we'll work with
 flt_wx <- flights %>%
-  left_join(weather,by = c('origin','time_hour')) %>%
+  left_join(weather,by = c('origin','time_hour'))
+
+flt_wx
+```
+
+## Univariate analysis
+
+Here's what I'll look at for each variable:
+
+* Metadata will explain what each variable represents
+* Descriptive variables including number of observations, mean, standard deviation, median, min, max, and interquartile measures
+* A histogram will offer a visual representation of each
+
+Doing this will expose:
+
+* Fields that would be unlikely related to departure delay,
+* Fields with too few observations or with too many missing observations to be representative, and
+* Fields that will require transformation
+
+```{r}
+skim(flt_wx)
+```
+The following fields are either unlikely to be related to departure time or duplicative of another, superior field in the data set
+
+* Destination
+* Tail number
+* Arrival time
+* Day of the month
+* Flight number
+* Scheduled arrival time
+* Year
+* Air time
+* Arrival delay
+* Departure time
+
+Only one field among those remaining, **wind gust**, is concerning due to the number of entries in which it's missing. The following fields will need to be transformed in the succeeding ways:
+
+* Carrier -- Use difference with mean delay to determine carrier effect
+* Origin --  Use difference with mean delay to determine origin effect
+* Time_hour -- Extract day of the week and convert to a dummy variable for whether the day is a weekend day
+* Scheduled departure time -- Use difference with the hour of day of peak delays
+* Month -- Use difference with the month of peak delays
+
+```{r}
+
+
+ %>%
   group_by(carrier) %>%
   mutate(is_wkend = if_else(wday(as.Date(time_hour)) == 1 
             | wday(as.Date(time_hour)) == 7,1,0)
@@ -57,11 +103,6 @@ flt_wx <- flights %>%
   ungroup() %>%
   select(dep_delay,temp:carr_delay)
 
-flt_wx
-
-```
-
-```{r}
 flt_wx %>%
   cor(use = 'pairwise.complete.obs', method = 'pearson') %>%
   round(2) %>%
@@ -70,6 +111,9 @@ flt_wx %>%
   cbind(rownames(.),.) %>%
   filter(dep_delay > -1 & dep_delay < 1) %>%
   arrange(desc(abs(dep_delay)))
+
+
+
 
 
 flt_wx
