@@ -191,7 +191,12 @@ flights %>%
   geom_point() +
   geom_smooth(method = lm)
 
-
+# Block bits
+# 0| |▁
+# 1|▂|▃
+# 2|▄|▅
+# 3|▆|▇
+# 4|█|
 
   
     cor(use = 'pairwise.complete.obs',method = 'pearson')
