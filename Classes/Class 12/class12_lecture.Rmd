@@ -27,3 +27,180 @@ css: /Users/hsubhash/Documents/R4D/Assets/custom.css
 7. Writing data into R
 8. Bonus: Working with google drive
 
+```{r}
+x <- 1:3
+y <- 1:6
+
+```
+
+```{r}
+x + y
+```
+
+```{r}
+z <- 1:7
+z
+```
+
+```{r}
+x + z
+```
+
+
+```{r}
+x == y
+```
+
+
+```{r}
+c(1, 2, 3) == c("1", "2", "3")
+```
+
+If you want to check if two objects in R are identical...
+```{r}
+identical(x, y)
+```
+
+```{r}
+x + y
+sum(x, y)
+```
+
+
+```{r}
+sum(x + 2)
+```
+
+
+```{r}
+sum(x) + 2
+```
+
+
+I would like to illustrate the difference between using `==` vs `%in%` operator.
+
+```{r}
+x == y
+```
+
+```{r}
+x
+```
+
+```{r}
+y
+```
+
+```{r}
+x %in% y
+```
+I would like to pull out the carriers "UA", "AA", "B6"
+Why is this the wrong way to do this?
+```{r, message=FALSE}
+library(tidyverse); library(nycflights13)
+
+flights %>% 
+    filter(carrier == c("UA", "AA", "B6"))
+    
+```
+
+
+```{r}
+flights %>% 
+    filter(carrier %in% c("UA", "AA", "B6"))
+```
+What happens if we swap the order of operands.
+```{r}
+flights %>% 
+    filter(c("UA", "AA", "B6") %in% carrier)
+```
+
+There is a place for the `==`.
+```{r}
+flights %>% 
+    filter(dep_delay == 2)
+```
+
+```{r}
+flights %>% 
+    filter(dep_delay %in% 2)
+```
+
+
+##File traversal in R
+You can load csv using base r.
+```{r}
+airlinesCSV <- read_csv(file = "data/airlines.csv")
+```
+
+```{r}
+list.dirs()
+```
+
+I can also get the list of files in a directory
+```{r}
+list.files()
+```
+
+```{r}
+list.files(pattern = "*.Rmd")
+```
+
+
+```{r}
+library(readxl)
+
+nycFlightsXL <- read_excel(path = "../outside data folder/nycFlightsData.xlsx", sheet = "weather")
+```
+If you have spss, stata, sas,
+```{r}
+library(haven)
+
+airlinesDTA <- read_dta("data/airlines.dta")
+```
+
+
+```{r}
+getwd()
+```
+
+
+##Linking with googlesheets
+Current package to use is googlesheets. However, this will be deprecated soon (because of changes in the Google API) and be replaced by a combination of two packages googledrive and googlesheets4. However, if you learn googlesheets the syntax and concepts are similar to those in the packages that will eventually replace it
+
+```{r}
+library(googlesheets)
+
+##register a spreadsheet
+attendance <- gs_title("Attendance List")
+
+##load a worksheet from a registered spreadsheet
+attendanceData <- attendance %>% 
+    gs_read(ws = "Attendance Sheet")
+
+```
+
+delete a sheet
+
+```{r}
+##delete a worksheet
+attendance %>% 
+    gs_ws_delete(ws = "temp")
+```
+
+
+```{r}
+newAttendanceData <- attendanceData %>% 
+    mutate(testCol = "hi")
+```
+
+```{r}
+##add a new sheet
+attendance %>% 
+    gs_ws_new(ws_title = "temp", input = newAttendanceData, trim = TRUE, verbose = FALSE)
+```
+
+
+You can add a row
+
+You can go in and edit specific cells.

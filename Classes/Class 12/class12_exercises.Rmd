@@ -30,6 +30,7 @@ flights %>%
 ```
 
 3. I am trying to summarise by origin to create a variable that shows the mean of the square of departure delay. Why am I getting the error?
+
 ```{r}
 flights %>% 
     group_by(origin) %>% 
@@ -37,8 +38,29 @@ flights %>%
               meanSqDelay = mean(depDelaySq))
 ```
 
+```{r}
+flights %>% 
+    group_by(origin) %>% 
+    summarise(nObs = n())
+```
+
+
 4. Correct the code above.
 
+We can correct this easily
+```{r}
+flights %>% 
+    group_by(origin) %>% 
+    summarise(meanSqDelay = mean(dep_delay ^ 2, na.rm = T))
+```
+
+If you wanted to do this before the summarise
+```{r}
+flights %>% 
+    mutate(depSq = dep_delay ^ 2) %>% 
+    group_by(origin) %>% 
+    summarise(meanSqDelay = mean(depSq, na.rm = T))
+```
 
 ##Task Set 2
 1. Go to your desktop and create a folder called "temp_data".

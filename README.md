@@ -55,4 +55,5 @@ This repository contains all the material for the R4D course - March 2019
 
 ## Week 7
 
-1. Class 12 - April 16th - [Class Lecture](https://puzhu.github.io/R4D/Classes/Class%2012/class12_lecture.nb.html) | [Class Exercises](https://puzhu.github.io/R4D/Classes/Class%2012/class12_exercises.nb.html) | [Class Video]()
+1. Class 12 - April 16th - [Class Lecture](https://puzhu.github.io/R4D/Classes/Class%2012/class12_lecture.nb.html) | [Class Exercises](https://puzhu.github.io/R4D/Classes/Class%2012/class12_exercises.nb.html) | [Class Video](https://youtu.be/YgeM_JUNn1w)
+2. Class 13 - April 18th - [Class Lecture](https://puzhu.github.io/R4D/Classes/Class%2013/class13_lecture.nb.html) | [Class Exercises](https://puzhu.github.io/R4D/Classes/Class%2013/class13_exercises.nb.html) | [Class Video]()
