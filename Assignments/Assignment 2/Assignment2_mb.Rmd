@@ -69,7 +69,7 @@ Doing this will expose:
 ```{r}
 skim(flt_wx)
 ```
-The following fields are either unlikely to be related to departure time or duplicative of another, superior field in the data set
+The following fields are either unlikely to be related to departure delay or duplicative of another, superior field in the data set
 
 * Destination
 * Tail number
@@ -85,48 +85,70 @@ The following fields are either unlikely to be related to departure time or dupl
 
 The following fields will need to be transformed in the succeeding ways:
 
-* Carrier -- Use difference with mean delay to determine carrier effect
-* Origin --  Use difference with mean delay to determine origin effect
+* Departure delay -- replace negative values with 0
+* Carrier -- Use difference between the mean delay of flights by a single carrier with mean delay overall
+* Origin --  Use difference between the mean delay of flights that originate at a single airport with mean delay overall
 * Time_hour -- Extract day of the week and convert to a dummy variable for whether the day is a weekend day
 * Scheduled departure time -- Use difference with the hour of day of peak delays
 * Month -- Use difference with the month of peak delays
 
-Only one field among those remaining, **wind gust**, is concerning due to the number of entries missing, so I'll check that 
-
-
+Only one field among those remaining, **wind gust**, is concerning due to the number of n/a entries. My fear is that these incomplete entries are biased -- that is, we may be telling a story that is based on a disproportionate sample of the data.
 ```{r}
 flt_wx %>%
   select(wind_gust,dep_delay) %>%
   filter(is.na(dep_delay) == F) %>%
-  cut(dep_delay)
-
-length() %>%
   mutate(na_gust = if_else(is.na(wind_gust), 0, 1)) %>%
   group_by(na_gust) %>%
   summarise(mean_del = mean(dep_delay,na.rm = T)
-     ,mean_del  = mean(dep_delay,na.rm = T)         
-     ,stdev_del = sd(dep_delay,na.rm = T)
-     ,min_del   = min(dep_delay,na.rm = T)
-     ,del_25qile= quantile(dep_delay,probs = 0.25,na.rm = T)
-     ,mdn_del   = median(dep_delay,na.rm = T)
-     ,del_75qile= quantile(dep_delay,probs = 0.75,na.rm = T)
-     ,max_del   = max(dep_delay,na.rm = T)) %>%
+     ,n_del     = length(dep_delay)
+     ,mean_del   = mean(dep_delay,na.rm = T)         
+     ,stdev_del  = sd(dep_delay,na.rm = T)
+     ,min_del    = min(dep_delay,na.rm = T)
+     ,del_25qile = quantile(dep_delay,probs = 0.25,na.rm = T)
+     ,mdn_del    = median(dep_delay,na.rm = T)
+     ,del_75qile = quantile(dep_delay,probs = 0.75,na.rm = T)
+     ,max_del    = max(dep_delay,na.rm = T)) %>%
   round(2)
-```
 
-
-
-```{r}
 flt_wx %>%
   select(wind_gust,dep_delay) %>%
-  filter(is.na(dep_delay) == T) %>%
+  filter(is.na(dep_delay) == F) %>%
   mutate(na_gust = if_else(is.na(wind_gust), 0, 1)) %>%
   ggplot(aes(dep_delay)) +
   geom_density() +
   facet_wrap(~na_gust)
+```
+These look similar enough to work with.
+
+Now to filter out the unused fields and transform other fields:
 
 
+```{r}
+flt_wx_cln <- flt_wx %>%
+  filter(is.na(dep_delay) == F) %>%
+  group_by(carrier) %>%
+  mutate(dep_delay   = (abs(dep_delay)+dep_delay)/2 ## Zeroing negative delays
+         ,carr_delay = mean(dep_delay,na.rm = T) - mean(flights$dep_delay,na.rm = T)
+         ,is_wkend   = if_else(wday(as.Date(time_hour)) == 1 
+            | wday(as.Date(time_hour)) == 7,1,0)
+         ,diff_20hr  = if_else(sched_dep_time < 2000, 1960 - sched_dep_time, sched_dep_time - 2000)
+         ,diff_7mo   = abs(month.x-7)) %>%
+  ungroup() %>%
+  group_by(origin) %>%
+  mutate(ogn_delay = mean(dep_delay,na.rm = T) - mean(flights$dep_delay, na.rm = T)) %>%
+  ungroup() %>%
+  select(dep_delay, temp:ogn_delay)
 
+%>%
+  cor(use = 'pairwise.complete.obs', method = 'pearson') %>%
+  round(2) %>%
+  as.data.frame() %>%
+  select(1) %>%
+  cbind(rownames(.),.) %>%
+  filter(dep_delay > -1 & dep_delay < 1) %>%
+  arrange(desc(abs(dep_delay)))
+
+flt_wx_cln
 ```
 
 
