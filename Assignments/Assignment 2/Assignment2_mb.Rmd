@@ -92,13 +92,19 @@ The following fields will need to be transformed in the succeeding ways:
 * Scheduled departure time -- Use difference with the hour of day of peak delays
 * Month -- Use difference with the month of peak delays
 
-Only one field among those remaining, **wind gust**, is concerning due to the number of n/a entries. My fear is that these incomplete entries are biased -- that is, we may be telling a story that is based on a disproportionate sample of the data.
+Only one field among those remaining, **wind gust**, is concerning due to the number of n/a entries. My fear is that these incomplete entries are biased -- that is, we may be telling a story that is based on a sample of the data that does not represent the poopulation.
 ```{r}
+library(tidyverse); library(skimr); library(nycflights13)
+
 flt_wx %>%
   select(wind_gust,dep_delay) %>%
   filter(is.na(dep_delay) == F) %>%
   mutate(na_gust = if_else(is.na(wind_gust), 0, 1)) %>%
   group_by(na_gust) %>%
+  mutate(pile = cut(dep_delay,5,labels = c('p20','p40','p60','p80','p99'))) %>%
+     
+
+
   summarise(mean_del = mean(dep_delay,na.rm = T)
      ,n_del     = length(dep_delay)
      ,mean_del   = mean(dep_delay,na.rm = T)         
@@ -107,8 +113,12 @@ flt_wx %>%
      ,del_25qile = quantile(dep_delay,probs = 0.25,na.rm = T)
      ,mdn_del    = median(dep_delay,na.rm = T)
      ,del_75qile = quantile(dep_delay,probs = 0.75,na.rm = T)
-     ,max_del    = max(dep_delay,na.rm = T)) %>%
-  round(2)
+     ,max_del    = max(dep_delay,na.rm = T))%>%
+  
+  round(2) %>%
+
+
+cut(flt_wx$dep_delay, breaks = 5, labels = c('cut_1','cut_2','cut_3','cut_4','cut_5'))
 
 flt_wx %>%
   select(wind_gust,dep_delay) %>%
