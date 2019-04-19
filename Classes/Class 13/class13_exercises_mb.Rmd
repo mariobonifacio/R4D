@@ -1,0 +1,46 @@
+---
+title: "Class 13 - In class exercises"
+author: Hari Subhash
+date: "Date created: `r Sys.Date()`"
+output:
+  html_notebook:
+    highlight: kate
+    smart: yes
+    theme: cosmo
+    code_folding: show
+    df_print: paged
+---
+##Task Set 1: Repeat after me
+1. The `table1` below is a tidy dataset. `gather()` the columns case and population to create an untidy table that mirrors `table2`. See question 2 below to see how `table2` looks.
+```{r, message=FALSE}
+library(tidyverse)
+table1
+```
+
+2. Use `spread()` to spread the `type` column into a wide format.
+```{r}
+table2
+```
+
+3. `table4a` contains the values for the count variable.
+
+```{r}
+table4a
+```
+Here is how I would clean this.
+```{r}
+table4a %>% 
+    gather(key = "year", value = "value", -country)
+```
+
+Use a similar approach to clean `table4b` and join it (using a `left_join()`) with the cleaned `table4a` to recreate table1. Bonus points if you do this without storing either table4b or table4a in a separate variable.
+
+
+##Task Set 2: Identify issues
+1. Load the messy gapminder data using `read_csv()`
+2. Discuss the issues with this data within your group (from the perspective of tidyness)
+3. Write down the steps you will take to clean this data up (in terms of `tidyr` functions). So for instance: "I will gather xyz columns, then separate a_b_c...."
+
+##Task Set 3: Tidy
+1. Load and clean the untidy gapminder data.
+

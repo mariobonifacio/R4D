@@ -137,18 +137,17 @@ flt_wx_cln <- flt_wx_raw %>%
   ungroup() %>%
   select(dep_delay, temp:ogn_delay)
 
-flt_wx_cln
+skim(flt_wx_cln)
 ```
 ## Bivariate analysis
 
 There are steps here
 
 1. Scatter plots to intuit relationships to explore
-2. Box plots to see if outliers may be skewing things
-3. Find correlation
-4. Linear model the best
+2. Find correlation
+3. Linear model the best
 
-
+**LINEAR RELATIONSHIPS:** I'm looking for scatter plots that appear generally linear with as little spread around the line as possible
 
 ```{r}
 flt_wx_cln %>%
@@ -248,13 +247,33 @@ ggplot(aes(x = jitter(is_wkend, 0.8), jitter(dep_delay,10))) +
   ggtitle('Weekend day also graphs poorly')
 
 flt_wx_cln %>%
-  cor(use = 'pairwise.complete.obs', method = 'pearson') %>%
-  round(2) %>%
-  as.data.frame() %>%
-  select(1) %>%
-  cbind(rownames(.),.) %>%
-  filter(dep_delay > -1 & dep_delay < 1) %>%
-  arrange(desc(abs(dep_delay)))
+  group_by(diff_20hr) %>%
+  summarise(mean_delay = mean(dep_delay, na.rm = T)) %>%
+ggplot(aes(x = diff_20hr, mean_delay)) +
+  geom_point() +
+  geom_smooth(method = lm, se = F) +
+  theme_fivethirtyeight() +
+  scale_color_fivethirtyeight() +
+  ggtitle('Time difference with 8 pm looks like the best')
+
+flt_wx_cln %>%
+ggplot(aes(x = diff_7mo, dep_delay)) +
+  geom_point() +
+  geom_smooth(method = lm, se = F) +
+  theme_fivethirtyeight() +
+  scale_color_fivethirtyeight() +
+  ggtitle('Month difference with July isnt great')
+
+flt_wx_cln %>%
+ggplot(aes(x = ogn_delay, dep_delay)) +
+  geom_point() +
+  geom_smooth(method = lm, se = F) +
+  theme_fivethirtyeight() +
+  scale_color_fivethirtyeight() +
+  ggtitle('Origin effect also is not good')
+
+
+
 
 # ASCII bits for building in-line histograms
 # 0| |▁
@@ -264,6 +283,99 @@ flt_wx_cln %>%
 # 4|█|
 
 ```
+
+The variables that appear to have the best relationships with dep_delay are:
+
+1. diff_20hr (the best by far),
+2. humid,
+3. pressure,
+4. carr_delay, and
+5. dewp
+
+One initial concern I have is that humidity and dewpoint are telling the same part of the story.
+
+For now, let's shrink our working data frame for the last time to the remaining variables we still care about.
+```{r}
+flt_wx <- flt_wx_cln %>%
+  select(dep_delay, diff_20hr, humid, pressure, carr_delay, dewp)
+
+flt_wx
+```
+
+
+**OUTLIERS:** 
+
+```{r message=FALSE, warning=FALSE}
+flt_wx %>%
+  mutate(cats = cut_number(diff_20hr, n = 5)) %>%
+  ggplot(aes(group = cats, x = cats, y = dep_delay)) +
+  geom_boxplot() +
+  geom_jitter(width = 0.49, height = 0.49) +
+  theme_fivethirtyeight() +
+  scale_color_fivethirtyeight()
+
+flt_wx %>%
+  mutate(cats = cut_number(humid, n = 5)) %>%
+  ggplot(aes(group = cats, x = cats, y = dep_delay)) +
+  geom_boxplot() +
+  geom_jitter(width = 0.49, height = 0.49) +
+  theme_fivethirtyeight() +
+  scale_color_fivethirtyeight()
+
+flt_wx %>%
+  mutate(cats = cut_number(pressure, n = 5)) %>%
+  ggplot(aes(group = cats, x = cats, y = dep_delay)) +
+  geom_boxplot() +
+  geom_jitter(width = 0.49, height = 0.49) +
+  theme_fivethirtyeight() +
+  scale_color_fivethirtyeight()
+
+flt_wx %>%
+  mutate(cats = cut_number(carr_delay, n = 5
+                           ,labels = c('carr_delay_1', 'carr_delay_2', 'carr_delay_3', 'carr_delay_4', 'carr_delay_5'))) %>%
+  ggplot(aes(group = cats, x = cats, y = dep_delay)) +
+  geom_boxplot() +
+  geom_jitter(width = 0.49, height = 0.49) +
+  theme_igray()
+
+flt_wx %>%
+  filter(is.na(dewp) == F) %>%
+  mutate(cats = cut_number(dewp, n = 5
+                           ,labels = c('dewp_1', 'dewp_2', 'dewp_3', 'dewp_4', 'dewp_5'))) %>%
+  ggplot(aes(group = cats, x = cats, y = dep_delay)) +
+  geom_jitter(width = 0.49, height = 0.49) +
+  scale_color_fivethirtyeight() +
+  theme_fivethirtyeight() +
+  geom_boxplot()
+```
+
+
+**CORRELATION:** Now that we've picked our independent variables, I'll verify using correlation
+
+Correlation measures the degree to which two variables move up or down in relation to each other. Correlation must fall somewhere between -1.00 and 1.00, which imply a perfectly negative relationship and a perfectly positive relationship, respectively.
+
+
+And now correlation.
+```{r}
+flt_wx %>%
+  cor(use = 'pairwise.complete.obs', method = 'pearson') %>%
+  round(2) %>%
+  as.data.frame() %>%
+  select(1) %>%
+  cbind(rownames(.),.) %>%
+  rename('variable' = 'rownames(.)'
+         ,'corr_dep_delay' = 'dep_delay') %>%
+  filter(corr_dep_delay > -1 & corr_dep_delay < 1) %>%
+  arrange(desc(abs(corr_dep_delay)))
+```
+As predicted, diff_20hr has the best relationship with corr_dep_delay. Though it doesn't appear that the magnitude of any correlations is very high.
+
+**LINEAR MODEL:** Having confirmed diff_20hr as the variable to use, we can let R build a linear model.
+
+```{r}
+lm(formula = dep_delay ~ diff_20hr, data = flt_wx)
+```
+
 
 
 
