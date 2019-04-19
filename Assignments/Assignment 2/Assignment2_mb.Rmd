@@ -1,29 +1,32 @@
 ---
 title: "Assignment 2"
-author: ~~Hari Subhash~~ Mario 
-date: "Date created: `r Sys.Date()`"
+author: "~~Hari Subhash~~ Mario"
+date: 'Date created: `r Sys.Date()`'
 output:
   html_notebook:
-    highlight: kate
-    smart: yes
-    theme: cosmo
     code_folding: show
     df_print: paged
-    toc: true
-    toc_depth: 2
+    highlight: kate
+    smart: yes
+    theme: paper
+    toc: yes
+  html_document:
+    toc: yes
 ---
 
-## Abstract
+# {.tabset .tabset-fade .tabset-pills}
 
-Unpredictable flight delays are a costly problem, forcing travelers to choose between spending extra time at the airport and missing a flight. In 2013, flights from the three New York area airports alone saw aggregate delays of half a million minutes. I explore the predictive capacity with respect to departure delay of five variables that are forecasted ahead of time and publicly available.
+## Abstract 
+
+Unpredictable flight delays are a costly problem, forcing travelers to choose between spending extra time at the airport and missing a flight. In 2013, flights from the three New York area airports alone saw aggregate delays of half a million minutes. I explore the predictive capacity with respect to departure delay of five variables that are forecasted ahead of time and publicly available. Of those five variables -- scheduled departure time, humidity, atmomspheric pressure, the effect associated with each carrier, and dewpoint -- it's scheduled departure time that is most closely associated with
 
 ## Background
 
-**PROBLEM:** Here, the problem is that flight delays are unpredictable. Not only that, mis-timing your ride to the airport could be costly; Arrive late and you may miss your flight altogether, but arrive early and you'll spend even more uncomfortable, unproductive time at the gate
+**PROBLEM:** Here, the problem is that flight delays are unpredictable. Not only that, mis-timing your ride to the airport could be costly; Arrive late and you may miss your flight altogether, but arrive early and you'll spend even more uncomfortable, unproductive time at the gate.
 
 **GOAL:** My ultimate goal is to be able to best predict a flight's departure delay. In an ideal world, all flights would simply leave on time. In a second-best world, each airline would contact travelers directly with flight delay information that was accurate and timely enough to be actionable. Alas, neither of those are the case and so in the world we live in, my goal is to better predict delay using weather and flight data.
 
-**HYPOTHESIS:** My null hypothesis is that *no* available weather or flight data shares a relationship with flight delay. 
+**HYPOTHESIS:** My null hypothesis is that *no* available weather or flight data shares a relationship with flight delay. I'll seek to disprove this.
 
 
 ## Setting up
@@ -48,23 +51,70 @@ library(tidyverse); library(skimr); library(nycflights13); library(lubridate); l
 flt_wx_raw <- flights %>%
   left_join(weather,by = c('origin','time_hour')) %>%
   mutate(dep_delay = (abs(dep_delay) + dep_delay) / 2) ## Here, I'm zeroing out negative delays
-# 
-flt_wx
+
+flt_wx_raw
 ```
 
 ## Univariate analysis
 
-Here's what I'll look at for each variable:
+Here are the steps for this
 
-* Metadata will explain what each variable represents
-* Descriptive variables including number of observations, mean, standard deviation, median, min, max, and interquartile measures
-* A histogram will offer a visual representation of each
+1. Metadata will explain what each variable represents
+2. Descriptive statics of the dependent variable including number of observations, mean, standard deviation, median, min, max, and interquartile measures
+3. Descriptive statistics for the independent variables  
+4. A histogram will offer a visual representation of each
 
 Doing this will expose:
 
 * Fields that would be unlikely related to departure delay,
 * Fields that will require transformation, and
 * Fields with too few observations or with too many missing observations to be representative
+
+**DATA DICTIONARY**
+
+* **year,month,day:** Date of departure or date of weather recording
+
+* **dep_time,arr_time:** Actual departure and arrival times (format HHMM or HMM), local tz.
+
+* **sched_dep_time,sched_arr_time:** Scheduled departure and arrival times (format HHMM or HMM), local tz.
+
+* **dep_delay,arr_delay:** Departure and arrival delays, in minutes. Negative times represent early departures/arrivals.
+
+* **hour** Hour part of time of scheduled departure or weather recording
+* **minute:** Minute part of time of scheduled departure
+
+* **carrier:** Two letter carrier abbreviation. See airlines() to get name
+
+* **tailnum:** Plane tail number
+
+* **flight:** Flight number
+
+* **origin:** Origin of flight or weather station. Origin + time_hour can be used to join flight and weather data
+* **dest:** Destination of flight. See airports() for additional metadata.
+
+* **air_time:** Amount of time spent in the air, in minutes
+
+* **distance:** Distance between airports, in miles
+
+* **time_hour:** Scheduled date and hour of the flight or of the weather recording as a POSIXct date. Origin + time_hour can be used to join flight and weather data
+
+* **temp,dewp:** Temperature and dewpoint in F
+
+* **humid:** Relative humidity
+
+* **wind_dir,wind_speed,wind_gust:** Wind direction (in degrees), speed and gust speed (in mph)
+
+* **precip:** Precipitation, in inches
+
+* **pressure:** Sea level pressure in millibars
+
+* **visib:** Visibility in miles
+
+
+
+
+
+**DESCRIPTIVE STATS OF THE DEPENDENT VARIABLE:** 
 
 ```{r}
 skim(flt_wx_raw)
@@ -92,14 +142,16 @@ The following fields will need to be transformed in the succeeding ways:
 * Scheduled departure time -- Use difference with the hour of day of peak delays
 * Month -- Use difference with the month of peak delays
 
-Only one field among those remaining, **wind gust**, is concerning due to the number of n/a entries. My fear is that these incomplete entries are biased -- that is, we may be telling a story that is based on a sample of the data that does not represent the poopulation.
+Only one field among those remaining, **wind gust**, is concerning due to the number of n/a entries -- 256,391 of 336,776 total. My fear is that these incomplete entries are biased -- that is, we may be telling a story that is based on a sample of the data that does not represent the poopulation.
 ```{r}
+### Here, I split up all entries based on whether or not wind_gust is NULL
+### Then, look at descriptive statistics of delay by those groups
 flt_wx_raw %>%
   select(wind_gust,dep_delay) %>%
   filter(is.na(dep_delay) == F) %>%
   mutate(na_gust = if_else(is.na(wind_gust), 0, 1)) %>% 
-  group_by(na_gust) %>% ## Here, I split up all entries based on whether or not wind_gust is NULL
-  summarise(mean_del = mean(dep_delay,na.rm = T) ## Starting here, I look at descriptive statistics by NULL or not
+  group_by(na_gust) %>% 
+  summarise(mean_del = mean(dep_delay,na.rm = T) 
      ,n_del     = length(dep_delay)
      ,mean_del   = mean(dep_delay,na.rm = T)         
      ,stdev_del  = sd(dep_delay,na.rm = T)
@@ -107,17 +159,19 @@ flt_wx_raw %>%
      ,del_25qile = quantile(dep_delay,probs = 0.25,na.rm = T)
      ,mdn_del    = median(dep_delay,na.rm = T)
      ,del_75qile = quantile(dep_delay,probs = 0.75,na.rm = T)
-     ,max_del    = max(dep_delay, na.rm = T))
+     ,max_del    = max(dep_delay, na.rm = T)) %>%
     round(2)
 
 flt_wx_raw %>%
   select(wind_gust,dep_delay) %>%
   filter(is.na(dep_delay) == F) %>%
-  mutate(na_gust = if_else(is.na(wind_gust), 0, 1)) %>%
+  mutate(na_gust = factor(if_else(is.na(wind_gust), 0, 1)
+                             ,levels = c(0,1)
+                             ,labels = c('null', 'not null') )) %>%
   ggplot(aes(dep_delay)) +
   geom_density() +
-  ggtitle(label = 'Dep. delay differs when wind gust is na but not by much') +
-  theme_fivethirtyeight() +
+  ggtitle(label = 'Dep. delay differs when wind gust is na but is good enough to use') +
+  theme_economist() +
   facet_wrap(~na_gust, nrow = 2, ncol = 1)
 ```
 These look similar enough to work with. To verify with numbers, I would do a z-test to see if I'm able to disprove that the means are unequal and an f-test to do the same with the standard deviations. But not today. Today, I will do neither.
@@ -143,13 +197,13 @@ skim(flt_wx_cln)
 
 There are steps here
 
-1. Scatter plots to intuit relationships to explore
+1. Scatter plots to intuit linear relationships to explore
 2. Find correlation
 3. Linear model the best
 
-**LINEAR RELATIONSHIPS:** I'm looking for scatter plots that appear generally linear with as little spread around the line as possible
+**FINDING LINEAR RELATIONSHIPS:** I'm looking for scatter plots that appear generally linear with as little spread around the line as possible
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 flt_wx_cln %>%
   group_by(temp) %>%
   summarise(mean_delay = mean(dep_delay, na.rm = T)) %>%
@@ -234,8 +288,8 @@ flt_wx_cln %>%
 ggplot(aes(x = carr_delay, dep_delay)) +
   geom_point() +
   geom_smooth(method = lm, se = F) +
-  theme_fivethirtyeight() +
-  scale_color_fivethirtyeight() +
+  theme_economist() +
+  geom_jitter() +
   ggtitle('Carrier effect graphs poorly but could be nice')
 
 flt_wx_cln %>%
