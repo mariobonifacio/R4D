@@ -43,9 +43,95 @@ To set up, I'll do the following:
 # install.packages('skimr') 
 # install.package('lubridate')
 # install.packages('ggthemes')
+# install.packages('DiagrammeR')
 
 # This line enables relevant packages
-library(tidyverse); library(skimr); library(nycflights13); library(lubridate); library(ggthemes)
+library(tidyverse); library(skimr); library(nycflights13); library(lubridate); library(ggthemes); library(DiagrammeR)
+
+DiagrammeR()
+
+
+
+
+
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(nycflights13); library(tidyverse)
+
+### Join flight, plane, and weather data into a data frame of raw data
+flt_raw <- flights %>%
+  mutate(dep_delay = (abs(dep_delay) + dep_delay) / 2) %>%
+  left_join(rename(planes,'manuf_year' = year), by = 'tailnum') %>%
+  left_join(weather, by = c('time_hour', 'origin'))
+
+
+
+### Remove irrelevant columns and transform categorical data into numbers
+flt_test <- flt_raw %>%
+  select(dep_delay, sched_dep_time, distance, manuf_year, engines ## 1-5
+         ,seats, temp, dewp, humid, wind_speed,wind_gust, precip ## 6-12
+         ,pressure, visib ## 13-14
+         ,carrier, origin, dest, type, manufacturer ## cat cols 15-19
+         ,model, speed ,engine) %>% ## cat cols 20-22
+  group_by(carrier) %>%
+  mutate(carr_fact = mean(dep_delay, na.rm = T)) %>%
+  group_by(origin) %>%
+  mutate(ogn_fact = mean(dep_delay, na.rm = T)) %>%
+  group_by(dest) %>%
+  mutate(dest_fact = mean(dep_delay, na.rm = T)) %>%
+  group_by(type) %>%
+  mutate(type_fact = mean(dep_delay, na.rm = T)) %>%
+  group_by(manufacturer) %>%
+  mutate(mnf_fact = mean(dep_delay, na.rm = T)) %>%
+  group_by(model) %>%
+  mutate(mdl_fact = mean(dep_delay, na.rm = T)) %>%
+  group_by(speed) %>%
+  mutate(spd_fact = mean(dep_delay, na.rm = T)) %>%
+  group_by(engine) %>%
+  mutate(eng_fact = mean(dep_delay, na.rm = T)) %>%
+  ungroup()
+  
+head(flt_test[,23])
+
+
+
+
+```
+
+
+```{r}
+cat_facts
+
+str(cat_facts)
+
+mean_cat <- function(CAT_COL, new_col_name) {group_by(flt_test, flt_test[,CAT_COL]) 
+  cat_facts <- rbind(cat_facts, cbind(cat = colnames(flt_test[,CAT_COL]), sub_cat = flt_test[,CAT_COL]
+            ,fact = flt_test %>%
+               select(dep_delay, flt_test[,CAT_COL]) %>%
+               group_by(flt_test[,CAT_COL]) %>%
+               mutate(temp = mean(dep_delay, na.rm = T)) %>%
+               ungroup() %>%
+               select(temp)))
+  flt_test[,CAT_COL] <- mean(dep_delay, na.rm = T)
+  colnames(flt_test[,CAT_COL]) <- new_col_name
+  ungroup(flt_test)}
+
+
+
+
+
+
+```
+
+```{r}
+
+```
+
+
 
 ### This joins flight and weather data, storing it in the new data frame we'll work with
 flt_wx_raw <- flights %>%
@@ -322,8 +408,7 @@ flt_wx_cln %>%
 ggplot(aes(x = ogn_delay, dep_delay)) +
   geom_point() +
   geom_smooth(method = lm, se = F) +
-  theme_fivethirtyeight() +
-  scale_color_fivethirtyeight() +
+  theme_economist() +
   ggtitle('Origin effect also is not good')
 
 
@@ -346,7 +431,7 @@ The variables that appear to have the best relationships with dep_delay are:
 4. carr_delay, and
 5. dewp
 
-One initial concern I have is that humidity and dewpoint are telling the same part of the story.
+One initial concern I have is that humidity and dewpoint are telling the same part of the story, but that's not so big a concern .
 
 For now, let's shrink our working data frame for the last time to the remaining variables we still care about.
 ```{r}
