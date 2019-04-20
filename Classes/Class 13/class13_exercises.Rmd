@@ -27,6 +27,10 @@ table2
 ```{r}
 table4a
 ```
+```{r}
+table4b
+```
+
 Here is how I would clean this.
 ```{r}
 table4a %>% 
@@ -34,6 +38,66 @@ table4a %>%
 ```
 
 Use a similar approach to clean `table4b` and join it (using a `left_join()`) with the cleaned `table4a` to recreate table1. Bonus points if you do this without storing either table4b or table4a in a separate variable.
+
+```{r}
+table4a %>% 
+    gather(key = "year", value = "value", -country)
+```
+
+Another way to do this is as follows.
+```{r}
+table4a %>% 
+    gather(key = "year", value = "value", `1999`, `2000`)
+```
+
+```{r}
+table4a %>% 
+    gather(key = "year", value = "value", `1999`, `2000`) %>% 
+    left_join(., table4b %>% 
+                  gather(key = "year", value = "value", `1999`, `2000`), by = c("country", "year")) %>% 
+    rename(cases = value.x, population = value.y) %>% 
+    arrange(country, year)
+```
+
+```{r}
+table4a %>% 
+    gather(key = "year", value = "cases", `1999`, `2000`) 
+```
+
+```{r}
+table4b %>% 
+    gather(key = "year", value = "population", `1999`, `2000`)
+```
+THis will not run but shows the general idea of nested functions.
+```{r}
+# table4a %>% 
+#     gather(key = "year", value = "cases", `1999`, `2000`) %>% 
+#     left_join(x = ., y = sum(mean(table4b)), 
+#               by = c("country", "year")) %>% 
+#     arrange(country, year)
+```
+
+
+Ian was like duh dude.
+```{r}
+table4a %>%
+    gather(key = "year", value = "cases", `1999`, `2000`) %>%
+    left_join(x = ., 
+              y = table4b %>%
+                  gather(key = "year", value = "population", `1999`, `2000`),
+              by = c("country", "year")) %>%
+    arrange(country, year)
+```
+
+Another more readable way to write this. Best way to write this. This is combine Zeenat + Ian.
+```{r}
+left_join(x = gather(data = table4a, key = "year", value = "cases", `1999`, `2000`),
+          y = gather(data = table4b, key = "year", value = "population", `1999`, `2000`),
+          by = c("country", "year")) %>%
+    arrange(country, year)
+```
+
+
 
 
 ##Task Set 2: Identify issues

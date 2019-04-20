@@ -27,6 +27,83 @@
 <script src="data:application/x-javascript;base64,CndpbmRvdy5pbml0aWFsaXplU291cmNlRW1iZWQgPSBmdW5jdGlvbihmaWxlbmFtZSkgewogICQoIiNybWQtZG93bmxvYWQtc291cmNlIikuY2xpY2soZnVuY3Rpb24oKSB7CiAgICB2YXIgc3JjID0gJCgiI3JtZC1zb3VyY2UtY29kZSIpLmh0bWwoKTsKICAgIHZhciBhID0gZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgnYScpOwogICAgYS5ocmVmID0gImRhdGE6dGV4dC94LXItbWFya2Rvd247YmFzZTY0LCIgKyBzcmM7CiAgICBhLmRvd25sb2FkID0gZmlsZW5hbWU7CiAgICBkb2N1bWVudC5ib2R5LmFwcGVuZENoaWxkKGEpOwogICAgYS5jbGljaygpOwogICAgZG9jdW1lbnQuYm9keS5yZW1vdmVDaGlsZChhKTsKICB9KTsKfTsK"></script>
 
 
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #ffffff; color: #1f1c1b; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; background-color: #ffffff; color: #a0a0a0; border-right: 1px solid #a0a0a0; }
+td.sourceCode { padding-left: 5px; }
+pre, code { color: #1f1c1b; background-color: #ffffff; }
+code > span.kw { color: #1f1c1b; font-weight: bold; } /* Keyword */
+code > span.dt { color: #0057ae; } /* DataType */
+code > span.dv { color: #b08000; } /* DecVal */
+code > span.bn { color: #b08000; } /* BaseN */
+code > span.fl { color: #b08000; } /* Float */
+code > span.cn { color: #aa5500; } /* Constant */
+code > span.ch { color: #924c9d; } /* Char */
+code > span.sc { color: #3daee9; } /* SpecialChar */
+code > span.st { color: #bf0303; } /* String */
+code > span.vs { color: #bf0303; } /* VerbatimString */
+code > span.ss { color: #ff5500; } /* SpecialString */
+code > span.im { color: #ff5500; } /* Import */
+code > span.co { color: #898887; } /* Comment */
+code > span.do { color: #607880; } /* Documentation */
+code > span.an { color: #ca60ca; } /* Annotation */
+code > span.cv { color: #0095ff; } /* CommentVar */
+code > span.ot { color: #006e28; } /* Other */
+code > span.fu { color: #644a9b; } /* Function */
+code > span.va { color: #0057ae; } /* Variable */
+code > span.cf { color: #1f1c1b; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #1f1c1b; } /* Operator */
+code > span.bu { color: #644a9b; font-weight: bold; } /* BuiltIn */
+code > span.ex { color: #0095ff; font-weight: bold; } /* Extension */
+code > span.pp { color: #006e28; } /* Preprocessor */
+code > span.at { color: #0057ae; } /* Attribute */
+code > span.re { color: #0057ae; } /* RegionMarker */
+code > span.in { color: #b08000; } /* Information */
+code > span.wa { color: #bf0303; } /* Warning */
+code > span.al { color: #bf0303; font-weight: bold; } /* Alert */
+code > span.er { color: #bf0303; text-decoration: underline; } /* Error */
+code > span. { color: #1f1c1b; } /* Normal */
+
+.sourceCode .row {
+  width: 100%;
+}
+.sourceCode {
+  overflow-x: auto;
+}
+.code-folding-btn {
+  margin-right: -30px;
+}
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
 
 
 <style type="text/css">
@@ -265,10 +342,22 @@ $(document).ready(function () {
 </ol>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbInRibF9kZiIsInRibCIsImRhdGEuZnJhbWUiXSwibmNvbCI6MywibnJvdyI6M30sInJkZiI6Ikg0c0lBQUFBQUFBQUExMVF5MDdETUJEYzJIR3JHaFZWNGcrNE53b1ZFZ29TQnloZndLbFhrNmFOSWF3cnh4R1BFLy9BVi9JUk5OaUpMWVFQOFk1bk56T2VmYmpmclBpR0F3QUJ5Z2dRYW1GSzdKRkFDak5YM3dEb21RV3VzeGpxMkRpNTNlMXJnYkkxQWowMXVkUGlRemIreHRhMVJHSEJmUHliZkFOOFNhQTM1MzhjZjRMa3VnYTZua1MyRE1WTDFVYVcwMUoxYVBTN3Y2WVhSVkVFdk1yelBOWW9HOUVHalVEeXJUQWkyMmtySDQzUHRIck5ncTE3SC9tMFI5LzNQN1ljbytHcE9oaXAwSTRTdHh3V3VTUTZJaFlkT3VudHNxdzdmRjVlWHJtbkRQM3htL3RLLzJQblNYcXZ4Y0thSzl4THJFTEtSanhXWWVlbk5zTVFJVHRvaVNaa3RteWJHV1ZFbU9PbGFnSXpoSVBqTDJHb0lLUUxBZ0FBIn0= -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGFibGU0YVxuYGBgIn0= -->
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">table4a</code></pre></div>
+<!-- rnb-source-end -->
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbInRibF9kZiIsInRibCIsImRhdGEuZnJhbWUiXSwibmNvbCI6MywibnJvdyI6M30sInJkZiI6Ikg0c0lBQUFBQUFBQUExMVF5MDdETUJEYzJIR3JHaFZWNGcrNE53cEZRZ29TQnloZndLbFhrNmFOSWF3cnh4R1BFLy9BVi9JUk5OaUpMWVFQOFk1bk56T2VmYmpmclBpR0F3QUJ5Z2dRYW1GSzdKRkFDak5YM3dEb21RV3VzeGpxMkRpNTNlMXJnYkkxQWowMXVkUGlRemIreHRhMVJHSEJmUHliZkFOOFNhQTM1MzhjZjRMa3VnYTZua1MyRE1WTDFVYVcwMUoxYVBTN3Y2WVhSVkVFdk1yelBOWW9HOUVHalVEeXJUQWkyMmtySDQzUHRIck5ncTE3SC9tMFI5LzNQN1ljbytHcE9oaXAwSTRTdHh3V3VTUTZJaFlkT3VudHNxdzdmRjVlWHJtbkRQM3htL3RLLzJQblNYcXZ4Y0thSzl4THJFTEtSanhXWWVlbk5zTVFJVHRvaVNaa3RteWJHV1ZFbU9PbGFnSXpoSVBqTDlMZjVJRUxBZ0FBIn0= -->
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
 {"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["country"],"name":[1],"type":["chr"],"align":["left"]},{"label":["1999"],"name":[2],"type":["int"],"align":["right"]},{"label":["2000"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"Afghanistan","2":"745","3":"2666","_rn_":"1"},{"1":"Brazil","2":"37737","3":"80488","_rn_":"2"},{"1":"China","2":"212258","3":"213766","_rn_":"3"}],"options":{"columns":{"min":{},"max":[10],"total":[3]},"rows":{"min":[10],"max":[10],"total":[3]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-frame-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbInRibF9kZiIsInRibCIsImRhdGEuZnJhbWUiXSwibmNvbCI6MywibnJvdyI6M30sInJkZiI6Ikg0c0lBQUFBQUFBQUF3dHlpVERpaXVCaVlHQmdZbUJtWldKZ1lnWXlXWmlBQkNNREN3TW5pSzVnWUdBV0JqSkFNZ0pnR2lMQjdaaVducEdZbDFsY2twZ0hGV0p6S2txc3lzeUI4bGlkTXpMekVvRU1YcEF1Um9OZjlWd09zMjk1MzFmMWdJdFpPUzNnU3R0OXlDZndsRHFhdGF4NWlibXB4V2hXc2lmbmwrYVZGRlZDdVN5R2xwYVdNTGFSZ1lFQnVobkpPWW5GTUROZ2dsd3BpU1dKZW1sRlFPUFJsSE1XNVpmcndhd0Z1WStwQVVqOC8vLy9MNUQ2aDZhWVBiK2dKRE0vRDZpVUNSUTRyR2kyTUJhaENRaVU1b0dNVHRGTnppak55OVkxTmdjNUJTd1B3YnhRbWhtVkRiS1Q2VC9VTEZaWU1LZm1wV2ZtcGNKOG1aT1lsQW9MY3o2Z0g4QmUwQ3NveXN3cmdma1pLRnFzVjVKZmtnaFR4NVdjbndNVEFYdU80UjhBZ0ZRUnNBc0NBQUE9In0= -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["country"],"name":[1],"type":["chr"],"align":["left"]},{"label":["1999"],"name":[2],"type":["int"],"align":["right"]},{"label":["2000"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"Afghanistan","2":"19987071","3":"20595360","_rn_":"1"},{"1":"Brazil","2":"172006362","3":"174504898","_rn_":"2"},{"1":"China","2":"1272915272","3":"1280428583","_rn_":"3"}],"options":{"columns":{"min":{},"max":[10],"total":[3]},"rows":{"min":[10],"max":[10],"total":[3]},"pages":{}}}
   </script>
 </div>
 <!-- rnb-frame-end -->
@@ -287,6 +376,98 @@ $(document).ready(function () {
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Use a similar approach to clean <code>table4b</code> and join it (using a <code>left_join()</code>) with the cleaned <code>table4a</code> to recreate table1. Bonus points if you do this without storing either table4b or table4a in a separate variable.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbInRibF9kZiIsInRibCIsImRhdGEuZnJhbWUiXSwibmNvbCI6MywibnJvdyI6Nn0sInJkZiI6Ikg0c0lBQUFBQUFBQUE1VlJTMDdETUJDZDJFbXFCaFZGNGdic0c1V3lJVWdzb0p5QVZiZEQ2amFHWUZlT0E1UVZkK0NVWElGRlV5ZXhKYkNFRUpGaVA3OTU4Nys3WGM2VFpRSUFCR2hFZ0ZBRFEyS09BRUlZZC9jckFEMHhvTE9rNW8rdDRlaDZ2U2xSOEZxanNGUjhvL0NOVi9ZVkxVb3U4Si9xbnpuQ3N6elAvOEx6Mld6Mkt3YVk5UEdBZkFKOGNLQlhwd0RKQXdTWEpkQkY3RFU3VnZJbEUvakVhdXRJM3MzUnR1MlhKNHljS08wbk01Q2pRalpDcTUwcllNZFFPZjB6Vmczemd4UVYxaTZJSTVNVmFzeld5c1Ezcjczbk1wSmJ6YVV3VHFUYlNlUTVCOG9qMGtaMGxhNm1SZG1JeCtuNVJaZWh0dy9meE9MNEc2WkRUdHJhV0pIYkZ4TWJMcGdydnNKNzVwWjNiT2JXVHlUYktpNjBhOFd3ZGFhbFJxZExDbGs1cG04TzlnZm9HSEpiZ2dJQUFBPT0ifQ== -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["country"],"name":[1],"type":["chr"],"align":["left"]},{"label":["year"],"name":[2],"type":["chr"],"align":["left"]},{"label":["value"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"Afghanistan","2":"1999","3":"745"},{"1":"Brazil","2":"1999","3":"37737"},{"1":"China","2":"1999","3":"212258"},{"1":"Afghanistan","2":"2000","3":"2666"},{"1":"Brazil","2":"2000","3":"80488"},{"1":"China","2":"2000","3":"213766"}],"options":{"columns":{"min":{},"max":[10],"total":[3]},"rows":{"min":[10],"max":[10],"total":[6]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-frame-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Another way to do this is as follows.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbInRibF9kZiIsInRibCIsImRhdGEuZnJhbWUiXSwibmNvbCI6MywibnJvdyI6Nn0sInJkZiI6Ikg0c0lBQUFBQUFBQUE1VlJTMDdETUJDZDJFbXFCaFZWNGdic0c0V0lUWkJZUURrQnEyNkgxRzBNd2E0Y0J5Z3I3c0FwdVFLTEJpZXhKYkNFRUpGaVA3OTU4Nys5V2VYSktnRUFBalFpUUtpQklURkhBQ0ZNKy9zRmdKNFkwRnZtNW8rdDRlaHFzNjFROEVhanNGUjhyZkNWMS9ZVkxTc3U4Si9xbnpuQ3M2SW8vc0o1bG1XL1lvRFpFQS9JQjhBN0IzcDVDcERjUTNCUkFWM0dYck5USlo5VGdZK3NzWTdrelJ4ZDEzMTZ3c2lKNXNOa1JuSlN5bFpvdFhjRjdCa3FwMy9DdW1WK2tMTEd4Z1Z4WkxKR2plbEdtZmptZGZCY0puS251UlRHaWZRN2lUem5RSG5FdkJWOXBldEZXYlhpWVhHZTl4a0crL2pOTEk2L1lUcm1wSjJORmJsOU1iSGxncm5pYTd4amJubkhabTdEUk5LZDRrSzdWZ3picEZwcWRMcWtsTFZqaHViZzhBV3ZGRWQzZ2dJQUFBPT0ifQ== -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["country"],"name":[1],"type":["chr"],"align":["left"]},{"label":["year"],"name":[2],"type":["chr"],"align":["left"]},{"label":["value"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"Afghanistan","2":"1999","3":"745"},{"1":"Brazil","2":"1999","3":"37737"},{"1":"China","2":"1999","3":"212258"},{"1":"Afghanistan","2":"2000","3":"2666"},{"1":"Brazil","2":"2000","3":"80488"},{"1":"China","2":"2000","3":"213766"}],"options":{"columns":{"min":{},"max":[10],"total":[3]},"rows":{"min":[10],"max":[10],"total":[6]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-frame-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbInRibF9kZiIsInRibCIsImRhdGEuZnJhbWUiXSwibmNvbCI6NCwibnJvdyI6Nn0sInJkZiI6Ikg0c0lBQUFBQUFBQUE1VlJ2VTdETUJDK09EOVZqWW9pOFFaSWlLbFJxSkJRS2lGQnk0QUVDMHhkVFpvMmhtQkhqaU1vQzd3REl3dnZ3Y2JJSTdBdzh3b2RHcHcwUmpTQ2dVaDI3cjQ3ZjNmZjNmblJxSWRIR0FBUW1EWUNaQ3JUUXVveXdJSjIrYjhGTURkS1ZCMVhIYWNPckIxT3BqRmhOSk9FL1EwNUEwSHVhUEtyWnc5anlzaXFzMXJEMmdtQ1FOczkzL2YvalFOMEtqNUFud0Q0RXVDUmd0R1B3ZHpmQkhQbzZMamh6KytOL3VBWkh6eTk0OG5MNjhuSDF2SHAyZHQyWXhodHdXODhScTZqckg2SUh0UlZGTVc4a1dpSENjbXlXbzBHOFpoSTRrMkVldDlNMTV4dU5lZ2wyQXA1enFTWWFUMnppSWh2ZXBLcC9KbzI1V21lRUVrNVU5NmlRZDNpYVJsUjVLamNvdDNveVJBTndNMVoyY3k0RzhZNXUrcnU3cFVWcXZqeTY5UzI4OE8ybGpXdG91YXk5Ym9qTnFVczBrMG41Q0xTdTE5WGs2eEVlNm1nVEdvcENzMDh5U1hSZVRqa2lVWXFjYkQ0QXFaMEFjVzBBZ0FBIn0= -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["country"],"name":[1],"type":["chr"],"align":["left"]},{"label":["year"],"name":[2],"type":["chr"],"align":["left"]},{"label":["cases"],"name":[3],"type":["int"],"align":["right"]},{"label":["population"],"name":[4],"type":["int"],"align":["right"]}],"data":[{"1":"Afghanistan","2":"1999","3":"745","4":"19987071"},{"1":"Afghanistan","2":"2000","3":"2666","4":"20595360"},{"1":"Brazil","2":"1999","3":"37737","4":"172006362"},{"1":"Brazil","2":"2000","3":"80488","4":"174504898"},{"1":"China","2":"1999","3":"212258","4":"1272915272"},{"1":"China","2":"2000","3":"213766","4":"1280428583"}],"options":{"columns":{"min":{},"max":[10],"total":[4]},"rows":{"min":[10],"max":[10],"total":[6]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-frame-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbInRibF9kZiIsInRibCIsImRhdGEuZnJhbWUiXSwibmNvbCI6MywibnJvdyI6Nn0sInJkZiI6Ikg0c0lBQUFBQUFBQUE1VlJTMDdETUJDZDJFbXFHaFZGNGdic0c0VktMSUxFQXNvSldIVTdwR2xqQ0hibE9JS3k0ZzZja2l1d2FMQVRXNktSRU1LUzdlYzNiOGJ6dWI5YkxkaUtBUUFCR2hFZzFNQ1FtQ09BRUtiMmZnV2dad1pZUzJKMjdBd25ONXR0aFlJM0dvV2o0bHVGYjd4MnIyaFpjWUgvVkIvL0VWN2tlZjRYWG1SWjlpc0dtUFh4Z0h3Q2ZIQ2cxK2NBN0JHQ3F3cm9NaDRWTzFYeUpSWDRYRGJPa2J5Ym8rdTZyNUV3OHFLazc4eEFUZ3JaQ3EzMlBvRjlpY3JyQzJ5cy9qaElVV1BqZzNpU3JWRmp1bEVtdm5rZFJpNFR1ZE5jQ3VORTdFeWlrWE9nUmtUU0NwdnBlbDVVclhpYVg5cUdzTjQrckpuRDhROU1oejlwNTJKRmZsNmwySEpSK3VScmZDajk4RTVOMy9xT3BEdkZoZmFsR0xaSnRkVG9kYXlRdFdmNjR1RHdEYUxVRXRlQ0FnQUEifQ== -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["country"],"name":[1],"type":["chr"],"align":["left"]},{"label":["year"],"name":[2],"type":["chr"],"align":["left"]},{"label":["cases"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"Afghanistan","2":"1999","3":"745"},{"1":"Brazil","2":"1999","3":"37737"},{"1":"China","2":"1999","3":"212258"},{"1":"Afghanistan","2":"2000","3":"2666"},{"1":"Brazil","2":"2000","3":"80488"},{"1":"China","2":"2000","3":"213766"}],"options":{"columns":{"min":{},"max":[10],"total":[3]},"rows":{"min":[10],"max":[10],"total":[6]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-frame-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbInRibF9kZiIsInRibCIsImRhdGEuZnJhbWUiXSwibmNvbCI6MywibnJvdyI6Nn0sInJkZiI6Ikg0c0lBQUFBQUFBQUE1VlJ1MDdETUJSMW5FZFZvNkpJZkFOaWFwUldZZ2dURkFZa1dHRHFhdEtrc1FoMjVEaUNzc0Ivc1BBZjNSajVCQmIrbzBPRG5kZ1NXRUtJU0xHUHo3MzMzTmYxMlh5SzVnZ0FBSUhyUXdCZENUMG9Ed2Q0WUtqdUJ3RGNQUW1VSlpSL29BMDdKL215d0pUVUFsTk5CVE9PSDBtcFgvNXBRU2orcC9mUEhONGtTWksvOERTTzQxOHhBQ09sNThTYkozVDg4bkh4dVgvdUhNMWVVYjUrdTd4NlA3Q2FIWEoySDFGOGw5VTZFRDdMbzIzYmplWG9HNmV3bTB4UERsTFdVTUZYcG9CVmhybkdxR0pWVTJKQkdMV1YwaExYUnNtUWFJRUZqbkl1azhqWDFnb1pzRW9KeVNDb0Z1TmJ3UTYzaUxDaHF0ekZPQzBhZWpzK25LZ01uYjMvUmhvSDM3RGI1M1JicmVXYnBXVjBTV2htaWkveFRXWTJ1Q3VIMTQwbHFqaWh3clFpMlRvU1RHRGpoMUpXR3FackRteS9BQVZZcVZXSEFnQUEifQ== -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["country"],"name":[1],"type":["chr"],"align":["left"]},{"label":["year"],"name":[2],"type":["chr"],"align":["left"]},{"label":["population"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"Afghanistan","2":"1999","3":"19987071"},{"1":"Brazil","2":"1999","3":"172006362"},{"1":"China","2":"1999","3":"1272915272"},{"1":"Afghanistan","2":"2000","3":"20595360"},{"1":"Brazil","2":"2000","3":"174504898"},{"1":"China","2":"2000","3":"1280428583"}],"options":{"columns":{"min":{},"max":[10],"total":[3]},"rows":{"min":[10],"max":[10],"total":[6]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-frame-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>THis will not run but shows the general idea of nested functions.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyB0YWJsZTRhICU+JSBcbiMgICAgIGdhdGhlcihrZXkgPSBcInllYXJcIiwgdmFsdWUgPSBcImNhc2VzXCIsIGAxOTk5YCwgYDIwMDBgKSAlPiUgXG4jICAgICBsZWZ0X2pvaW4oeCA9IC4sIHkgPSBzdW0obWVhbih0YWJsZTRiKSksIFxuIyAgICAgICAgICAgICAgIGJ5ID0gYyhcImNvdW50cnlcIiwgXCJ5ZWFyXCIpKSAlPiUgXG4jICAgICBhcnJhbmdlKGNvdW50cnksIHllYXIpXG5gYGAifQ== -->
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># table4a %&gt;% </span>
+<span class="co">#     gather(key = &quot;year&quot;, value = &quot;cases&quot;, `1999`, `2000`) %&gt;% </span>
+<span class="co">#     left_join(x = ., y = sum(mean(table4b)), </span>
+<span class="co">#               by = c(&quot;country&quot;, &quot;year&quot;)) %&gt;% </span>
+<span class="co">#     arrange(country, year)</span></code></pre></div>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Ian was like duh dude.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbInRibF9kZiIsInRibCIsImRhdGEuZnJhbWUiXSwibmNvbCI6NCwibnJvdyI6Nn0sInJkZiI6Ikg0c0lBQUFBQUFBQUE1VlJ2VTdETUJDK09EOVZqWW9pOFFaSWlLbFJxQmhJSlNSb0daQmdnYW1yU2RQR0VPekljUVJsZ1hkZ1pPRTkyQmg1QkJabVhxRkRnNVBHaUVZd0VNbk8zWGZuNys2N096OGE5ZkFJQXdBQzAwYUFUR1ZhU0YwR1dOQXUvN2NBNWthSnF1T3E0OVNCdGNQSk5DYU1acEt3dnlGbklNZ2RUWDcxN0dGTUdWbDFWbXRZTzBFUWFMdm4rLzYvY1lCT3hRZm9Fd0JmQWp4U01Qb3htUHViWUE0ZEhUZjgrYjNSSHp6amc2ZDNQSGw1UGZuWU9qNDllOXR1REtNdCtJM0h5SFdVMVEvUmc3cUtvcGczRXUwd0lWbFdxOUVnSGhOSnZJbFE3NXZwbXRPdEJyMEVXeUhQbVJRenJXY1dFZkZOVHpLVlg5T21QTTBUSWlsbnlsczBxRnM4TFNPS0hKVmJ0QnM5R2FJQnVEa3JteGwzd3poblY5M2R2YkpDRlY5K25kcDJmdGpXc3FaVjFGeTJYbmZFcHBSRnV1bUVYRVI2OSt0cWtwVm9MeFdVU1MxRm9aa251U1E2RDRjODBVZ2xEaFpmbTRINW1yUUNBQUE9In0= -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["country"],"name":[1],"type":["chr"],"align":["left"]},{"label":["year"],"name":[2],"type":["chr"],"align":["left"]},{"label":["cases"],"name":[3],"type":["int"],"align":["right"]},{"label":["population"],"name":[4],"type":["int"],"align":["right"]}],"data":[{"1":"Afghanistan","2":"1999","3":"745","4":"19987071"},{"1":"Afghanistan","2":"2000","3":"2666","4":"20595360"},{"1":"Brazil","2":"1999","3":"37737","4":"172006362"},{"1":"Brazil","2":"2000","3":"80488","4":"174504898"},{"1":"China","2":"1999","3":"212258","4":"1272915272"},{"1":"China","2":"2000","3":"213766","4":"1280428583"}],"options":{"columns":{"min":{},"max":[10],"total":[4]},"rows":{"min":[10],"max":[10],"total":[6]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-frame-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Another more readable way to write this. Best way to write this. This is combine Zeenat + Ian.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbInRibF9kZiIsInRibCIsImRhdGEuZnJhbWUiXSwibmNvbCI6NCwibnJvdyI6Nn0sInJkZiI6Ikg0c0lBQUFBQUFBQUE1VlJ2VTdETUJDK09EOVZqWW9xOFFaSWlLbFJxTVNRU2tqUU1pREJBbE5Ya3lhTklkaVI0d2pLUXQrQmtZWDNZR1BrRVZpWWVZVU9EVTRhSXhyQlFDUTdkOStkdjd2djd1SjQzTWRqREFBSVRCc0JNcFZwSVhVWllFRzcvTjhCbUZzbHFrNVhIYWNPYkJ4RjA1Z3dta25DL29hY29TRDNOUG5WczBjeFpXVGRXYTloN2ZtK3IrMis1M24veGdFNkZSK2dUd0I4QmZCSXdSakVZQjVzZ3pseWROendGZy9HWVBpTUQ1L2VjZlR5ZXZxeGMzSjIvcmJiR0VaYjhGdVhrWnN3cXgraXVicUtvbGcwRXUwZ0lWbFdxOUVnbmhCSjNFaW85ODEwemRtdEJyMENXd0hQbVJRenJXY1dFdkZOVHpLVlg5T21QTTBUSWlsbnlsczJxRnM4TFNPS0hKVmJ0QnM5R2FJQmRITldOalBwQlhIT3JudjcvYkpDRlY5OW5kcDJmdGpXcXFaVjFGeTJYbmZJcHBTRnV1bUVYSVo2OTV0cWtwVm9OeFdVU1MxRm9aa3J1U1E2RHdjODBVZ2xEcFpmaThkVkpiUUNBQUE9In0= -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["country"],"name":[1],"type":["chr"],"align":["left"]},{"label":["year"],"name":[2],"type":["chr"],"align":["left"]},{"label":["cases"],"name":[3],"type":["int"],"align":["right"]},{"label":["population"],"name":[4],"type":["int"],"align":["right"]}],"data":[{"1":"Afghanistan","2":"1999","3":"745","4":"19987071"},{"1":"Afghanistan","2":"2000","3":"2666","4":"20595360"},{"1":"Brazil","2":"1999","3":"37737","4":"172006362"},{"1":"Brazil","2":"2000","3":"80488","4":"174504898"},{"1":"China","2":"1999","3":"212258","4":"1272915272"},{"1":"China","2":"2000","3":"213766","4":"1280428583"}],"options":{"columns":{"min":{},"max":[10],"total":[4]},"rows":{"min":[10],"max":[10],"total":[6]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-frame-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
 </div>
 <div id="task-set-2-identify-issues" class="section level2">
 <h2>Task Set 2: Identify issues</h2>
@@ -304,7 +485,7 @@ $(document).ready(function () {
 <!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiQ2xhc3MgMTMgLSBJbiBjbGFzcyBleGVyY2lzZXMiCmF1dGhvcjogSGFyaSBTdWJoYXNoCmRhdGU6ICJEYXRlIGNyZWF0ZWQ6IGByIFN5cy5EYXRlKClgIgpvdXRwdXQ6CiAgaHRtbF9ub3RlYm9vazoKICAgIGhpZ2hsaWdodDoga2F0ZQogICAgc21hcnQ6IHllcwogICAgdGhlbWU6IGNvc21vCiAgICBjb2RlX2ZvbGRpbmc6IHNob3cKICAgIGRmX3ByaW50OiBwYWdlZAotLS0KIyNUYXNrIFNldCAxOiBSZXBlYXQgYWZ0ZXIgbWUKMS4gVGhlIGB0YWJsZTFgIGJlbG93IGlzIGEgdGlkeSBkYXRhc2V0LiBgZ2F0aGVyKClgIHRoZSBjb2x1bW5zIGNhc2UgYW5kIHBvcHVsYXRpb24gdG8gY3JlYXRlIGFuIHVudGlkeSB0YWJsZSB0aGF0IG1pcnJvcnMgYHRhYmxlMmAuIFNlZSBxdWVzdGlvbiAyIGJlbG93IHRvIHNlZSBob3cgYHRhYmxlMmAgbG9va3MuCmBgYHtyLCBtZXNzYWdlPUZBTFNFfQpsaWJyYXJ5KHRpZHl2ZXJzZSkKdGFibGUxCmBgYAoKMi4gVXNlIGBzcHJlYWQoKWAgdG8gc3ByZWFkIHRoZSBgdHlwZWAgY29sdW1uIGludG8gYSB3aWRlIGZvcm1hdC4KYGBge3J9CnRhYmxlMgpgYGAKCjMuIGB0YWJsZTRhYCBjb250YWlucyB0aGUgdmFsdWVzIGZvciB0aGUgY291bnQgdmFyaWFibGUuCgpgYGB7cn0KdGFibGU0YQpgYGAKSGVyZSBpcyBob3cgSSB3b3VsZCBjbGVhbiB0aGlzLgpgYGB7cn0KdGFibGU0YSAlPiUgCiAgICBnYXRoZXIoa2V5ID0gInllYXIiLCB2YWx1ZSA9ICJ2YWx1ZSIsIC1jb3VudHJ5KQpgYGAKClVzZSBhIHNpbWlsYXIgYXBwcm9hY2ggdG8gY2xlYW4gYHRhYmxlNGJgIGFuZCBqb2luIGl0ICh1c2luZyBhIGBsZWZ0X2pvaW4oKWApIHdpdGggdGhlIGNsZWFuZWQgYHRhYmxlNGFgIHRvIHJlY3JlYXRlIHRhYmxlMS4gQm9udXMgcG9pbnRzIGlmIHlvdSBkbyB0aGlzIHdpdGhvdXQgc3RvcmluZyBlaXRoZXIgdGFibGU0YiBvciB0YWJsZTRhIGluIGEgc2VwYXJhdGUgdmFyaWFibGUuCgoKIyNUYXNrIFNldCAyOiBJZGVudGlmeSBpc3N1ZXMKMS4gTG9hZCB0aGUgbWVzc3kgZ2FwbWluZGVyIGRhdGEgdXNpbmcgYHJlYWRfY3N2KClgCjIuIERpc2N1c3MgdGhlIGlzc3VlcyB3aXRoIHRoaXMgZGF0YSB3aXRoaW4geW91ciBncm91cCAoZnJvbSB0aGUgcGVyc3BlY3RpdmUgb2YgdGlkeW5lc3MpCjMuIFdyaXRlIGRvd24gdGhlIHN0ZXBzIHlvdSB3aWxsIHRha2UgdG8gY2xlYW4gdGhpcyBkYXRhIHVwIChpbiB0ZXJtcyBvZiBgdGlkeXJgIGZ1bmN0aW9ucykuIFNvIGZvciBpbnN0YW5jZTogIkkgd2lsbCBnYXRoZXIgeHl6IGNvbHVtbnMsIHRoZW4gc2VwYXJhdGUgYV9iX2MuLi4uIgoKIyNUYXNrIFNldCAzOiBUaWR5CjEuIExvYWQgYW5kIGNsZWFuIHRoZSB1bnRpZHkgZ2FwbWluZGVyIGRhdGEuCgo=</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiQ2xhc3MgMTMgLSBJbiBjbGFzcyBleGVyY2lzZXMiCmF1dGhvcjogSGFyaSBTdWJoYXNoCmRhdGU6ICJEYXRlIGNyZWF0ZWQ6IGByIFN5cy5EYXRlKClgIgpvdXRwdXQ6CiAgaHRtbF9ub3RlYm9vazoKICAgIGhpZ2hsaWdodDoga2F0ZQogICAgc21hcnQ6IHllcwogICAgdGhlbWU6IGNvc21vCiAgICBjb2RlX2ZvbGRpbmc6IHNob3cKICAgIGRmX3ByaW50OiBwYWdlZAotLS0KIyNUYXNrIFNldCAxOiBSZXBlYXQgYWZ0ZXIgbWUKMS4gVGhlIGB0YWJsZTFgIGJlbG93IGlzIGEgdGlkeSBkYXRhc2V0LiBgZ2F0aGVyKClgIHRoZSBjb2x1bW5zIGNhc2UgYW5kIHBvcHVsYXRpb24gdG8gY3JlYXRlIGFuIHVudGlkeSB0YWJsZSB0aGF0IG1pcnJvcnMgYHRhYmxlMmAuIFNlZSBxdWVzdGlvbiAyIGJlbG93IHRvIHNlZSBob3cgYHRhYmxlMmAgbG9va3MuCmBgYHtyLCBtZXNzYWdlPUZBTFNFfQpsaWJyYXJ5KHRpZHl2ZXJzZSkKdGFibGUxCmBgYAoKMi4gVXNlIGBzcHJlYWQoKWAgdG8gc3ByZWFkIHRoZSBgdHlwZWAgY29sdW1uIGludG8gYSB3aWRlIGZvcm1hdC4KYGBge3J9CnRhYmxlMgpgYGAKCjMuIGB0YWJsZTRhYCBjb250YWlucyB0aGUgdmFsdWVzIGZvciB0aGUgY291bnQgdmFyaWFibGUuCgpgYGB7cn0KdGFibGU0YQpgYGAKYGBge3J9CnRhYmxlNGIKYGBgCgpIZXJlIGlzIGhvdyBJIHdvdWxkIGNsZWFuIHRoaXMuCmBgYHtyfQp0YWJsZTRhICU+JSAKICAgIGdhdGhlcihrZXkgPSAieWVhciIsIHZhbHVlID0gInZhbHVlIiwgLWNvdW50cnkpCmBgYAoKVXNlIGEgc2ltaWxhciBhcHByb2FjaCB0byBjbGVhbiBgdGFibGU0YmAgYW5kIGpvaW4gaXQgKHVzaW5nIGEgYGxlZnRfam9pbigpYCkgd2l0aCB0aGUgY2xlYW5lZCBgdGFibGU0YWAgdG8gcmVjcmVhdGUgdGFibGUxLiBCb251cyBwb2ludHMgaWYgeW91IGRvIHRoaXMgd2l0aG91dCBzdG9yaW5nIGVpdGhlciB0YWJsZTRiIG9yIHRhYmxlNGEgaW4gYSBzZXBhcmF0ZSB2YXJpYWJsZS4KCmBgYHtyfQp0YWJsZTRhICU+JSAKICAgIGdhdGhlcihrZXkgPSAieWVhciIsIHZhbHVlID0gInZhbHVlIiwgLWNvdW50cnkpCmBgYAoKQW5vdGhlciB3YXkgdG8gZG8gdGhpcyBpcyBhcyBmb2xsb3dzLgpgYGB7cn0KdGFibGU0YSAlPiUgCiAgICBnYXRoZXIoa2V5ID0gInllYXIiLCB2YWx1ZSA9ICJ2YWx1ZSIsIGAxOTk5YCwgYDIwMDBgKQpgYGAKCmBgYHtyfQp0YWJsZTRhICU+JSAKICAgIGdhdGhlcihrZXkgPSAieWVhciIsIHZhbHVlID0gInZhbHVlIiwgYDE5OTlgLCBgMjAwMGApICU+JSAKICAgIGxlZnRfam9pbiguLCB0YWJsZTRiICU+JSAKICAgICAgICAgICAgICAgICAgZ2F0aGVyKGtleSA9ICJ5ZWFyIiwgdmFsdWUgPSAidmFsdWUiLCBgMTk5OWAsIGAyMDAwYCksIGJ5ID0gYygiY291bnRyeSIsICJ5ZWFyIikpICU+JSAKICAgIHJlbmFtZShjYXNlcyA9IHZhbHVlLngsIHBvcHVsYXRpb24gPSB2YWx1ZS55KSAlPiUgCiAgICBhcnJhbmdlKGNvdW50cnksIHllYXIpCmBgYAoKYGBge3J9CnRhYmxlNGEgJT4lIAogICAgZ2F0aGVyKGtleSA9ICJ5ZWFyIiwgdmFsdWUgPSAiY2FzZXMiLCBgMTk5OWAsIGAyMDAwYCkgCmBgYAoKYGBge3J9CnRhYmxlNGIgJT4lIAogICAgZ2F0aGVyKGtleSA9ICJ5ZWFyIiwgdmFsdWUgPSAicG9wdWxhdGlvbiIsIGAxOTk5YCwgYDIwMDBgKQpgYGAKVEhpcyB3aWxsIG5vdCBydW4gYnV0IHNob3dzIHRoZSBnZW5lcmFsIGlkZWEgb2YgbmVzdGVkIGZ1bmN0aW9ucy4KYGBge3J9CiMgdGFibGU0YSAlPiUgCiMgICAgIGdhdGhlcihrZXkgPSAieWVhciIsIHZhbHVlID0gImNhc2VzIiwgYDE5OTlgLCBgMjAwMGApICU+JSAKIyAgICAgbGVmdF9qb2luKHggPSAuLCB5ID0gc3VtKG1lYW4odGFibGU0YikpLCAKIyAgICAgICAgICAgICAgIGJ5ID0gYygiY291bnRyeSIsICJ5ZWFyIikpICU+JSAKIyAgICAgYXJyYW5nZShjb3VudHJ5LCB5ZWFyKQpgYGAKCgpJYW4gd2FzIGxpa2UgZHVoIGR1ZGUuCmBgYHtyfQp0YWJsZTRhICU+JQogICAgZ2F0aGVyKGtleSA9ICJ5ZWFyIiwgdmFsdWUgPSAiY2FzZXMiLCBgMTk5OWAsIGAyMDAwYCkgJT4lCiAgICBsZWZ0X2pvaW4oeCA9IC4sIAogICAgICAgICAgICAgIHkgPSB0YWJsZTRiICU+JQogICAgICAgICAgICAgICAgICBnYXRoZXIoa2V5ID0gInllYXIiLCB2YWx1ZSA9ICJwb3B1bGF0aW9uIiwgYDE5OTlgLCBgMjAwMGApLAogICAgICAgICAgICAgIGJ5ID0gYygiY291bnRyeSIsICJ5ZWFyIikpICU+JQogICAgYXJyYW5nZShjb3VudHJ5LCB5ZWFyKQpgYGAKCkFub3RoZXIgbW9yZSByZWFkYWJsZSB3YXkgdG8gd3JpdGUgdGhpcy4gQmVzdCB3YXkgdG8gd3JpdGUgdGhpcy4gVGhpcyBpcyBjb21iaW5lIFplZW5hdCArIElhbi4KYGBge3J9CmxlZnRfam9pbih4ID0gZ2F0aGVyKGRhdGEgPSB0YWJsZTRhLCBrZXkgPSAieWVhciIsIHZhbHVlID0gImNhc2VzIiwgYDE5OTlgLCBgMjAwMGApLAogICAgICAgICAgeSA9IGdhdGhlcihkYXRhID0gdGFibGU0Yiwga2V5ID0gInllYXIiLCB2YWx1ZSA9ICJwb3B1bGF0aW9uIiwgYDE5OTlgLCBgMjAwMGApLAogICAgICAgICAgYnkgPSBjKCJjb3VudHJ5IiwgInllYXIiKSkgJT4lCiAgICBhcnJhbmdlKGNvdW50cnksIHllYXIpCmBgYAoKCgoKIyNUYXNrIFNldCAyOiBJZGVudGlmeSBpc3N1ZXMKMS4gTG9hZCB0aGUgbWVzc3kgZ2FwbWluZGVyIGRhdGEgdXNpbmcgYHJlYWRfY3N2KClgCjIuIERpc2N1c3MgdGhlIGlzc3VlcyB3aXRoIHRoaXMgZGF0YSB3aXRoaW4geW91ciBncm91cCAoZnJvbSB0aGUgcGVyc3BlY3RpdmUgb2YgdGlkeW5lc3MpCjMuIFdyaXRlIGRvd24gdGhlIHN0ZXBzIHlvdSB3aWxsIHRha2UgdG8gY2xlYW4gdGhpcyBkYXRhIHVwIChpbiB0ZXJtcyBvZiBgdGlkeXJgIGZ1bmN0aW9ucykuIFNvIGZvciBpbnN0YW5jZTogIkkgd2lsbCBnYXRoZXIgeHl6IGNvbHVtbnMsIHRoZW4gc2VwYXJhdGUgYV9iX2MuLi4uIgoKIyNUYXNrIFNldCAzOiBUaWR5CjEuIExvYWQgYW5kIGNsZWFuIHRoZSB1bnRpZHkgZ2FwbWluZGVyIGRhdGEuCgo=</div>
 
 
 

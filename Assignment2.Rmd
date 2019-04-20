@@ -1,0 +1,117 @@
+---
+title: "Assignment 2"
+author: Hari Subhash
+date: "Date created: `r Sys.Date()`"
+output:
+  html_notebook:
+    highlight: kate
+    smart: yes
+    theme: cosmo
+    code_folding: show
+    df_print: paged
+---
+**Due Date**: Sunday, April 28th
+
+**Keyboard Shortcuts**:
+
+1. Assignment operator (<-) is `Alt+-` for Windows and `Option+-` for Mac
+2. Insert new code chunk `Ctrl+Alt+I` for Windows and `Command+Option+I` for Mac
+3. Run a line of code `Ctrl+Enter` for Windows and `Command+Enter` for Mac
+4. Run all the code within a chunk `Ctrl+Shift+Enter` for Windows and `Command+Shift+Enter` for Mac
+5. Insert a pipe operator (%>%) `Ctrl+Shift+M` for Windows and `Command+Shift+M` for Mac
+
+**General Instructions**
+
+1. Create a new notebook (copy parts of the YAML header you are interested in keeping) to work on your assignment.
+2. The assignment should be submitted via a shareable github link that points to your notebook (.nb.html) file to me on Slack.
+3. Make sure the notebook is neatly formatted, and that all the charts and tables and look good when you preview it.
+
+**Task**: Explore at least 5 different causes for departure and arrival delays (combined - not 5 each). Its not necessary that you find a definitive answer for what causes a delay, instead I want you to showcase your ability to explore the data with a combination of analytical text, tables and charts. The final output should be something you can show a prospective employer or client as proof of you ability to work with data in R.
+
+
+```{r}
+library(tidyverse); library(nycflights13); library(skimr)
+
+planes
+```
+
+Hypothesis: Larger planes (as measured by seating) are more frequently delayed
+
+Lets take a look at the planes dataset.
+```{r}
+planes
+```
+
+```{r}
+skimr::skim(planes)
+```
+
+
+Lets take a closer look at our explanatory variable.
+```{r}
+ggplot(data = planes, aes(x = seats)) +
+    geom_histogram()
+```
+
+```{r}
+flights
+```
+
+Now lets also look at the dep_delay
+```{r}
+ggplot(data = flights, aes(x = dep_delay)) +
+    geom_histogram()
+```
+This is the dep delay threshold I am interested in values above this. And some reasons why....
+```{r}
+depThreshold <- 20
+```
+
+
+Now lets join the planes data with the flights. I am only interested in rows with both dep delay and seating info. I am also only interested in positive delays.
+```{r}
+seatingData <- inner_join(flights, 
+           planes %>% 
+               rename(yearMfg = year), 
+           by = "tailnum") %>% 
+    filter(dep_delay > depThreshold)
+    
+```
+
+Lets look at a table with some summary stats grouped by seating.
+```{r}
+seatingData %>% 
+    group_by(seats) %>% 
+    ##lets remove groups which have less than 20 obs.
+    filter(n() > 20) %>% 
+    summarise(nObs = n(), 
+              meanDelay = mean(dep_delay, na.rm = T)) %>% 
+    arrange(desc(meanDelay))
+```
+
+This chart is not telling me a compelling story yet.
+```{r}
+seatingData %>% 
+    group_by(seats) %>% 
+    ##lets remove groups which have less than 20 obs.
+    filter(n() > 20) %>% 
+    summarise(nObs = n(), 
+              meanDelay = mean(dep_delay, na.rm = T)) %>% 
+    ggplot(aes(x = seats, y = meanDelay)) +
+    geom_point() +
+    geom_smooth(method = "lm")
+```
+
+
+I would like to maybe work with the raw data instead of summarised.
+
+```{r}
+seatingData %>% 
+    mutate(seatCat = cut_width(seats, width = 100)) %>% 
+    ggplot(aes(x = seatCat, y = dep_delay)) +
+    geom_jitter(aes(colour = origin), alpha = 0.1) +
+    geom_boxplot(alpha = 0.4) +
+    coord_flip() +
+    scale_y_continuous(limits = c(depThreshold, 250))
+```
+

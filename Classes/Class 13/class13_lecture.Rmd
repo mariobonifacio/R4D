@@ -22,3 +22,166 @@ css: /Users/hsubhash/Documents/R4D/Assets/custom.css
 4. Gather columns to convert a wide table to long
 5. Separate a column
 6. Clean the who data (https://www.who.int/tb/country/data/download/en/)
+
+
+##What is tidy data?
+
+```{r}
+library(tidyverse)
+
+table1
+```
+
+```{r}
+table2
+```
+
+```{r}
+table3
+```
+
+
+```{r}
+table5
+```
+
+
+##Spread from long to wide
+
+```{r}
+table2
+```
+
+```{r}
+table2 %>% 
+    spread(key = type, value = count)
+```
+
+```{r}
+table1
+```
+
+
+##lets separate a column into two
+```{r}
+table3 %>% 
+    separate(col = rate, into = c("cases", "population"), sep = "/", convert = T)
+```
+
+##Lets unite a columns and separate another
+
+```{r}
+table5
+```
+
+```{r}
+table5 %>% 
+    unite(col = "year", century, year, sep = "")
+```
+
+I can also use a mutate to do this
+
+```{r}
+table5 %>% 
+    mutate(newYear = paste(century, year, sep = ""))
+```
+
+```{r}
+table5 %>% 
+    unite(col = "year", century, year, sep = "")  %>% 
+    separate(col = rate, into = c("cases", "population"))
+```
+
+
+
+##Lets try again
+
+Lets try to gather multiple columns into a single one.
+
+```{r}
+table1
+```
+
+I want to gather cases and population into a single column and create an untidy tibble.
+```{r}
+table1 %>% 
+    gather(key = "emmasKey", value = "newValue", cases, population)
+```
+
+Another way to specify these columns
+```{r}
+table1 %>% 
+    gather(key = "casePop", value = "value", -country, -year)
+```
+
+```{r}
+table1
+```
+
+
+```{r}
+table1 %>% 
+    gather(key = "casePop", value = "value")
+```
+
+
+```{r}
+table1 %>% 
+    gather(key = "casePop", value = "value", -country)
+```
+
+
+```{r}
+weather
+```
+
+
+```{r}
+weather %>% 
+    select(-origin, -year)
+```
+
+##A spread redux
+
+Spread requires me to specifiy the key column that needs to be spread into a wide format along with the name of the column that contains the corresp values for those keys.
+```{r}
+table2 %>% 
+    spread(key = type, value = count)
+```
+
+```{r}
+table2
+```
+
+
+```{r}
+table1 %>% 
+    spread()
+```
+
+##Lets separate again
+```{r}
+table3
+```
+```{r}
+table3 %>% 
+    bind_rows(., tibble(country = "My Country", year = 2000, rate = "3434/454/23423/32432")) %>% 
+    separate(col = rate, into = c("cases", "population", "newCol"), sep = "/")
+```
+
+
+```{r}
+table3 %>% 
+    separate(col = rate, into = c("cases", "population", "newCol"), sep = "/")
+```
+
+Gather and Spread mirror each other. Gather gathers columns into key value pairs. Spread spreads a key value pairs into new columns.
+
+Separate separates a combined columns into multiple. Unite combines multiple columns into a single column.
+
+
+
+
+
+
+
