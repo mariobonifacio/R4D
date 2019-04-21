@@ -26,7 +26,7 @@ Unpredictable flight delays are a costly problem, forcing travelers to choose be
 
 **GOAL:** My ultimate goal is to be able to best predict a flight's departure delay. In an ideal world, all flights would simply leave on time. In a second-best world, each airline would contact travelers directly with flight delay information that was accurate and timely enough to be actionable. Alas, neither of those are the case and so in the world we live in, my goal is to better predict delay using weather and flight data.
 
-**HYPOTHESIS:** My null hypothesis is that *no* available weather or flight data shares a relationship with flight delay. I'll seek to disprove this.
+**HYPOTHESIS:** My null hypothesis is that *no* available weather, plane, or flight data shares a relationship with flight delay. I'll seek to disprove this.
 
 
 ## Setting up
@@ -34,7 +34,7 @@ Unpredictable flight delays are a costly problem, forcing travelers to choose be
 To set up, I'll do the following:
 
 1. Install and enable the packages that will help explore, manipulate, and analyze the data
-2. Join flight data with corresponding weather data 
+2. Join flight data with corresponding weather and plane data 
 3. Set negative departure delay values equal to zero because flights that leave before their scheduled departure time are not "more" on time than flights that leave at exactly their scheduled time (N.B. I will leave entries with n/a values for )
 
 ```{r}
@@ -45,28 +45,14 @@ To set up, I'll do the following:
 # install.packages('ggthemes')
 # install.packages('DiagrammeR')
 
-# This line enables relevant packages
-library(tidyverse); library(skimr); library(nycflights13); library(lubridate); library(ggthemes); library(DiagrammeR)
+# This line enables packages
+library(tidyverse); library(skimr); library(nycflights13); library(lubridate); library(ggthemes)
 
-DiagrammeR()
-
-
-
-
-
----
-title: "R Notebook"
-output: html_notebook
----
-
-```{r}
-library(nycflights13); library(tidyverse)
-
-### Join flight, plane, and weather data into a data frame of raw data
+### Join flight, plane, and weather data into a single data frame of raw data
 flt_raw <- flights %>%
   mutate(dep_delay = (abs(dep_delay) + dep_delay) / 2) %>%
   left_join(rename(planes,'manuf_year' = year), by = 'tailnum') %>%
-  left_join(weather, by = c('time_hour', 'origin'))
+  left_join(weather, by = c('time_hour', 'origin')) 
 
 
 
@@ -77,28 +63,55 @@ flt_test <- flt_raw %>%
          ,pressure, visib ## 13-14
          ,carrier, origin, dest, type, manufacturer ## cat cols 15-19
          ,model, speed ,engine) %>% ## cat cols 20-22
+  mutate(diff_20h = if_else(sched_dep_time < 2000
+                            ,1960 - sched_dep_time
+                            ,sched_dep_time - 2000)) %>%
   group_by(carrier) %>%
-  mutate(carr_fact = mean(dep_delay, na.rm = T)) %>%
+     mutate(carr_fact = mean(dep_delay, na.rm = T)) %>%
+     ungroup() %>%
   group_by(origin) %>%
-  mutate(ogn_fact = mean(dep_delay, na.rm = T)) %>%
+     mutate(ogn_fact = mean(dep_delay, na.rm = T)) %>%
+     ungroup() %>%
   group_by(dest) %>%
-  mutate(dest_fact = mean(dep_delay, na.rm = T)) %>%
+     mutate(dest_fact = mean(dep_delay, na.rm = T)) %>%
+     ungroup() %>%
   group_by(type) %>%
-  mutate(type_fact = mean(dep_delay, na.rm = T)) %>%
+     mutate(type_fact = mean(dep_delay, na.rm = T)) %>%
+     ungroup() %>%
   group_by(manufacturer) %>%
-  mutate(mnf_fact = mean(dep_delay, na.rm = T)) %>%
+     mutate(mnf_fact = mean(dep_delay, na.rm = T)) %>%
+     ungroup() %>%
   group_by(model) %>%
-  mutate(mdl_fact = mean(dep_delay, na.rm = T)) %>%
+     mutate(mdl_fact = mean(dep_delay, na.rm = T)) %>%
+     ungroup() %>%
   group_by(speed) %>%
-  mutate(spd_fact = mean(dep_delay, na.rm = T)) %>%
+     mutate(spd_fact = mean(dep_delay, na.rm = T)) %>%
+     ungroup() %>%
   group_by(engine) %>%
-  mutate(eng_fact = mean(dep_delay, na.rm = T)) %>%
-  ungroup()
+     mutate(eng_fact = mean(dep_delay, na.rm = T)) %>%
+     ungroup()
+
+cat_facts <- flt_test %>%
+  select(15,23,16,24,17,25,18,26,19,27,20,28,21,29,22,30) %>%
+  unique()
+
+flt_test <- flt_test %>%
+  select(-carrier,-origin,-dest,-type,-manufacturer
+         ,-model,-speed, -engine)
   
-head(flt_test[,23])
+flt <- flt_test %>%
+  select(dep_delay, diff_20h, humid, pressure, carr_fact, mdl_fact, sched_dep_time)
 
 
 
+ggplot(data = flt, mapping = aes(x = diff_20h, y = dep_delay, colour = sched_dep_time)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+ggplot(data = flt, mapping = aes(x = humid, y = dep_delay)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  theme_economist_white()
 
 ```
 
@@ -108,17 +121,6 @@ cat_facts
 
 str(cat_facts)
 
-mean_cat <- function(CAT_COL, new_col_name) {group_by(flt_test, flt_test[,CAT_COL]) 
-  cat_facts <- rbind(cat_facts, cbind(cat = colnames(flt_test[,CAT_COL]), sub_cat = flt_test[,CAT_COL]
-            ,fact = flt_test %>%
-               select(dep_delay, flt_test[,CAT_COL]) %>%
-               group_by(flt_test[,CAT_COL]) %>%
-               mutate(temp = mean(dep_delay, na.rm = T)) %>%
-               ungroup() %>%
-               select(temp)))
-  flt_test[,CAT_COL] <- mean(dep_delay, na.rm = T)
-  colnames(flt_test[,CAT_COL]) <- new_col_name
-  ungroup(flt_test)}
 
 
 
