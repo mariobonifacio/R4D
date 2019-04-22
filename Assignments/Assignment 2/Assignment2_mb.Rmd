@@ -9,22 +9,24 @@ output:
     highlight: kate
     smart: yes
     theme: paper
-    toc: yes
+    toc: no
   html_document:
-    toc: yes
+    toc: no
 ---
 
 # {.tabset .tabset-fade .tabset-pills}
 
 ## Abstract 
 
-Unpredictable flight delays are a costly problem, forcing travelers to choose between spending extra time at the airport and missing a flight. In 2013, flights from the three New York area airports alone saw aggregate delays of half a million minutes. I explore the predictive capacity with respect to departure delay of five variables that are forecasted ahead of time and publicly available. Of those five variables -- scheduled departure time, humidity, atmomspheric pressure, the effect associated with each carrier, and dewpoint -- it's scheduled departure time that is most closely associated with
+
+
+Unpredictable flight delays a re a costly problem, forcing travelers to choose between spending extra time at the airport and missing a flight. In 2013, flights from the three New York area airports alone saw aggregate delays of half a million minutes. I explore the predictive capacity with respect to departure delay of five variables -- **scheduled departure time**, **humidity**, **atmomspheric pressure**, **the mean delay associated with each carrier**, and **the mean delay associated with each carrier** -- that are forecasted ahead of time and publicly available. Of those five variables, it's **scheduled departure time** that is most closely associated with mean delay.
 
 ## Background
 
-**PROBLEM:** Here, the problem is that flight delays are unpredictable. Not only that, mis-timing your ride to the airport could be costly; Arrive late and you may miss your flight altogether, but arrive early and you'll spend even more uncomfortable, unproductive time at the gate.
+**PROBLEM:** Here, the problem is that flight delays are unpredictable. Not only that, mis-timing your ride to the airport could be costly; Arrive late and you may miss your flight altogether, but arrive early and you'll spend even more uncomfortable, unproductive time at the gate. In an ideal world, all flights would simply leave on time. In a second-best world, each airline would contact travelers directly with flight delay information that was accurate and timely enough to be actionable. Alas, neither of those are the case.
 
-**GOAL:** My ultimate goal is to be able to best predict a flight's departure delay. In an ideal world, all flights would simply leave on time. In a second-best world, each airline would contact travelers directly with flight delay information that was accurate and timely enough to be actionable. Alas, neither of those are the case and so in the world we live in, my goal is to better predict delay using weather and flight data.
+**GOAL:** My ultimate goal is to be able to best predict a flight's departure delay using weather, plane, and flight data.
 
 **HYPOTHESIS:** My null hypothesis is that *no* available weather, plane, or flight data shares a relationship with flight delay. I'll seek to disprove this.
 
@@ -33,28 +35,36 @@ Unpredictable flight delays are a costly problem, forcing travelers to choose be
 
 To set up, I'll do the following:
 
-1. Install and enable the packages that will help explore, manipulate, and analyze the data
-2. Join flight data with corresponding weather and plane data 
-3. Set negative departure delay values equal to zero because flights that leave before their scheduled departure time are not "more" on time than flights that leave at exactly their scheduled time (N.B. I will leave entries with n/a values for )
+1. Combine flight data with data on the planes used for each flight
+2. Clean and adapt the data both so that it makes sense logically; This will include:
+    a. Set negative departure delay values equal to zero^1^
+    b. Replacing categorical data -- such as the name of an airline -- with an "object effect" that estimates the delay associated with any object compared to other objects in that category
+3. Prepare an appendix of metadata, including:
+    a. A data dictionary
+    b. A data lineage diagram
+
 
 ```{r}
+### On the code side, I'll do the following:
+
+# 1. Install and enable R packages to explore, manipulate, and analyze the data
+# 2. Use common fields to join flight table w/weather and plane tables
+# 3. Select columns to be removed
+# 4. Mutate some columns so they're more useful. In particular, I group categorical variables and take a mean
+# 5.
+
 ### Install packages, as needed 
-# install.packages('tidyverse') 
-# install.packages('skimr') 
-# install.package('lubridate')
-# install.packages('ggthemes')
-# install.packages('DiagrammeR')
+# install.packages('tidyverse'); install.packages('skimr'); install.package('lubridate');
+# install.packages('ggthemes'); install.packages('DiagrammeR')
 
 # This line enables packages
-library(tidyverse); library(skimr); library(nycflights13); library(lubridate); library(ggthemes)
+library(tidyverse); library(skimr); library(nycflights13); library(lubridate); library(ggthemes); library(DiagrammeR)
 
-### Join flight, plane, and weather data into a single data frame of raw data
+### Join flight, plane, and weather data into a single data frame of raw data to work with
 flt_raw <- flights %>%
   mutate(dep_delay = (abs(dep_delay) + dep_delay) / 2) %>%
-  left_join(rename(planes,'manuf_year' = year), by = 'tailnum') %>%
-  left_join(weather, by = c('time_hour', 'origin')) 
-
-
+  left_join(rename(planes,'manuf_year' = year), by = 'tailnum') %>% ## I rename plane manufacture year from 'year' to 'manuf_year' to not confuse it with flight year
+  left_join(weather, by = c('time_hour', 'origin'))
 
 ### Remove irrelevant columns and transform categorical data into numbers
 flt_test <- flt_raw %>%
@@ -91,18 +101,19 @@ flt_test <- flt_raw %>%
      mutate(eng_fact = mean(dep_delay, na.rm = T)) %>%
      ungroup()
 
+### This code creates a separate data frame which links categorical variables to their relative means
 cat_facts <- flt_test %>%
   select(15,23,16,24,17,25,18,26,19,27,20,28,21,29,22,30) %>%
   unique()
 
+### This code removes the original categorical variables from the data frame; Can reference cat_facts if needed
 flt_test <- flt_test %>%
   select(-carrier,-origin,-dest,-type,-manufacturer
          ,-model,-speed, -engine)
-  
+
+### This creates a skinny data frame
 flt <- flt_test %>%
   select(dep_delay, diff_20h, humid, pressure, carr_fact, mdl_fact, sched_dep_time)
-
-
 
 ggplot(data = flt, mapping = aes(x = diff_20h, y = dep_delay, colour = sched_dep_time)) +
   geom_point() +
@@ -111,37 +122,13 @@ ggplot(data = flt, mapping = aes(x = diff_20h, y = dep_delay, colour = sched_dep
 ggplot(data = flt, mapping = aes(x = humid, y = dep_delay)) +
   geom_point() +
   geom_smooth(method = "lm") +
-  theme_economist_white()
+  theme_economist_white() +
+  geom_jitter()
+  
 
 ```
 
-
-```{r}
-cat_facts
-
-str(cat_facts)
-
-
-
-
-
-
-
-```
-
-```{r}
-
-```
-
-
-
-### This joins flight and weather data, storing it in the new data frame we'll work with
-flt_wx_raw <- flights %>%
-  left_join(weather,by = c('origin','time_hour')) %>%
-  mutate(dep_delay = (abs(dep_delay) + dep_delay) / 2) ## Here, I'm zeroing out negative delays
-
-flt_wx_raw
-```
+^1^ A flight that leaves early should not be considered "more on time" than a flight that leaves at it's scheduled time. However, a negative value affects averages as though it *is* more on time. To better intuit this, suppose an airline has one flight that leaves 30 minutes early and another that leaves 30 minutes late. On paper it would appear that a traveler need not worry about delays when flying on this airline, but this is not the case. Because of that, I chose to zero out negative departure delay values.
 
 ## Univariate analysis
 
@@ -524,6 +511,5 @@ lm(formula = dep_delay ~ diff_20hr, data = flt_wx)
 
 1. Covariance
 2. Linear model multiple
-
 
 
