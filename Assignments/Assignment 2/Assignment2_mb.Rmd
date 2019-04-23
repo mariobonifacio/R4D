@@ -18,8 +18,6 @@ output:
 
 ## Abstract 
 
-
-
 Unpredictable flight delays a re a costly problem, forcing travelers to choose between spending extra time at the airport and missing a flight. In 2013, flights from the three New York area airports alone saw aggregate delays of half a million minutes. I explore the predictive capacity with respect to departure delay of five variables -- **scheduled departure time**, **humidity**, **atmomspheric pressure**, **the mean delay associated with each carrier**, and **the mean delay associated with each carrier** -- that are forecasted ahead of time and publicly available. Of those five variables, it's **scheduled departure time** that is most closely associated with mean delay.
 
 ## Background
@@ -192,7 +190,61 @@ Doing this will expose:
 **DESCRIPTIVE STATS OF THE DEPENDENT VARIABLE:** 
 
 ```{r}
-skim(flt_wx_raw)
+flights %>%
+  select(dep_delay) %>%
+  mutate(#
+
+    
+str(flights$dep_delay)
+#
+sum(is.na(flights$dep_delay) == T)
+# NA      = 8
+# max_0hr = 200
+# max_1hr = 102
+# min1_hr = 27
+
+tibble(cat = c('na','max_0hr','max_1hr','min_1hr'), cnt = c(8, 200, 102, 27))
+
+27/(8+200+102+27)
+
+
+
+flights %>%
+  select(dep_delay) %>%
+  filter(is.na(dep_delay) == F) %>%
+  mutate(dep_delay = (dep_delay+abs(dep_delay))/2) %>%
+  group_by(is.na(dep_delay)) %>%
+  summarise(del_50qile = quantile(dep_delay,probs = 0.50)
+         ,del_75qile = quantile(dep_delay,probs = 0.75)
+         ,del_90qile = quantile(dep_delay,probs = 0.90)
+         ,del_95qile = quantile(dep_delay,probs = 0.95)
+         ,del_99qile = quantile(dep_delay,probs = 0.99)
+         ,) %>%
+  select(2:6)
+
+flights %>%
+  
+#
+#
+#
+
+                 
+           )
+  
+  arrange(desc(ct_delay)) 
+
+     
+##
+          ,mean_del   = mean(dep_delay,na.rm = T)         
+     ,stdev_del  = sd(dep_delay,na.rm = T)
+     ,min_del    = min(dep_delay,na.rm = T)
+     ,del_25qile = quantile(dep_delay,probs = 0.25,na.rm = T)
+     ,mdn_del    = median(dep_delay,na.rm = T)
+     ,del_75qile = quantile(dep_delay,probs = 0.75,na.rm = T)
+     ,max_del    = max(dep_delay, na.rm = T)) %>%
+    round(2)
+
+
 ```
 The following fields are either unlikely to be related to departure delay or duplicative of another, superior field in the data set
 
