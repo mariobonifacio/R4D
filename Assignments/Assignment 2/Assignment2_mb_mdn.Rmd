@@ -193,9 +193,23 @@ Doing this will expose:
 **DESCRIPTIVE STATS OF THE DEPENDENT VARIABLE:** 
 
 ```{r}
-flights %>%
+flights %>% ##
   select(dep_delay) %>%
-  mutate(#
+  mutate(dep_delay = (dep_delay+abs(dep_delay))/2) %>%
+  group_by(dep_delay) %>%
+  summarise(ct = length(dep_delay)) %>%
+  ggplot(mapping = aes(x=dep_delay,y=log(ct))) +
+  geom_line()
+
+
+
+  quantile(dep_delay,probs = .1)
+
+mutate(dep_delay = (dep_delay+abs(dep_delay))/2) %>%
+  group_by(dep_delay>0) %>%
+  summarise(nobs = length(dep_delay)
+            ,p = nobs/sum(!is.na(flights$dep_delay)))
+
 
     
 str(flights$dep_delay)
@@ -215,37 +229,23 @@ tibble(cat = c('na','max_0hr','max_1hr','min_1hr'), cnt = c(8, 200, 102, 27))
 flights %>%
   select(dep_delay) %>%
   filter(is.na(dep_delay) == F) %>%
-  mutate(dep_delay = (dep_delay+abs(dep_delay))/2) %>%
-  group_by(is.na(dep_delay)) %>%
-  summarise(del_50qile = quantile(dep_delay,probs = 0.50)
-         ,del_75qile = quantile(dep_delay,probs = 0.75)
-         ,del_90qile = quantile(dep_delay,probs = 0.90)
-         ,del_95qile = quantile(dep_delay,probs = 0.95)
-         ,del_99qile = quantile(dep_delay,probs = 0.99)
-         ,) %>%
-  select(2:6)
+  mutate(pos_dep_delay = dep_delay>0) %>%
+  group_by(pos_dep_delay) %>%
+  summarise(ct =length(pos_dep_delay), p_base = length(pos_dep_delay) / length(!is.na(flights$dep_delay))) %>%
+  ggplot(aes(pos_dep_delay,p_base)) +
+  geom_col()
 
 flights %>%
-  
-#
-#
-#
+  mutate(dep_delay = (dep_delay+abs(dep_delay))/2) %>%
+  ggplot(aes(dep_delay, is.na=T)) +
+  geom_density()
 
-                 
-           )
+
   
-  arrange(desc(ct_delay)) 
+
 
      
-##
-          ,mean_del   = mean(dep_delay,na.rm = T)         
-     ,stdev_del  = sd(dep_delay,na.rm = T)
-     ,min_del    = min(dep_delay,na.rm = T)
-     ,del_25qile = quantile(dep_delay,probs = 0.25,na.rm = T)
-     ,mdn_del    = median(dep_delay,na.rm = T)
-     ,del_75qile = quantile(dep_delay,probs = 0.75,na.rm = T)
-     ,max_del    = max(dep_delay, na.rm = T)) %>%
-    round(2)
+
 
 
 ```
@@ -281,10 +281,8 @@ flt_wx_raw %>%
   filter(is.na(dep_delay) == F) %>%
   mutate(na_gust = if_else(is.na(wind_gust), 0, 1)) %>% 
   group_by(na_gust) %>% 
-  summarise(mean_del = mean(dep_delay,na.rm = T) 
+  summarise(p_del = sum(dep_delay > 0)/length(dep_delay) 
      ,n_del     = length(dep_delay)
-     ,mean_del   = mean(dep_delay,na.rm = T)         
-     ,stdev_del  = sd(dep_delay,na.rm = T)
      ,min_del    = min(dep_delay,na.rm = T)
      ,del_25qile = quantile(dep_delay,probs = 0.25,na.rm = T)
      ,mdn_del    = median(dep_delay,na.rm = T)
@@ -308,18 +306,22 @@ These look similar enough to work with. To verify with numbers, I would do a z-t
 
 Now to filter out the unused fields and transform other fields:
 ```{r}
+library(nycflights13)
+
 flt_wx_cln <- flt_wx_raw %>%
   group_by(carrier) %>%
-  mutate(carr_delay = mean(dep_delay,na.rm = T) - mean(flights$dep_delay,na.rm = T) ## Creating the carrier effect
+  mutate(p_carr = sum(dep_delay > 0) / sum(!is.na(dep_delay)) - 0.39094 ## Creating the carrier effect
          ,is_wkend   = if_else(wday(as.Date(time_hour)) == 1
             | wday(as.Date(time_hour)) == 7,1,0) ## Creating categorical variable for weekend-ness
          ,diff_20hr  = if_else(sched_dep_time < 2000, 1960 - sched_dep_time, sched_dep_time - 2000) ## Transforming time variable by difference from 8 p.m.
          ,diff_7mo   = abs(month.x-7)) %>%  ## Transforming month variable by difference from July
   ungroup() %>%
   group_by(origin) %>%
-  mutate(ogn_delay = mean(dep_delay,na.rm = T) - mean(flights$dep_delay, na.rm = T)) %>% ## Deriving origin effect
+  mutate(p_ogn = sum(dep_delay > 0) / sum(!is.na(dep_delay)) - 0.39094) %>% ## Deriving origin effect
   ungroup() %>%
-  select(dep_delay, temp:ogn_delay)
+  select(dep_delay, temp:p_ogn)
+
+
 
 skim(flt_wx_cln)
 ```

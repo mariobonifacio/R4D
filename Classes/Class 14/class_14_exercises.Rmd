@@ -1,0 +1,57 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Tidying data, class 14
+
+```{r}
+library(tidyverse);library(gapminder)
+
+### gap_wide
+
+gap_wide <- read_csv('gapminder_wide.csv')
+
+str(gap_wide)
+
+head(gap_wide)
+
+my_gapminder <- gap_wide %>%
+  gather(key = 'stat_year', value = 'my_value', -continent, -country) %>%
+  separate(col = stat_year, into = c('stat','year'), sep = '_' ) %>%
+  spread(key = 'stat', value = my_value) %>%
+  arrange(country,year) %>%
+  select(names(gapminder))
+
+identical(str(gapminder),str(my_gapminder)) # TRUE
+
+identical(gapminder,my_gapminder)
+
+identical(gapminder$country,my_gapminder$country)
+
+for (i in 1:6) print(identical(gapminder[,i],my_gapminder[,i]))
+
+
+identical(gapminder[,1],my_gapminder[,1])
+
+(gapminder[,1])
+
+my_gapminder %>%
+labels(country)
+
+for(i in 1:5) print(1:i)
+```
+
+
+```{r}
+### gap_base
+
+head(gapminder)
+str(gapminder)
+
+gapminder$country %>%
+levels()
+
+
+```
+
