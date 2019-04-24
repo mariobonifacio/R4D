@@ -21,7 +21,7 @@ css: /Users/hsubhash/Documents/R4D/Assets/custom.css
 3. Spread columns to convert a long table to wide
 4. Gather columns to convert a wide table to long
 5. Separate a column
-6. Clean the who data (https://www.who.int/tb/country/data/download/en/)
+
 
 
 ##What is tidy data?

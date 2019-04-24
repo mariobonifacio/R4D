@@ -1,0 +1,145 @@
+---
+title: "Class 14 - In class exercises"
+author: Hari Subhash
+date: "Date created: `r Sys.Date()`"
+output:
+  html_notebook:
+    highlight: haddock
+    smart: yes
+    theme: readable
+    df_print: paged
+---
+
+##Task Set 1: Load and compare
+1. Load the messy gapminder data using `read_csv()`. If you saved the data inside a data folder that is in the same folder as this notebook the path would be: "data/gapminder_wide.csv".
+
+2. Use `head()` to print out the first 10 rows (you will need to set the n argument within the function to 10 to change it from the default of 6)
+
+3. Compare the output above with the `gapminder` data from the gapminder package.
+```{r}
+gapminder::gapminder
+```
+
+4. What are some issues with the wide version of the data (from the perspective of tidyness)
+
+
+##Task Set 2: Plan
+1. Discuss and list the issues with this data within your group (from the perspective of tidyness)
+
+2. Write down the steps you will take to clean this data up (in terms of `tidyr` functions). So for instance: "I will gather xyz columns, then separate a_b_c...."
+
+##Task Set 3: Clean
+1. Load and clean the untidy gapminder data.
+Here is my implementation for this.
+```{r, message=FALSE}
+library(tidyverse); library(gapminder)
+gapminderWide <- read_csv("assets/gapminder_wide.csv")
+
+gapminderWide
+```
+
+It looks like all the columns are encoding a particularly statistic and the year. Lets gather those into a combo column.
+```{r}
+gapminderWide <- gapminderWide %>% 
+    gather(key = "combo", value = "value", -continent, -country)
+
+gapminderWide
+```
+
+Next step we need to split the combo into year and variable.
+```{r}
+gapminderWide <- gapminderWide %>% 
+    separate(col = combo, into = c("variable", "year"), sep = "_")
+
+gapminderWide
+```
+
+Now the last task is to spread the variables into a column.
+```{r}
+gapminderWide <- gapminderWide %>% 
+    spread(key = variable, value = value)
+
+gapminderWide
+```
+
+Lets compare the output with the actual gapminder data.
+```{r}
+gapminder
+```
+
+The order of columns is not the same across the two tibbles. Lets fix that by reordering the gap_wide data by the names of the actual gapminder data.
+
+```{r}
+gapminderWide <- gapminderWide %>% 
+    select(names(gapminder))
+
+gapminderWide
+```
+
+Bonus task for everyone make the column types also match.
+
+##Task Set 4: Non vectorised conditional
+1. Correct the code below so that it runs.
+```{r}
+animal <- sample(c("Birds", "Fish"), size = 1)
+
+if(animal = "Fish"){
+    print("I can swim")
+} else {
+    print("I can't swim")
+}
+```
+2. Modify the code above to check if an animal is a "Bird" and print whether it can fly or not.
+
+3. Print "yes" if there are `any()` values greater than 4 in the vector x below.
+```{r}
+x <- c(3, 6, 7, 8, NA)
+
+```
+4. Modify the code you wrote for task 3 to check if there are any values greater than 8. This will likely throw an error. See the documentation for `any()` to see how ot address this
+
+##Task Set 5: Vectorized
+1. Use an `if_else()` statement to create a character vector that indicates whether a given value in x is missing. It should be marked "missing" if a value is missing and "not missing" otherwise. You can tell if an element in a vector is missing using the function `is.na()`
+
+```{r}
+x <- c(3, 6, 7, 8, NA)
+```
+
+2. Load the gapminder package
+
+3. Use the `if_else()` in a `mutate()` to add a new column to the gapminder data that indicates whether the year is greater than 2000.
+
+4. Complete the following code to create a new variable called incomeGroup that cuts the `gdpPercap` variable based on the median value of the `gdpPercap` every year. The final variable should have 4 levels - Low income, low middle income, high middle income and high income. I have complete one of the levels for you in the code. Complete the rest.
+```{r}
+gapminder %>% 
+    group_by(year) %>% 
+    mutate(incomeGroups = case_when(
+        gdpPercap < 0.5 * median(gdpPercap) ~ "Low income",
+    )) %>% 
+    ggplot(aes(x = as.factor(year), y = lifeExp)) +
+    geom_boxplot() +
+    facet_wrap(~incomeGroups)
+```
+
+
+4. Complete the code below. For every year I would like to mark the `incomeGroup` variable as "Above" if it is above the median `gdpPercap` for that year (global median). The subsequent plot explores the relationship between `incomeGroup` and the `lifeExp`
+```{r, fig.width = 9}
+library(gapminder); library(ggthemes)
+gapminder %>% 
+    group_by() %>% 
+    mutate(incomeGroup = if_else()) %>% 
+    ggplot(aes(x = as.factor(year), y = lifeExp, colour = incomeGroup)) +
+    geom_boxplot(outlier.shape = NA) +
+    labs(title = str_wrap("Over time life expectancy in high income countries have converged while those in low income countries have diverged", width = 70),
+         y = "Life Expectancy",
+         colour = "Income Group") +
+    theme_tufte() +
+    theme(
+        legend.position = "bottom",
+        axis.title.x = element_blank()
+    )
+    
+    
+```
+
+

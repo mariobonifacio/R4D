@@ -9,6 +9,28 @@ output:
     theme: readable
     df_print: paged
 ---
+```{r}
+library(nycflights13)
+
+#Setting up weathered flights
+weatheredFlights <- flights %>% 
+  select(origin, time_hour, dep_delay) %>% 
+  left_join(weather, by = c("origin", "time_hour")) 
+
+#Let's explore how precip and temp relate to delay
+weatheredFlights %>% 
+  filter(dep_delay > 0 & !is.na(dep_delay)) %>% 
+  mutate(tempGroup = cut_interval(temp, length = 10, na.rm = T)) %>%
+  #mutate(tempGroup = cut(temp, seq(from = min(temp, na.rm = T), to = max(temp, na.rm = T), 10))) %>% # A more roundabout alternative code
+  mutate(precipGroup = cut_interval(precip, length = 0.3, na.rm = T)) %>%   
+  group_by(precip, tempGroup) %>% 
+  summarise(meanDelay = mean(dep_delay, na.rm = T),
+            nObs = n()) %>% 
+  ggplot(aes(precip, nObs))+
+  geom_point() +
+    geom_smooth(method = "lm") +
+    facet_wrap(~tempGroup, scales = "free_x")
+```
 
 #Instructions {.tabset .tabset-fade}
 This notebook contains practice material. The aim is to get you to revise and practice some of the concepts that we have learnt so far.
@@ -18,7 +40,7 @@ This notebook contains practice material. The aim is to get you to revise and pr
 While we have used the `dplyr` package to extract rows and columns from tibbles, it is useful to keep the base R syntax for this handy. I will use the `gapminder` dataset for this section. Lets load it along with the tidyverse. Lets use the `skim()` function from `skimr` to look at the gapminder data before we go further.
 
 ```{r, message=FALSE}
-library(gapminder); library(tidyverse); library(magrittr)
+library(gapminder); library(tidyverse)
 skimr::skim(gapminder)
 ```
 
@@ -340,7 +362,37 @@ Notice how I have to use the assignment operator to reassign the value of gapSma
 **Task 2**: Do the same thing with `dplyr` syntax.
 
 ##Summarise
-Coming soon
+When given a dataset we want to be able to have a feel for all the variables within it. What are their typical ranges? What is their central tendency (fancy word for mean/median/mode)? If given a value for one of the variables how expected or unexpected is it given its range and measures of central tendency.
+
+All these key statistics can be arrived at by summarising the data. The `skim()` function from the `skimr` package is a handy tool for giving us a quick snapshot of the data.
+```{r}
+skimr::skim(gapminder)
+```
+
+When looking at data there are two broad classifications to be immediately aware of. Which are the continous variables and which are the discrete ones? Discrete variables are those that can only take a fixed and finite set of values.
+
+**TASK 1**: There are three discrete variables in the gapminder data. Name them.
+
+Let's start with looking at the discrete variable country first. Let's say we would like to summarise the number of years of data available for each country in the data. We can do it using the `count()` function from `dplyr`.
+```{r}
+gapminder %>% 
+    count(country)
+```
+The count function takes counts the number of occcurences for each value of its input. The output above shows that each country in the dataset has 12 observations each i.e. each of them appear 12 times in the data.
+
+Another quick way to summarise a discrete variable is using a bar plot that shows the count for each distinct value within it. Lets use to study the number of observations for each continent in the data.
+```{r}
+ggplot(data = gapminder, mapping = aes(x = continent)) +
+    geom_bar()
+```
+
+
+
+
+
+
+
+
 
 ##Group
 Coming soon
