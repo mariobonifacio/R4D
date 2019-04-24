@@ -49,18 +49,21 @@ To set up, I'll do the following:
 # 3. Select columns to be removed
 # 4. Mutate some columns so they're more useful. Specifically, I group categorical variables and estimate a conditional probability using observed delay data
 
-### Install packages, as needed 
+### 1. Install packages, as needed 
 # install.packages('tidyverse'); install.packages('skimr'); install.package('lubridate');
 # install.packages('ggthemes'); install.packages('DiagrammeR')
 
-# This line enables packages
+# This line enable packages
 library(tidyverse); library(skimr); library(nycflights13); library(lubridate); library(ggthemes); library(DiagrammeR)
-
-### Join flight, plane, and weather data into a single data frame of raw data to work with
+```
+```{r}
+### 2. Join flight, plane, and weather data into a single data frame of raw data to work with
 flt_raw <- flights %>%
   left_join(rename(planes,'manuf_year' = year), by = 'tailnum') %>% ## Rename plane manufacture year from 'year' to 'manuf_year' to not confuse it with flight year
   left_join(weather, by = c('time_hour', 'origin'))
+```
 
+```{r}
 ### Here, I'll calculate the baseline probability of delay
 op_base <- flt_raw %>%
   filter(!is.na(dep_delay) == T) %>%
@@ -70,6 +73,10 @@ op_base <- flt_raw %>%
   select(2) %>%
   as.numeric()
 
+# I'll use this to normalize individual category probabilities
+```
+
+```{r}
 ### Remove irrelevant columns and transform categorical data into numbers
 flt_test <- flt_raw %>%
   filter(!is.na(dep_delay) == T) %>%
@@ -103,26 +110,39 @@ flt_test <- flt_raw %>%
   group_by(engine) %>%
      mutate(op_eng = sum(dep_delay>0) / length(dep_delay) - op_base) %>%
      ungroup()
+```
 
-unique(planes$speed)
-
+```{r}
 ### This code creates a separate data frame which links categorical variables to their relative probs
 cat_facts <- flt_test %>%
-  select(15,23,16,24,17,25,18,26,19,27,20,28,21,29,22,30) %>%
+  select(15:21,23:29) %>%
   unique()
 
-### This code removes the original categorical variables from the data frame; Can reference cat_facts if needed
+## Now, I'll gather and do a little clean-up
+
+cat_facts <- cat_facts %>%
+  gather(key = 'cat', value = 'obj', carrier, origin, type, manufacturer, model, speed, engine) %>%
+  rename(carrier = op_carr
+         ,origin = op_ogn
+         ,type = op_type
+         ,manufacturer = op_mnf
+         ,model = op_mdl
+         ,speed = op_spd
+         ,engine = op_eng) %>%
+  gather(key = 'trans', value = 'facts', 1:7) %>%
+  filter(cat == trans) %>%
+  select(-trans) %>%
+  unique() %>%
+  arrange(cat,desc(facts))
+
+cat_facts
+```  
+  
+```{r}
+### This code removes the original categorical variables for an even skinnier data frame; Can reference cat_facts if needed
 flt_test <- flt_test %>%
   select(-carrier,-origin,-dest,-type,-manufacturer
          ,-model,-speed, -engine)
-
-### This creates a skinny data frame with just the most relevant data
-flt <- flt_test %>%
-  select(dep_delay, diff_20h, humid, pressure, op_carr, op_mdl, sched_dep_time)
-
-
-  
-
 ```
 
 ^1^ A negative departure delay value would decrease a category mean as though it *is* more on time.  A flight that leaves early should not be considered "more on time" than a flight that leaves at it's scheduled time. To better intuit this, suppose an airline has one flight that leaves 30 minutes early and another that leaves 30 minutes late. On paper it would appear that a traveler need not worry about delays when flying on this airline, but this is not the case. Because of that, I chose to zero out negative departure delay values.
