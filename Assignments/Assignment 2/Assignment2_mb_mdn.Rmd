@@ -129,7 +129,7 @@ ggplot(data = flt, mapping = aes(x = humid, y = dep_delay)) +
 
 ```
 
-^1^ A flight that leaves early should not be considered "more on time" than a flight that leaves at it's scheduled time. However, a negative value affects averages as though it *is* more on time. To better intuit this, suppose an airline has one flight that leaves 30 minutes early and another that leaves 30 minutes late. On paper it would appear that a traveler need not worry about delays when flying on this airline, but this is not the case. Because of that, I chose to zero out negative departure delay values.
+^1^ A negative departure delay value would decrease a category mean as though it *is* more on time.  A flight that leaves early should not be considered "more on time" than a flight that leaves at it's scheduled time. To better intuit this, suppose an airline has one flight that leaves 30 minutes early and another that leaves 30 minutes late. On paper it would appear that a traveler need not worry about delays when flying on this airline, but this is not the case. Because of that, I chose to zero out negative departure delay values.
 
 ## Univariate analysis
 
