@@ -18,25 +18,24 @@ output:
 
 ## Abstract 
 
-Unpredictable flight delays a re a costly problem, forcing travelers to choose between spending extra time at the airport and missing a flight. In 2013, flights from the three New York area airports alone saw aggregate delays of half a million minutes. I explore the predictive capacity with respect to departure delay of five variables -- **scheduled departure time**, **humidity**, **atmomspheric pressure**, **the mean delay associated with each carrier**, and **the mean delay associated with each carrier** -- that are forecasted ahead of time and publicly available. Of those five variables, it's **scheduled departure time** that is most closely associated with mean delay.
+Unpredictable flight delays are a costly problem, forcing travelers to choose between spending unproductive time at the airport and missing a flight. In 2013, flights from the three New York area airports alone saw aggregate delays of half a million minutes. I explore the predictive capacity with respect to departure delay of five variables -- **scheduled departure time**, **humidity**, **atmomspheric pressure**, **the mean delay associated with each carrier**, and **the mean delay associated with each carrier**. Notably all five of these variables are forecasted ahead of time and made publicly available. Of those five variables, it's **scheduled departure time** that is most closely associated with delay.
 
 ## Background
 
 **PROBLEM:** Here, the problem is that flight delays are unpredictable. Not only that, mis-timing your ride to the airport could be costly; Arrive late and you may miss your flight altogether, but arrive early and you'll spend even more uncomfortable, unproductive time at the gate. In an ideal world, all flights would simply leave on time. In a second-best world, each airline would contact travelers directly with flight delay information that was accurate and timely enough to be actionable. Alas, neither of those are the case.
 
-**GOAL:** My ultimate goal is to be able to best predict a flight's departure delay using weather, plane, and flight data.
+**GOAL:** My ultimate goal is to be able to best predict whether a flight will be delayed using weather, plane, and flight data.
 
 **HYPOTHESIS:** My null hypothesis is that *no* available weather, plane, or flight data shares a relationship with flight delay. I'll seek to disprove this.
-
 
 ## Setting up
 
 To set up, I'll do the following:
 
-1. Combine flight data with data on the planes used for each flight and the weather contemporaneous to each flight
-2. Clean and adapt the data both so that it makes sense logically; This will include:
-    a. Set negative departure delay values equal to zero^1^
-    b. Replacing categorical data -- such as the name of an airline -- with an "object effect" that estimates the delay associated with any object compared to other objects in that category
+1. Link flight data with data to the planes flown and the weather contemporaneous to each flight
+2. Clean and adapt the data both so that it makes sense logically and is testable; This will include:
+    a. Setting negative departure delay values equal to zero^1^
+    b. Replacing categorical data -- such as the name of an airline -- with an "object effect" that estimates the added chance for delay associated with any object
 3. Prepare an appendix of metadata, including:
     a. A data dictionary
     b. A data lineage diagram
@@ -59,50 +58,55 @@ library(tidyverse); library(skimr); library(nycflights13); library(lubridate); l
 
 ### Join flight, plane, and weather data into a single data frame of raw data to work with
 flt_raw <- flights %>%
-  mutate(dep_delay = (abs(dep_delay) + dep_delay) / 2) %>%
-  left_join(rename(planes,'manuf_year' = year), by = 'tailnum') %>% ## I rename plane manufacture year from 'year' to 'manuf_year' to not confuse it with flight year
+  left_join(rename(planes,'manuf_year' = year), by = 'tailnum') %>% ## Rename plane manufacture year from 'year' to 'manuf_year' to not confuse it with flight year
   left_join(weather, by = c('time_hour', 'origin'))
 
-str(flights)
+### Here, I'll calculate the baseline probability of delay
+op_base <- flt_raw %>%
+  filter(!is.na(dep_delay) == T) %>%
+  group_by(dep_delay > 0) %>%
+  summarise(p = length(dep_delay)/ sum(!is.na(flights$dep_delay) == T) ) %>%
+  filter(p<.5) %>%
+  select(2) %>%
+  as.numeric()
 
 ### Remove irrelevant columns and transform categorical data into numbers
 flt_test <- flt_raw %>%
+  filter(!is.na(dep_delay) == T) %>%
   select(dep_delay, sched_dep_time, distance, manuf_year, engines ## 1-5
          ,seats, temp, dewp, humid, wind_speed,wind_gust, precip ## 6-12
-         ,pressure, visib ## 13-14
-         ,carrier, origin, dest, type, manufacturer ## cat cols 15-19
+         ,pressure, visib, distance ## 13-15
+         ,carrier, origin, type, manufacturer ## cat cols 16-19
          ,model, speed ,engine) %>% ## cat cols 20-22
   mutate(diff_20h = if_else(sched_dep_time < 2000
                             ,1960 - sched_dep_time
-                            ,sched_dep_time - 2000)) %>%
+                            ,sched_dep_time - 2000)
+                            ,dep_delay = if_else(dep_delay > 0, 1, 0)) %>%
   group_by(carrier) %>%
-     mutate(op_carr = mean(dep_delay, na.rm = T)) %>%
+     mutate(op_carr = sum(dep_delay>0) / length(dep_delay) - op_base) %>%
      ungroup() %>%
   group_by(origin) %>%
-     mutate(op_ogn = mean(dep_delay, na.rm = T)) %>%
-     ungroup() %>%
-  group_by(dest) %>%
-     mutate(op_dest = mean(dep_delay, na.rm = T)) %>%
+     mutate(op_ogn = sum(dep_delay>0) / length(dep_delay) - op_base) %>%
      ungroup() %>%
   group_by(type) %>%
-     mutate(op_type = mean(dep_delay, na.rm = T)) %>%
+     mutate(op_type = sum(dep_delay>0) / length(dep_delay) - op_base) %>%
      ungroup() %>%
   group_by(manufacturer) %>%
-     mutate(op_mnf = mean(dep_delay, na.rm = T)) %>%
+     mutate(op_mnf = sum(dep_delay>0) / length(dep_delay) - op_base) %>%
      ungroup() %>%
   group_by(model) %>%
-     mutate(op_mdl = mean(dep_delay, na.rm = T)) %>%
+     mutate(op_mdl = sum(dep_delay>0) / length(dep_delay) - op_base) %>%
      ungroup() %>%
   group_by(speed) %>%
-     mutate(op_spd = mean(dep_delay, na.rm = T)) %>%
+     mutate(op_spd = sum(dep_delay>0) / length(dep_delay) - op_base) %>%
      ungroup() %>%
   group_by(engine) %>%
-     mutate(op_eng = mean(dep_delay, na.rm = T)) %>%
+     mutate(op_eng = sum(dep_delay>0) / length(dep_delay) - op_base) %>%
      ungroup()
 
 unique(planes$speed)
 
-### This code creates a separate data frame which links categorical variables to their relative means
+### This code creates a separate data frame which links categorical variables to their relative probs
 cat_facts <- flt_test %>%
   select(15,23,16,24,17,25,18,26,19,27,20,28,21,29,22,30) %>%
   unique()
@@ -112,19 +116,11 @@ flt_test <- flt_test %>%
   select(-carrier,-origin,-dest,-type,-manufacturer
          ,-model,-speed, -engine)
 
-### This creates a skinny data frame
+### This creates a skinny data frame with just the most relevant data
 flt <- flt_test %>%
-  select(dep_delay, diff_20h, humid, pressure, carr_fact, mdl_fact, sched_dep_time)
+  select(dep_delay, diff_20h, humid, pressure, op_carr, op_mdl, sched_dep_time)
 
-ggplot(data = flt, mapping = aes(x = diff_20h, y = dep_delay, colour = sched_dep_time)) +
-  geom_point() +
-  geom_smooth(method = "lm")
 
-ggplot(data = flt, mapping = aes(x = humid, y = dep_delay)) +
-  geom_point() +
-  geom_smooth(method = "lm") +
-  theme_economist_white() +
-  geom_jitter()
   
 
 ```
