@@ -1,0 +1,101 @@
+---
+title: "Class 15 - In class exercises"
+author: Hari Subhash
+date: "Date created: `r Sys.Date()`"
+output:
+  html_notebook:
+    highlight: haddock
+    smart: yes
+    theme: readable
+    df_print: paged
+---
+
+
+##Task Set 1: Non vectorised conditional
+1. Correct the code below so that it runs.
+```{r}
+animal <- sample(c("Birds", "Fish"), size = 1)
+
+if(animal = "Fish"){
+    print("I can swim")
+} else {
+    print("I can't swim")
+}
+```
+2. Modify the code above to check if an animal is a "Bird" and print whether it can fly or not.
+
+3. Use an `if()` with `any()` to print "yes" if there are `any()` values greater than 4 in the vector x below.
+```{r}
+x <- c(3, 6, 7, 8, NA)
+```
+
+4. Modify the code above to check if there any values that are missing in x. You can tell if an element in a vector is missing using the function `is.na()`.
+
+5. Modify the code you wrote for task 3 to check if there are any values greater than 8 instead of checking if there are any missing values. This will likely throw an error. Can you reason why this might be giving you an error? See the documentation for `any()` to see how to address this.
+
+6. Check if `all()` the values in vector x are not missing. If yes print "yes" else print "no".
+
+
+##Task Set 5: Vectorized Ifs
+1. Use an `if_else()` statement to create a character vector that indicates whether a given value in vector x (from previous task set) is missing. It should be marked "missing" if a value is missing and "not missing" otherwise. 
+
+2. Load the gapminder and tidyverse packages
+
+3. Use the `if_else()` in a `mutate()` to add a new column to the gapminder data that indicates whether the year is greater than 2000.
+
+4. Make sure you have already loaded the tidyverse and gapminder before you start this. Complete the code below (the `group_by()` and `if_else()`). For every year I would like to mark the `incomeGroup` variable as "Higher" if it is above the median `gdpPercap` for that year (global median) and "Lower" otherwise. The subsequent plot explores the relationship between `incomeGroup` and the `lifeExp`. How would you interpret it?
+```{r, fig.width = 9}
+gapminder %>% 
+    group_by() %>% 
+    mutate(incomeGroup = if_else()) %>% 
+    ggplot(aes(x = as.factor(year), y = lifeExp, colour = incomeGroup)) +
+    geom_boxplot(outlier.alpha = 0.3) +
+    labs(title = str_wrap("Over time life expectancy in high income countries have converged while those in low income countries have diverged", width = 70),
+         y = "Life Expectancy",
+         colour = "Income Group") +
+    ggthemes::theme_tufte() +
+    theme(
+        legend.position = "bottom",
+        axis.title.x = element_blank()
+    )
+    
+    
+```
+
+4. Complete the following code to create a new variable called incomeGroup that cuts the `gdpPercap` variable based on the median value of the `gdpPercap` every year. The final variable should have 4 levels - Low income, low middle income, middle income, high middle income and high income. I have complete one of the levels for you in the code. Complete the rest - gdpPercap < 0.75 x median(gdpPercap) is "Low middle income", gdpPercap < 2 x median(gdpPercap) is "Middle income", gdpPercap < 4 x median(gdpPercap) is "High middle income" and everything else is high income.
+```{r, fig.width = 12}
+gapminder %>% 
+    group_by(year) %>% 
+    mutate(incomeGroups = case_when(
+        gdpPercap < 0.25 * median(gdpPercap) ~ "Low income",
+        gdpPercap <  ~ "Low middle income",
+         ~ "Middle income",
+         ~ "High middle income",
+        TRUE ~ "High Income"
+    )) %>% 
+    ungroup() %>% 
+    ggplot(aes(x = as.factor(year), y = lifeExp)) +
+    geom_boxplot() +
+    facet_wrap(~incomeGroups, nrow = 1) +
+    labs(title = str_wrap("Over time life expectancy in high income countries have converged while those in low income countries have diverged", width = 90),
+         y = "Life Expectancy",
+         colour = "Income Group") +
+    theme_tufte() +
+    theme(
+        legend.position = "bottom",
+        axis.title.x = element_blank(),
+        axis.text.x = element_text(angle = 45)
+    )
+```
+
+
+##Task Set 3: Write a for loop
+1. Create a sequence of numbers from 1 to 50 store it in a variable
+
+2. Write a for loop that returns "even" if a number in the vector you created above is even and "odd" otherwise. Store the results from this in a variable called odds_evens. You can initiate the `odds_evens` vector like this - `odds_evens <- vector("character", length = length(x))`. You can establish if a value is even by checking if the remainder when you divide it by 2 is zero. The syntax for this is `value %% 2 == 0`, where value is the number you are comparing.
+
+3. Now do the same thing with an `if_else()` statement and store the results in a 
+
+
+
+
