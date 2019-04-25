@@ -54,7 +54,7 @@ To set up, I'll do the following:
 # install.packages('ggthemes'); install.packages('DiagrammeR')
 
 # This line enable packages
-library(tidyverse); library(skimr); library(nycflights13); library(lubridate); library(ggthemes); library(DiagrammeR)
+library(tidyverse); library(skimr); library(nycflights13); library(lubridate); library(ggthemes)
 ```
 ```{r}
 ### 2. Join flight, plane, and weather data into a single data frame of raw data to work with
@@ -113,7 +113,7 @@ flt_test <- flt_raw %>%
 ```
 
 ```{r}
-### This code creates a separate data frame which links categorical variables to their relative probs
+### This code creates a separate data frame which links categorical variables to their relative probabilities
 cat_facts <- flt_test %>%
   select(15:21,23:29) %>%
   unique()
@@ -124,25 +124,26 @@ cat_facts <- cat_facts %>%
   gather(key = 'cat', value = 'obj', carrier, origin, type, manufacturer, model, speed, engine) %>%
   rename(carrier = op_carr
          ,origin = op_ogn
-         ,type = op_type
-         ,manufacturer = op_mnf
-         ,model = op_mdl
-         ,speed = op_spd
+           ,type = op_type
+   ,manufacturer = op_mnf
+          ,model = op_mdl
+          ,speed = op_spd
          ,engine = op_eng) %>%
   gather(key = 'trans', value = 'facts', 1:7) %>%
   filter(cat == trans) %>%
   select(-trans) %>%
   unique() %>%
+  filter(!is.na(obj) == T) %>%
   arrange(cat,desc(facts))
 
 cat_facts
 ```  
   
 ```{r}
-### This code removes the original categorical variables for an even skinnier data frame; Can reference cat_facts if needed
+### This code removes the original categorical variables for a skinnier data frame; Can reference cat_facts if needed
+
 flt_test <- flt_test %>%
-  select(-carrier,-origin,-dest,-type,-manufacturer
-         ,-model,-speed, -engine)
+  select(-(15:21))
 ```
 
 ^1^ A negative departure delay value would decrease a category mean as though it *is* more on time.  A flight that leaves early should not be considered "more on time" than a flight that leaves at it's scheduled time. To better intuit this, suppose an airline has one flight that leaves 30 minutes early and another that leaves 30 minutes late. On paper it would appear that a traveler need not worry about delays when flying on this airline, but this is not the case. Because of that, I chose to zero out negative departure delay values.
@@ -151,9 +152,9 @@ flt_test <- flt_test %>%
 
 Here are the steps for this
 
-1. Metadata will explain what each variable represents
-2. Descriptive statics of the dependent variable including number of observations, mean, standard deviation, median, min, max, and interquartile measures
-3. Descriptive statistics for the independent variables  
+1. Explore metadata to ensure I understand what each variable represents
+2. Descriptive statics of the dependent variable, departure delay, including number of observations, mean, standard deviation, median, min, max, and interquartile measures
+3. Descriptive statistics for the independent variables
 4. A histogram will offer a visual representation of each
 
 Doing this will expose:
@@ -165,68 +166,44 @@ Doing this will expose:
 **DATA DICTIONARY**
 
 * **year,month,day:** Date of departure or date of weather recording
-
 * **dep_time,arr_time:** Actual departure and arrival times (format HHMM or HMM), local tz.
-
 * **sched_dep_time,sched_arr_time:** Scheduled departure and arrival times (format HHMM or HMM), local tz.
-
 * **dep_delay,arr_delay:** Departure and arrival delays, in minutes. Negative times represent early departures/arrivals.
-
 * **hour** Hour part of time of scheduled departure or weather recording
 * **minute:** Minute part of time of scheduled departure
-
 * **carrier:** Two letter carrier abbreviation. See airlines() to get name
-
 * **tailnum:** Plane tail number
-
 * **flight:** Flight number
-
 * **origin:** Origin of flight or weather station. Origin + time_hour can be used to join flight and weather data
 * **dest:** Destination of flight. See airports() for additional metadata.
-
 * **air_time:** Amount of time spent in the air, in minutes
-
 * **distance:** Distance between airports, in miles
-
 * **time_hour:** Scheduled date and hour of the flight or of the weather recording as a POSIXct date. Origin + time_hour can be used to join flight and weather data
-
 * **temp,dewp:** Temperature and dewpoint in F
-
 * **humid:** Relative humidity
-
 * **wind_dir,wind_speed,wind_gust:** Wind direction (in degrees), speed and gust speed (in mph)
-
 * **precip:** Precipitation, in inches
-
 * **pressure:** Sea level pressure in millibars
-
 * **visib:** Visibility in miles
-
-
-
-
 
 **DESCRIPTIVE STATS OF THE DEPENDENT VARIABLE:** 
 
 ```{r}
 flights %>% ##
+  filter(!is.na(dep_delay) == T) %>%
   select(dep_delay) %>%
   mutate(dep_delay = (dep_delay+abs(dep_delay))/2) %>%
   group_by(dep_delay) %>%
   summarise(ct = length(dep_delay)) %>%
-  ggplot(mapping = aes(x=dep_delay,y=log(ct))) +
+  ggplot(mapping = aes(x=log(dep_delay),y=ct)) +
   geom_line()
 
-
-
-  quantile(dep_delay,probs = .1)
+quantile(dep_delay,probs = .1)
 
 mutate(dep_delay = (dep_delay+abs(dep_delay))/2) %>%
   group_by(dep_delay>0) %>%
   summarise(nobs = length(dep_delay)
             ,p = nobs/sum(!is.na(flights$dep_delay)))
-
-
     
 str(flights$dep_delay)
 #
@@ -237,10 +214,6 @@ sum(is.na(flights$dep_delay) == T)
 # min1_hr = 27
 
 tibble(cat = c('na','max_0hr','max_1hr','min_1hr'), cnt = c(8, 200, 102, 27))
-
-27/(8+200+102+27)
-
-
 
 flights %>%
   select(dep_delay) %>%
@@ -279,20 +252,11 @@ The following fields are either unlikely to be related to departure delay or dup
 * Departure time
 * Distance
 
-The following fields will need to be transformed in the succeeding ways:
-
-* Departure delay -- replace negative values with 0
-* Carrier -- Use difference between the mean delay of flights by a single carrier with mean delay overall
-* Origin --  Use difference between the mean delay of flights that originate at a single airport with mean delay overall
-* Time_hour -- Extract day of the week and convert to a dummy variable for whether the day is a weekend day
-* Scheduled departure time -- Use difference with the hour of day of peak delays
-* Month -- Use difference with the month of peak delays
-
 Only one field among those remaining, **wind gust**, is concerning due to the number of n/a entries -- 256,391 of 336,776 total. My fear is that these incomplete entries are biased -- that is, we may be telling a story that is based on a sample of the data that does not represent the poopulation.
 ```{r}
 ### Here, I split up all entries based on whether or not wind_gust is NULL
 ### Then, look at descriptive statistics of delay by those groups
-flt_wx_raw %>%
+flt %>%
   select(wind_gust,dep_delay) %>%
   filter(is.na(dep_delay) == F) %>%
   mutate(na_gust = if_else(is.na(wind_gust), 0, 1)) %>% 
@@ -306,7 +270,7 @@ flt_wx_raw %>%
      ,max_del    = max(dep_delay, na.rm = T)) %>%
     round(2)
 
-flt_wx_raw %>%
+flt %>%
   select(wind_gust,dep_delay) %>%
   filter(is.na(dep_delay) == F) %>%
   mutate(na_gust = factor(if_else(is.na(wind_gust), 0, 1)
