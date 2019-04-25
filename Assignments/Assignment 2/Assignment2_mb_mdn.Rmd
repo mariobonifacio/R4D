@@ -18,7 +18,7 @@ output:
 
 ## Abstract 
 
-Unpredictable flight delays are a costly problem, forcing travelers to choose between spending unproductive time at the airport and missing a flight. In 2013, flights from the three New York area airports alone saw aggregate delays of half a million minutes. I explore the predictive capacity with respect to departure delay of five variables -- **scheduled departure time**, **humidity**, **atmomspheric pressure**, **the mean delay associated with each carrier**, and **the mean delay associated with each carrier**. Notably all five of these variables are forecasted ahead of time and made publicly available. Of those five variables, it's **scheduled departure time** that is most closely associated with delay.
+Unpredictable flight delays are a costly problem, forcing travelers to choose between spending unproductive time at the airport and missing a flight. In 2013, flights from the three New York area airports alone saw aggregate delays of half a million minutes. I explore the predictive capacity with respect to departure delay of five variables -- **scheduled departure time**, **humidity**, **atmomspheric pressure**, **the probability associated with each airplane model**, and **the probability associated with each carrier**. Notably all five of these variables are forecasted ahead of time and made publicly available. Of those five variables, it's **scheduled departure time** that is most closely associated with delay.
 
 ## Background
 
@@ -63,21 +63,11 @@ flt_raw <- flights %>%
   left_join(weather, by = c('time_hour', 'origin'))
 ```
 
-```{r}
-### Here, I'll calculate the baseline probability of delay
-op_base <- flt_raw %>%
-  filter(!is.na(dep_delay) == T) %>%
-  group_by(dep_delay > 0) %>%
-  summarise(p = length(dep_delay)/ sum(!is.na(flights$dep_delay) == T) ) %>%
-  filter(p<.5) %>%
-  select(2) %>%
-  as.numeric()
-
-# I'll use this to normalize individual category probabilities
-```
 
 ```{r}
 ### Remove irrelevant columns and transform categorical data into numbers
+
+
 flt_test <- flt_raw %>%
   filter(!is.na(dep_delay) == T) %>%
   select(dep_delay, sched_dep_time, distance, manuf_year, engines ## 1-5
@@ -140,10 +130,21 @@ cat_facts
 ```  
   
 ```{r}
-### This code removes the original categorical variables for a skinnier data frame; Can reference cat_facts if needed
+### This code removes the original categorical variables to get the data frame even skinnier; Can reference cat_facts if needed
 
 flt_test <- flt_test %>%
   select(-(15:21))
+
+flt_test %>%
+  cor(use = 'pairwise.complete.obs') %>%
+  as_tibble() %>%
+  mutate(field = rownames(cor(flt_test))) %>%
+  filter(dep_delay < 1) %>%
+  select(field, dep_delay) %>%
+  arrange(desc(abs(dep_delay)))
+
+glm(op_mdl, na.action = na.exclude(), family = binomial, data = flt_test)
+
 ```
 
 ^1^ A negative departure delay value would decrease a category mean as though it *is* more on time.  A flight that leaves early should not be considered "more on time" than a flight that leaves at it's scheduled time. To better intuit this, suppose an airline has one flight that leaves 30 minutes early and another that leaves 30 minutes late. On paper it would appear that a traveler need not worry about delays when flying on this airline, but this is not the case. Because of that, I chose to zero out negative departure delay values.
@@ -188,54 +189,54 @@ Doing this will expose:
 
 **DESCRIPTIVE STATS OF THE DEPENDENT VARIABLE:** 
 
+First, I'll prepare a histogram of departure delay. I'll cut off at the 97.5th percentile so it's easier to see
+
 ```{r}
 flights %>% ##
-  filter(!is.na(dep_delay) == T) %>%
   select(dep_delay) %>%
-  mutate(dep_delay = (dep_delay+abs(dep_delay))/2) %>%
-  group_by(dep_delay) %>%
-  summarise(ct = length(dep_delay)) %>%
-  ggplot(mapping = aes(x=log(dep_delay),y=ct)) +
-  geom_line()
-
-quantile(dep_delay,probs = .1)
-
-mutate(dep_delay = (dep_delay+abs(dep_delay))/2) %>%
-  group_by(dep_delay>0) %>%
-  summarise(nobs = length(dep_delay)
-            ,p = nobs/sum(!is.na(flights$dep_delay)))
-    
-str(flights$dep_delay)
-#
-sum(is.na(flights$dep_delay) == T)
-# NA      = 8
-# max_0hr = 200
-# max_1hr = 102
-# min1_hr = 27
-
-tibble(cat = c('na','max_0hr','max_1hr','min_1hr'), cnt = c(8, 200, 102, 27))
-
-flights %>%
-  select(dep_delay) %>%
-  filter(is.na(dep_delay) == F) %>%
-  mutate(pos_dep_delay = dep_delay>0) %>%
-  group_by(pos_dep_delay) %>%
-  summarise(ct =length(pos_dep_delay), p_base = length(pos_dep_delay) / length(!is.na(flights$dep_delay))) %>%
-  ggplot(aes(pos_dep_delay,p_base)) +
-  geom_col()
-
-flights %>%
-  mutate(dep_delay = (dep_delay+abs(dep_delay))/2) %>%
-  ggplot(aes(dep_delay, is.na=T)) +
-  geom_density()
-
-
+  filter(!is.na(dep_delay) == T
+           & dep_delay < as.numeric(quantile(flights %>%
+           filter(!is.na(dep_delay) ==T) %>%
+           select(dep_delay) %>%
+           as_vector(), probs = .975))) %>%
+  mutate(dep_delay = (dep_delay + abs(dep_delay)) / 2) %>%
+  as_tibble() %>%
+  ggplot(data = ., mapping = aes(x = dep_delay)) +
+  geom_histogram(binwidth = 5, na.rm = T) +
+  theme_economist() +
+  ggtitle('Departure delay is skewed right and not normally distributed')
   
+```
+Let's look at some percentiles to verify that this is not normal by checking the probabilities associated with one-tailed z-scores of 0.5 to 3.0
+```{r}
+quantile(flights %>%
+           filter(!is.na(dep_delay) ==T) %>%
+           select(dep_delay) %>%
+           mutate(dep_delay = (dep_delay + abs(dep_delay))/2) %>%
+           as_vector(), probs = c(0.6915, 0.8413,0.9332 ## p(z < 0.5, 1.0, 1.5)
+                                  ,0.9772, 0.9938, 0.9987)) ## p(z < 2.0, 2.5, 3.0)
+```
+In a normal distribution, the distance between each of these would be equal. 
+
+```{r}
 
 
-     
 
 
+```
+
+
+```{r}
+### Here, I'll calculate the baseline probability of delay
+op_base <- flt_raw %>%
+  filter(!is.na(dep_delay) == T) %>%
+  group_by(dep_delay > 0) %>%
+  summarise(p = length(dep_delay)/ sum(!is.na(flights$dep_delay) == T) ) %>%
+  filter(p<.5) %>%
+  select(2) %>%
+  as.numeric()
+
+# I'll use this to normalize individual category probabilities
 
 ```
 The following fields are either unlikely to be related to departure delay or duplicative of another, superior field in the data set
@@ -538,7 +539,7 @@ As predicted, diff_20hr has the best relationship with corr_dep_delay. Though it
 **LINEAR MODEL:** Having confirmed diff_20hr as the variable to use, we can let R build a linear model.
 
 ```{r}
-lm(formula = dep_delay ~ diff_20hr, data = flt_wx)
+lm(formula = dep_delay ~ dif, data = flt_test)
 ```
 
 
@@ -548,5 +549,4 @@ lm(formula = dep_delay ~ diff_20hr, data = flt_wx)
 
 1. Covariance
 2. Linear model multiple
-
 
