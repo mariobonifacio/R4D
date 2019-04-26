@@ -1,5 +1,5 @@
 ---
-title: "Class 13 - Lecture"
+title: "Class 14 - Lecture"
 author: Hari Subhash
 date: "Date created: `r Sys.Date()`"
 output:
@@ -13,16 +13,15 @@ output:
 **LEARNING OBJECTIVE** Solidify tidyr
 
 **TOPICS**
+
 1. Recap tidyr
 2. Clean the who data (https://www.who.int/tb/country/data/download/en/)
-3. Non-vectorised conditionals (if else if else, any, all)
-4. Vectorised conditionals (if_else, case_when)
 
 
-##Baseic tidyr syntax
 
-What does gather function do?
-Gather function gathers up columns into key value pairs.
+##Revise tidyr syntax
+
+What does gather function do? Gather function gathers up columns into key value pairs.
 ```{r}
 library(tidyverse)
 

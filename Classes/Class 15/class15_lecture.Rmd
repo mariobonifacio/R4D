@@ -1,0 +1,331 @@
+---
+title: "Class 15 - Lecture"
+author: Hari Subhash
+date: "Date created: `r Sys.Date()`"
+output:
+  html_notebook:
+    highlight: haddock
+    smart: yes
+    theme: readable
+    df_print: paged
+---
+
+**LEARNING OBJECTIVE:** Control the flow
+
+###Topics
+1. Correction: Gather allows quasiquotation!
+2. Non-vectorised conditionals (if else if else, any, all)
+3. Vectorised conditionals (if_else, case_when)
+4. Our first for loop.
+
+
+###Basic if else statement
+
+if (condition) {then do something} else {Do something else}
+
+```{r}
+if(TRUE) {
+    "Hey there I am true"
+} else {
+    "I am false"
+}
+```
+
+Lets feed false as the condition
+
+```{r}
+if(FALSE) {
+    "Hey there I am true"
+} else {
+    "I am false"
+}
+```
+So if you feed a condition which does not coerce to TRUE/FALSE it will yield an error.
+```{r}
+if(NA) {
+    "Hey there I am true"
+} else {
+    "I am false"
+}
+```
+
+Lets try this with an actual condition
+```{r}
+x <- 4
+if(x == 4) {
+    "Hey there I am true"
+} else {
+    "I am false"
+}
+```
+
+```{r}
+x == 4
+```
+
+
+Now, let's see a few examples of coercion
+```{r}
+if(0) {
+    "Hey there I am true"
+} else {
+    "I am false"
+}
+```
+
+0 is called a falsey value.
+
+```{r}
+0 == FALSE
+```
+While 1 is a truthy value.
+```{r}
+if(1) {
+    "Hey there I am true"
+} else {
+    "I am false"
+}
+```
+Any number other than zero is 'truthy'
+```{r}
+if(10) {
+    "Hey there I am true"
+} else {
+    "I am false"
+}
+```
+
+
+##IF ELSE IF ELSE
+
+```{r}
+x <- 4
+if (x == 5) {
+    "I am 5"
+} else if(x %% 2 == 0) {
+    "I am even"
+} else {
+    "Try again"
+}
+```
+```{r}
+x == 5
+```
+
+
+```{r}
+x %% 2 == 0
+```
+
+```{r}
+x <- 7
+if (x == 5) {
+    "I am 5"
+} else if(x %% 2 == 0) {
+    "I am even"
+} else {
+    "Try again"
+}
+```
+
+##If else conditions are not vectorized
+If else conditions evaluate a single 
+```{r}
+x <- 1:10
+
+if(x %% 2 == 0) {
+    "even"
+} else {
+    "odd"
+}
+```
+```{r}
+x
+```
+
+```{r}
+x %% 2
+```
+
+```{r}
+x %% 2  == 0
+```
+
+```{r}
+evenNumbers <- x %% 2 == 0
+evenNumbers
+if(evenNumbers) {
+    "even"
+} else {
+    "odd"
+}
+```
+
+```{r}
+if(c(F, T, F, T)) {
+    "even"
+} else {
+    "odd"
+}
+```
+
+DO NOT FEED AN IF STATEMENT A LOGICAL VECTOR THAT IS LONGER THAN ONE.
+
+##Any and all
+
+```{r}
+x <- c(1, 3, 5, 7)
+
+if(any(x %% 2 == 0)) {
+    "There are even numbers"
+} else {
+    "Everything is odd"
+}
+```
+
+```{r}
+x %% 2 == 0
+```
+
+```{r}
+any(x %% 2 == 0)
+```
+
+If there is a single TRUE value in a logical vector it returns TRUE.
+```{r}
+any(c(TRUE, FALSE, FALSE, FALSE))
+```
+
+```{r}
+any(c(FALSE, FALSE, FALSE, FALSE))
+```
+
+
+A very practical usecase for this is when we would like to see if there are missing values in a vector.
+
+```{r}
+x <- c(2, 5, 7, 0, NA)
+
+x
+```
+
+
+```{r}
+is.na(x)
+```
+
+Are any values in a vector missing?
+```{r}
+any(is.na(x))
+```
+
+
+
+```{r}
+x <- c(1, 3, 5, 7, 8, 10)
+
+if(any(x %% 2 == 0)) {
+    "There are even numbers"
+} else {
+    "Everything is odd"
+}
+```
+
+
+```{r}
+if(all(x %% 2 == 0)) {
+    "All of them are even numbers"
+} else {
+    "Some of them are odd"
+}
+```
+
+```{r}
+all(c(T, T, T))
+```
+
+```{r}
+all(c(T, F, T))
+```
+
+
+##Vectorized ifs
+
+```{r}
+x <- 1:10
+x
+```
+
+```{r}
+if(x %% 2 == 0) {
+    "even"
+} else {
+    "odd"
+}
+```
+
+The correct way to do this is as follows
+
+```{r}
+if_else(x %% 2 == 0, "even", "odd")
+```
+
+So this is very commonly used within `mutate()` in dplyr.
+```{r}
+library(tidyverse); library(gapminder)
+
+gapminder %>% 
+    mutate(year2000 = if_else(year >= 2000, "This are naughts", "These are the old days"))
+```
+
+What if there are multiple conditions to evaluate?
+```{r}
+gapminder %>% 
+    mutate(year2000 = if_else(year >= 2000, 
+                              "This are naughts", 
+                              if_else(year >= 1980, 
+                                      "still a good time", 
+                                      "The really old days")))
+```
+
+The correct way to do this is using a `case_when()`
+```{r}
+gapminder %>% 
+    mutate(year2000 = case_when(
+        year >= 2000 ~ "This are naughts",
+        year > 1980 ~ "still a good time",
+        TRUE ~ "The really old days"))
+```
+
+This is another one of those for which the order of the conditions matter. So for instance this will not yield the correct result.
+
+```{r}
+gapminder %>% 
+    mutate(year2000 = case_when(
+        year > 1980 ~ "still a good time",
+        year >= 2000 ~ "This are naughts",
+        TRUE ~ "The really old days"))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
