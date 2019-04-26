@@ -18,7 +18,9 @@ output:
 
 ## Abstract 
 
-Unpredictable flight delays are a costly problem, forcing travelers to choose between spending unproductive time at the airport and missing a flight. In 2013, flights from the three New York area airports alone saw aggregate delays of half a million minutes. I explore the predictive capacity with respect to departure delay of five variables -- **scheduled departure time**, **humidity**, **atmomspheric pressure**, **the probability associated with each airplane model**, and **the probability associated with each carrier**. Notably all five of these variables are forecasted ahead of time and made publicly available. Of those five variables, it's **scheduled departure time** that is most closely associated with delay.
+diff_20h, pressure, visib, op_carr, op_ogn
+
+Unpredictable flight delays are a costly problem, forcing travelers to choose between spending unproductive time at the airport and missing a flight. In 2013, flights from the three New York area airports alone saw aggregate delays of half a million minutes. I explore the predictive capacity with respect to departure delay of five variables -- **scheduled departure time**, **atmomspheric pressure**, **visibility**, **the probability associated with each air carrier**, and **the probability associated with each origin**. Notably all five of these variables are forecasted ahead of time and made publicly available. Of those five variables, it's **scheduled departure time** that is most closely associated with delay.
 
 ## Background
 
@@ -257,7 +259,7 @@ Only one field among those remaining, **wind gust**, is concerning due to the nu
 ```{r}
 ### Here, I split up all entries based on whether or not wind_gust is NULL
 ### Then, look at descriptive statistics of delay by those groups
-flt %>%
+flt_test %>%
   select(wind_gust,dep_delay) %>%
   filter(is.na(dep_delay) == F) %>%
   mutate(na_gust = if_else(is.na(wind_gust), 0, 1)) %>% 
@@ -271,7 +273,7 @@ flt %>%
      ,max_del    = max(dep_delay, na.rm = T)) %>%
     round(2)
 
-flt %>%
+flt_test %>%
   select(wind_gust,dep_delay) %>%
   filter(is.na(dep_delay) == F) %>%
   mutate(na_gust = factor(if_else(is.na(wind_gust), 0, 1)
@@ -285,139 +287,133 @@ flt %>%
 ```
 These look similar enough to work with. To verify with numbers, I would do a z-test to see if I'm able to disprove that the means are unequal and an f-test to do the same with the standard deviations. But not today. Today, I will do neither.
 
-Now to filter out the unused fields and transform other fields:
-```{r}
-library(nycflights13)
-
-flt_wx_cln <- flt_wx_raw %>%
-  group_by(carrier) %>%
-  mutate(p_carr = sum(dep_delay > 0) / sum(!is.na(dep_delay)) - 0.39094 ## Creating the carrier effect
-         ,is_wkend   = if_else(wday(as.Date(time_hour)) == 1
-            | wday(as.Date(time_hour)) == 7,1,0) ## Creating categorical variable for weekend-ness
-         ,diff_20hr  = if_else(sched_dep_time < 2000, 1960 - sched_dep_time, sched_dep_time - 2000) ## Transforming time variable by difference from 8 p.m.
-         ,diff_7mo   = abs(month.x-7)) %>%  ## Transforming month variable by difference from July
-  ungroup() %>%
-  group_by(origin) %>%
-  mutate(p_ogn = sum(dep_delay > 0) / sum(!is.na(dep_delay)) - 0.39094) %>% ## Deriving origin effect
-  ungroup() %>%
-  select(dep_delay, temp:p_ogn)
-
-
-
-skim(flt_wx_cln)
-```
 ## Bivariate analysis
 
 There are steps here
 
-1. Scatter plots to intuit linear relationships to explore
+1. Test relationships
 2. Find correlation
 3. Linear model the best
 
-**FINDING LINEAR RELATIONSHIPS:** I'm looking for scatter plots that appear generally linear with as little spread around the line as possible
+**FINDING SIGNIFICANT RELATIONSHIPS:**
 
+In testing departure delay and our other variables, I'll be looking for relationships that show a strong, correlative relationship. 
+
+To do this, I'll use R's general linear model (glm) tool. This will expose the strength of each relationship by providing a p-value, which estimates the probability that we'd get at least as extreme a result if NYC flights 2013 were repeated forever. Because we want there to be *little* chance that sampling the actual population gives us results that are extreme relative to our model, we want p-values that are as low as possible.
+
+**I will test the dataset I've created with a significance level of 0.1 percent.**
 ```{r, message=FALSE, warning=FALSE}
-glm.del_20h <- glm(data = flt_test, dep_delay ~ diff_20h, family = binomial)
+glm_test <- glm(data = flt_test, dep_delay ~ diff_20h + distance + manuf_year + engines + seats + temp + dewp + humid + wind_speed + wind_gust + precip + pressure + visib + op_carr + op_ogn + op_type + op_mnf + op_mdl + op_spd + op_eng, family = binomial)
 
-summary(glm.del_20h)
-dcast(data)
+glm_test <- glm(data = flt_test, dep_delay ~ diff_20h + humid + pressure + visib + op_carr + op_ogn + op_mnf + op_mdl + op_eng, family = binomial)
 
-ggplot(aes())
+(summary(glm_test))
 
 ```
+The variables that appear to have significant relationships with dep_delay are: diff_20h, humidity, pressure, visibility, op_carr, op_ogn, op_mnf, op_mdl, op_eng
 
-The variables that appear to have the best relationships with dep_delay are:
-
-1. diff_20hr (the best by far),
-2. humid,
-3. pressure,
-4. carr_delay, and
-5. dewp
-
-One initial concern I have is that humidity and dewpoint are telling the same part of the story, but that's not so big a concern .
-
-For now, let's shrink our working data frame for the last time to the remaining variables we still care about.
 ```{r}
-flt_wx <- flt_wx_cln %>%
-  select(dep_delay, diff_20hr, humid, pressure, carr_delay, dewp)
-
-flt_wx
-```
-
-
-**OUTLIERS:** 
-
-```{r message=FALSE, warning=FALSE}
-flt_wx %>%
-  mutate(cats = cut_number(diff_20hr, n = 5)) %>%
-  ggplot(aes(group = cats, x = cats, y = dep_delay)) +
-  geom_boxplot() +
-  geom_jitter(width = 0.49, height = 0.49) +
-  theme_fivethirtyeight() +
-  scale_color_fivethirtyeight()
-
-flt_wx %>%
-  mutate(cats = cut_number(humid, n = 5)) %>%
-  ggplot(aes(group = cats, x = cats, y = dep_delay)) +
-  geom_boxplot() +
-  geom_jitter(width = 0.49, height = 0.49) +
-  theme_fivethirtyeight() +
-  scale_color_fivethirtyeight()
-
-flt_wx %>%
-  mutate(cats = cut_number(pressure, n = 5)) %>%
-  ggplot(aes(group = cats, x = cats, y = dep_delay)) +
-  geom_boxplot() +
-  geom_jitter(width = 0.49, height = 0.49) +
-  theme_fivethirtyeight() +
-  scale_color_fivethirtyeight()
-
-flt_wx %>%
-  mutate(cats = cut_number(carr_delay, n = 5
-                           ,labels = c('carr_delay_1', 'carr_delay_2', 'carr_delay_3', 'carr_delay_4', 'carr_delay_5'))) %>%
-  ggplot(aes(group = cats, x = cats, y = dep_delay)) +
-  geom_boxplot() +
-  geom_jitter(width = 0.49, height = 0.49) +
-  theme_igray()
-
-flt_wx %>%
-  filter(is.na(dewp) == F) %>%
-  mutate(cats = cut_number(dewp, n = 5
-                           ,labels = c('dewp_1', 'dewp_2', 'dewp_3', 'dewp_4', 'dewp_5'))) %>%
-  ggplot(aes(group = cats, x = cats, y = dep_delay)) +
-  geom_jitter(width = 0.49, height = 0.49) +
-  scale_color_fivethirtyeight() +
-  theme_fivethirtyeight() +
-  geom_boxplot()
-```
-
-
-**CORRELATION:** Now that we've picked our independent variables, I'll verify using correlation
-
-Correlation measures the degree to which two variables move up or down in relation to each other. Correlation must fall somewhere between -1.00 and 1.00, which imply a perfectly negative relationship and a perfectly positive relationship, respectively.
-
-
-And now correlation.
-```{r}
-flt_wx %>%
-  cor(use = 'pairwise.complete.obs', method = 'pearson') %>%
+flt_test %>%
+  select(diff_20h, humid, pressure, visib, op_carr, op_ogn, op_mnf, op_mdl, op_eng) %>%
+  cor(use = 'pairwise.complete.obs') %>%
   round(2) %>%
-  as.data.frame() %>%
-  select(1) %>%
-  cbind(rownames(.),.) %>%
-  rename('variable' = 'rownames(.)'
-         ,'corr_dep_delay' = 'dep_delay') %>%
-  filter(corr_dep_delay > -1 & corr_dep_delay < 1) %>%
-  arrange(desc(abs(corr_dep_delay)))
+  as_tibble() %>%
+  mutate(field = c('diff_20h', 'humid', 'pressure', 'visib', 'op_carr', 'op_ogn', 'op_mnf', 'op_mdl', 'op_eng'))
 ```
-As predicted, diff_20hr has the best relationship with corr_dep_delay. Though it doesn't appear that the magnitude of any correlations is very high.
+In seeing this correlation table, it's clear that some of our predictor variables may be comingling with each other. I'll tabulate only the high values so it's easier to read
+```{r}
+tibble(humid = c(.54, NaN, NaN, NaN, NaN)
+       ,op_carr = c(NaN, 0.45, 0.52, 0.79, 0.37)
+       ,op_ogn = c(NaN, NaN, .36, .48, NaN)
+       ,op_mnf = c(NaN, NaN, NaN, .58, .59)
+       ,op_mdl = c(NaN, NaN, NaN, NaN, .35)
+       ,field = c("visib", "op_ogn", "op_mnf", "op_mdl", "op_eng"))
 
-**LINEAR MODEL:** Having confirmed diff_20hr as the variable to use, we can let R build a linear model.
+```
+Humidity is highly correlated with visibility. This makes sense since water vapor in the air makes it more difficult to see.
+   -humid
+
+Carrier is highly correlated with four variables which are also correlated with each other -- airport of origin, manufacturer, model, and engine. This makes sense because having more of its planes concentrated at one airport provides economies of scale and manufacturers -- who sell plane models with engines in them -- are likely to cut a deal with those who buy in bulk.
+   -op_mnf, -op_mdl, -op_eng
+   
+This brings us to our final five variables: diff_20h, pressure, visib, op_carr, op_ogn
 
 ```{r}
-lm(formula = dep_delay ~ dif, data = flt_test)
+flt_final <- flt_test %>%
+  select(dep_delay, diff_20h, pressure, visib, op_carr, op_ogn)
 ```
 
+To figure out which single variable is most closely associated with probability of flight delay, I'll build another logistic regression model
+```{r}
+glm_test <- glm(data = flt_final, dep_delay ~ diff_20h + pressure + visib + op_carr + op_ogn, family = binomial)
+
+summary(glm_test)
+
+for(i in 1:6) print(as.numeric(coefficients(glm_test)[i]))
+```
+Here is the equation that estimates the probability of your flight being delayed using five inputs:
+
+1/(1+e^-(
+24.54178 
+- 0.00116677 x diff_20h 
+- 0.02320652 x pressure 
+- 0.07679695 x visib 
++ 4.169445 x op_carr 
++ 1.73226 x op_ogn
+))
+
+To get a result with only one input, I can repeat the same:
+
+```{r}
+glm_test <- glm(data = flt_final, dep_delay ~ diff_20h, family = binomial)
+
+summary(glm_test)
+
+for(i in 1:2) print(as.numeric(coefficients(glm_test)[i]))
+```
+Here is the equation that estimates the probability of your flight being delayed using one input:
+
+1/(1+e^-(0.2746527 - 0.001169423 x diff_20h))
+
+```{r}
+flt_final %>%
+  mutate(pred_time_del = 1/(1+exp(-(0.2746527 - 0.001169423 * diff_20h)))) %>%
+  ggplot(mapping = aes(diff_20h, pred_time_del)) +
+  geom_point() +
+  theme_economist()
+
+
+
+
+
+test_p <- flights[sample(nrow(flights),100),] %>%
+  select(sched_dep_time, dep_delay) %>%
+  filter(!is.na(dep_delay) == T) %>%
+  mutate(is_delay = if_else(dep_delay > 0, 1, 0)
+           ,diff_20h = if_else(sched_dep_time < 2000
+                            ,1960 - sched_dep_time
+                            ,sched_dep_time - 2000))
+
+test_p <- cbind(test_p,tibble(x_p = sample(0:1460, nrow(test_p),replace=T))) %>%
+  mutate(y_p = 1/(1+exp(-(0.2746527 - 0.001169423 * x_p))))
+
+test_p %>%
+  ggplot(aes(x_p, y_p)) +
+  geom_line() +
+#  theme_economist() +
+  geom_point(data = test_p, aes(x = diff_20h, y = is_delay),
+    method = "glm", method.args = list(family = "binomial"), 
+    se = FALSE) +
+  geom_jitter(width = .01, height = .01)
+
+test_p %>%
+  mutate(meow = max(diff_20h))
+
+
+
+  
+
+```
 
 
 
@@ -425,4 +421,3 @@ lm(formula = dep_delay ~ dif, data = flt_test)
 
 1. Covariance
 2. Linear model multiple
-
