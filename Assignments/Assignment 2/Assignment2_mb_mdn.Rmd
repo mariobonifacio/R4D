@@ -54,7 +54,7 @@ To set up, I'll do the following:
 # install.packages('ggthemes'); install.packages('DiagrammeR')
 
 # This line enable packages
-library(tidyverse); library(skimr); library(nycflights13); library(lubridate); library(ggthemes)
+library(tidyverse); library(skimr); library(nycflights13); library(lubridate); library(ggthemes); library(reshape2)
 ```
 ```{r}
 ### 2. Join flight, plane, and weather data into a single data frame of raw data to work with
@@ -143,7 +143,7 @@ flt_test %>%
   select(field, dep_delay) %>%
   arrange(desc(abs(dep_delay)))
 
-glm(op_mdl, na.action = na.exclude(), family = binomial, data = flt_test)
+
 
 ```
 
@@ -317,136 +317,12 @@ There are steps here
 **FINDING LINEAR RELATIONSHIPS:** I'm looking for scatter plots that appear generally linear with as little spread around the line as possible
 
 ```{r, message=FALSE, warning=FALSE}
-flt_wx_cln %>%
-  group_by(temp) %>%
-  summarise(mean_delay = mean(dep_delay, na.rm = T)) %>%
-ggplot(aes(x = temp, y = mean_delay)) +
-  geom_point() +
-  geom_smooth(method = lm, se = F) +
-  theme_fivethirtyeight() +
-  scale_color_fivethirtyeight() +
-  ggtitle('Temp appears to have a relationship albeit weak')
+glm.del_20h <- glm(data = flt_test, dep_delay ~ diff_20h, family = binomial)
 
-flt_wx_cln %>%
-  group_by(dewp) %>%
-  summarise(mean_delay = mean(dep_delay, na.rm = T)) %>%
-ggplot(aes(x = dewp, y = mean_delay)) +
-  geom_point() +
-  geom_smooth(method = lm, se = F) +
-  theme_fivethirtyeight() +
-  scale_color_fivethirtyeight() +
-  ggtitle('Dewpoint looks real similar to temp which makes sense')
+summary(glm.del_20h)
+dcast(data)
 
-flt_wx_cln %>%
-  group_by(humid) %>%
-  summarise(mean_delay = mean(dep_delay, na.rm = T)) %>%
-ggplot(aes(x = humid, y = mean_delay)) +
-  geom_point() +
-  geom_smooth(method = lm, se = F) +
-  theme_fivethirtyeight() +
-  scale_color_fivethirtyeight() +
-  ggtitle('Humidity is the best so far but still weak')
-
-flt_wx_cln %>%
-  group_by(wind_speed) %>%
-  summarise(mean_delay = mean(dep_delay, na.rm = T)) %>%
-ggplot(aes(x = wind_speed, mean_delay)) +
-  geom_point() +
-  geom_smooth(method = lm, se = F) +
-  theme_fivethirtyeight() +
-  scale_color_fivethirtyeight() +
-  ggtitle('Std dev increases as wind speed increases BAD')
-
-flt_wx_cln %>%
-  group_by(wind_gust) %>%
-  summarise(mean_delay = mean(dep_delay, na.rm = T)) %>%
-ggplot(aes(x = wind_gust, mean_delay)) +
-  geom_point() +
-  geom_smooth(method = lm, se = F) +
-  theme_fivethirtyeight() +
-  scale_color_fivethirtyeight() +
-  ggtitle('Wind gust is weak')
-
-flt_wx_cln %>%
-  group_by(precip) %>%
-  summarise(mean_delay = mean(dep_delay, na.rm = T)) %>%
-ggplot(aes(x = precip, mean_delay)) +
-  geom_point() +
-  geom_smooth(method = lm, se = F) +
-  theme_fivethirtyeight() +
-  scale_color_fivethirtyeight() +
-  ggtitle('Precipitation looks OK')
-
-flt_wx_cln %>%
-  group_by(pressure) %>%
-  summarise(mean_delay = mean(dep_delay, na.rm = T)) %>%
-ggplot(aes(x = pressure, mean_delay)) +
-  geom_point() +
-  geom_smooth(method = lm, se = F) +
-  theme_fivethirtyeight() +
-  scale_color_fivethirtyeight() +
-  ggtitle('Pressure looks pretty decent')
-
-flt_wx_cln %>%
-  group_by(visib) %>%
-  summarise(mean_delay = mean(dep_delay, na.rm = T)) %>%
-ggplot(aes(x = visib, mean_delay)) +
-  geom_point() +
-  geom_smooth(method = lm, se = F) +
-  theme_fivethirtyeight() +
-  scale_color_fivethirtyeight() +
-  ggtitle('Visibility is on the good side of OK')
-
-flt_wx_cln %>%
-ggplot(aes(x = carr_delay, dep_delay)) +
-  geom_point() +
-  geom_smooth(method = lm, se = F) +
-  theme_economist() +
-  geom_jitter() +
-  ggtitle('Carrier effect graphs poorly but could be nice')
-
-flt_wx_cln %>%
-ggplot(aes(x = jitter(is_wkend, 0.8), jitter(dep_delay,10))) +
-  geom_point() +
-  geom_smooth(method = loess, se = F) +
-  theme_fivethirtyeight() +
-  scale_color_fivethirtyeight() +
-  ggtitle('Weekend day also graphs poorly')
-
-flt_wx_cln %>%
-  group_by(diff_20hr) %>%
-  summarise(mean_delay = mean(dep_delay, na.rm = T)) %>%
-ggplot(aes(x = diff_20hr, mean_delay)) +
-  geom_point() +
-  geom_smooth(method = lm, se = F) +
-  theme_fivethirtyeight() +
-  scale_color_fivethirtyeight() +
-  ggtitle('Time difference with 8 pm looks like the best')
-
-flt_wx_cln %>%
-ggplot(aes(x = diff_7mo, dep_delay)) +
-  geom_point() +
-  geom_smooth(method = lm, se = F) +
-  theme_fivethirtyeight() +
-  scale_color_fivethirtyeight() +
-  ggtitle('Month difference with July isnt great')
-
-flt_wx_cln %>%
-ggplot(aes(x = ogn_delay, dep_delay)) +
-  geom_point() +
-  geom_smooth(method = lm, se = F) +
-  theme_economist() +
-  ggtitle('Origin effect also is not good')
-
-
-
-
-# ASCII bits for building in-line histograms
-# 0| |▁
-# 1|▂|▃
-# 2|▄|▅
-# 3|▆|▇
-# 4|█|
+ggplot(aes())
 
 ```
 
