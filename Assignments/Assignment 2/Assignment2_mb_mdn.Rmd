@@ -18,9 +18,9 @@ output:
 
 ## Abstract 
 
-diff_20h, pressure, visib, op_carr, op_ogn
+Unpredictable flight delays are a costly problem, forcing travelers to choose between spending unproductive time at the airport and missing a flight. In 2013, flights from the three New York area airports alone saw aggregate delays of half a million minutes. I explore the predictive capacity with respect to the probability of departure delay of five variables -- **scheduled departure time**, **atmomspheric pressure**, **visibility**, **the probability associated with each air carrier**, and **the probability associated with each origin airport**. Notably all five of these variables are forecasted ahead of time and made publicly available.
 
-Unpredictable flight delays are a costly problem, forcing travelers to choose between spending unproductive time at the airport and missing a flight. In 2013, flights from the three New York area airports alone saw aggregate delays of half a million minutes. I explore the predictive capacity with respect to departure delay of five variables -- **scheduled departure time**, **atmomspheric pressure**, **visibility**, **the probability associated with each air carrier**, and **the probability associated with each origin**. Notably all five of these variables are forecasted ahead of time and made publicly available. Of those five variables, it's **scheduled departure time** that is most closely associated with delay.
+Of those five variables, it's **scheduled departure time** that is most closely associated with the probability of delay.
 
 ## Background
 
@@ -35,31 +35,43 @@ Unpredictable flight delays are a costly problem, forcing travelers to choose be
 To set up, I'll do the following:
 
 1. Link flight data with data to the planes flown and the weather contemporaneous to each flight
-2. Clean and adapt the data both so that it makes sense logically and is testable; This will include:
+2. Find a baseline probability for departure delay
+3. Clean and adapt the data both so that it makes sense logically and is testable; This will include:
     a. Setting negative departure delay values equal to zero^1^
     b. Replacing categorical data -- such as the name of an airline -- with an "object effect" that estimates the added chance for delay associated with any object
-3. Prepare an appendix of metadata, including:
+4. Start an appendix of metadata, including:
     a. A data dictionary
     b. A data lineage diagram
 
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 ### On the code side, I'll do the following:
 
 # 1. Install and enable R packages to explore, manipulate, and analyze the data
-# 2. Use common fields to join flight table w/weather and plane tables
-# 3. Select columns to be removed
-# 4. Mutate some columns so they're more useful. Specifically, I group categorical variables and estimate a conditional probability using observed delay data
+# 2. Finding a baseline for departure delay by counting delayed and on-time flights 
+# 3. Use common fields to join flight table w/weather and plane tables
+# 4. Select columns to be removed
+# 5. Mutate some columns so they're more useful. Specifically, I group categorical variables and estimate a conditional probability using observed delay data
 
 ### 1. Install packages, as needed 
 # install.packages('tidyverse'); install.packages('skimr'); install.package('lubridate');
 # install.packages('ggthemes'); install.packages('DiagrammeR')
 
 # This line enable packages
-library(tidyverse); library(skimr); library(nycflights13); library(lubridate); library(ggthemes); library(reshape2)
+library(tidyverse); library(skimr); library(nycflights13); library(lubridate); library(ggthemes); library(reshape2); library(DiagrammeR)
 ```
+
 ```{r}
-### 2. Join flight, plane, and weather data into a single data frame of raw data to work with
+### 2. Here, I use math to 
+
+op_base <- (flights %>% filter(dep_delay > 0) %>% nrow()) / (flights %>% filter(!is.na(dep_delay) == T) %>% nrow())
+
+
+```
+
+
+```{r}
+### 3. Join flight, plane, and weather data into a single data frame of raw data to work with
 flt_raw <- flights %>%
   left_join(rename(planes,'manuf_year' = year), by = 'tailnum') %>% ## Rename plane manufacture year from 'year' to 'manuf_year' to not confuse it with flight year
   left_join(weather, by = c('time_hour', 'origin'))
@@ -67,7 +79,7 @@ flt_raw <- flights %>%
 
 
 ```{r}
-### Remove irrelevant columns and transform categorical data into numbers
+### 3,4. Remove irrelevant columns and transform categorical data into numbers
 
 
 flt_test <- flt_raw %>%
@@ -228,19 +240,6 @@ In a normal distribution, the distance between each of these would be equal.
 ```
 
 
-```{r}
-### Here, I'll calculate the baseline probability of delay
-op_base <- flt_raw %>%
-  filter(!is.na(dep_delay) == T) %>%
-  group_by(dep_delay > 0) %>%
-  summarise(p = length(dep_delay)/ sum(!is.na(flights$dep_delay) == T) ) %>%
-  filter(p<.5) %>%
-  select(2) %>%
-  as.numeric()
-
-# I'll use this to normalize individual category probabilities
-
-```
 The following fields are either unlikely to be related to departure delay or duplicative of another, superior field in the data set
 
 * Destination
@@ -287,7 +286,7 @@ flt_test %>%
 ```
 These look similar enough to work with. To verify with numbers, I would do a z-test to see if I'm able to disprove that the means are unequal and an f-test to do the same with the standard deviations. But not today. Today, I will do neither.
 
-## Bivariate analysis
+## Multivariate analysis
 
 There are steps here
 
@@ -386,28 +385,41 @@ flt_final %>%
 
 
 
-test_p <- flights[sample(nrow(flights),100),] %>%
+test_a <- flights %>% ### flights[sample(nrow(flights),100),] %>% # Use this for sampling
   select(sched_dep_time, dep_delay) %>%
   filter(!is.na(dep_delay) == T) %>%
+  filter(sched_dep_time %in% (flights %>%
+             group_by(sched_dep_time) %>%
+             summarise(n = length(sched_dep_time)) %>%
+             filter(n >= 25) %>%
+             select(sched_dep_time) %>%
+             unique() %>%
+             unlist() %>%
+             as.character() %>%
+             as.integer())) %>%
   mutate(is_delay = if_else(dep_delay > 0, 1, 0)
            ,diff_20h = if_else(sched_dep_time < 2000
                             ,1960 - sched_dep_time
-                            ,sched_dep_time - 2000))
+                            ,sched_dep_time - 2000)) %>%
+  group_by(diff_20h) %>%
+  mutate(op_diff20 = sum(is_delay) / length(is_delay)) %>%
+  ungroup() %>%
+  as_tibble()
 
-test_p <- cbind(test_p,tibble(x_p = sample(0:1460, nrow(test_p),replace=T))) %>%
-  mutate(y_p = 1/(1+exp(-(0.2746527 - 0.001169423 * x_p))))
 
-test_p %>%
-  ggplot(aes(x_p, y_p)) +
-  geom_line() +
-#  theme_economist() +
-  geom_point(data = test_p, aes(x = diff_20h, y = is_delay),
-    method = "glm", method.args = list(family = "binomial"), 
-    se = FALSE) +
-  geom_jitter(width = .01, height = .01)
 
-test_p %>%
-  mutate(meow = max(diff_20h))
+test_b <- cbind(test_a, tibble(sched_dep_time_diff_8pm = sample(0:1460, nrow(test_a),replace=T))) %>%
+  mutate(prob_delay = 1/(1+exp(-(0.2746527 - 0.001169423 * sched_dep_time_diff_8pm))))
+
+
+
+test_b %>%
+  ggplot(aes(sched_dep_time_diff_8pm, prob_delay)) +
+  geom_line(size = 1, color = 'red') +
+  theme_fivethirtyeight() +
+  geom_point(data = test_b, aes(x = diff_20h, y = op_diff20), color = 'gray') +
+  geom_hline(yintercept = 0.39094, color='blue', size = 1)
+
 
 
 
@@ -417,7 +429,3 @@ test_p %>%
 
 
 
-## Multivariate analysis
-
-1. Covariance
-2. Linear model multiple
