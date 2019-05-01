@@ -8,7 +8,35 @@ This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute
 Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
 
 ```{r}
-plot(cars)
+library(tidyverse); library(nycflights13)
+
+col_names <- names(flights)
+
+output <- vector(mode = 'numeric', length = length(col_names))
+
+for(i in seq_along(col_names)) {
+  col_data <- flights[col_names[i]]
+  if(is.numeric(col_data)) {
+    output[i] <-mean(col_data, na.rm = T) %>%
+      round(2)
+  } else {output[i] <- 1}
+}
+
+for(i in seq_along(col_names)) {
+  col_data <- flights[col_names[1]]
+  if(is.numeric(unlist(col_data))) {
+    output[i] <-mean(col_data, na.rm = T) %>%
+      round(2)
+  } else {output[i] <- 1}
+}
+?unlist
+output
+
+
+
+?is.numeric
+
+str(col_data)
 ```
 
 Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
