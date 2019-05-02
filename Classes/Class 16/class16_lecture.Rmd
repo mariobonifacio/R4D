@@ -1,0 +1,340 @@
+---
+title: "Class 16 - Lecture"
+author: Hari Subhash
+date: "Date created: `r Sys.Date()`"
+output:
+  html_notebook:
+    highlight: haddock
+    smart: yes
+    theme: readable
+    df_print: paged
+---
+
+**Learning Objective**: Write a for loop and understand the basic recipe for it.
+
+###Topics
+1. Revise conditionals
+2. For loops
+3. Introduce the map family
+
+
+##Zoom poll
+
+Question 1 on the poll
+```{r}
+x <- 5
+y <- 4
+
+y %% 2 == 0 ## is y even?
+```
+
+```{r}
+if(condition){
+    Do this
+} else {
+    Do this
+}
+```
+
+
+```{r}
+if(y %% 2 == 0) {
+    x <- x - 1
+} else {
+    x <- x + 1
+}
+
+x
+```
+
+When there is an error in the condition nothing gets run and code is broken.
+```{r}
+if(z %% 5 == 0) {
+    x <- x - 1
+} else {
+    x <- x + 1
+}
+```
+
+Question 3
+```{r}
+x <- c(6, 5)
+
+if(x %% 5 == 0) {
+    x <- x - 1
+} else {
+    x <- x + 1
+}
+```
+if else block syntax is not vectorized. 
+```{r}
+x
+```
+
+the basic syntax for if_else
+```{r}
+if_else(condition, val1, val2)
+```
+
+
+```{r}
+x <- c(6, 5)
+
+x <- if_else(x %% 5 == 0, x - 1, x + 1)
+```
+
+```{r}
+x
+```
+
+```{r}
+x <- c(6, 5)
+x <- if_else(x %% 5 == 0, "yes", "no")
+```
+
+
+What does `any()` do?
+
+```{r}
+x <- c(6, 5)
+
+x == 5
+```
+
+any takes a vector and asks the question is there any TRUE values in you?
+
+```{r}
+any(x == 5)
+```
+
+```{r}
+if(any(x == 5)) {
+    x <- x + 1
+} else {
+    x <-  x - 1
+}
+```
+
+```{r}
+x
+```
+
+The values that true and false conditions take here would be either [7, 6] or for false [5, 4]
+```{r}
+x <- c(6, 5)
+
+x <- if_else(any(x == 5), x + 1, x - 1)
+```
+
+```{r}
+x <- if_else(any(x == 5), 1, x - 1)
+```
+
+```{r}
+any(x == 5)
+```
+
+
+Lets play around with this
+```{r}
+x <- c(6, 5)
+
+x <- if_else(x == 5, x + 1, x + 2)
+```
+
+```{r}
+x
+```
+
+```{r}
+x <- c(6, 5, 10, 5, 6)
+
+x <- if_else(x == 5, "yes equal to 5", "no not equal to 5")
+
+x
+```
+
+```{r}
+x == 5
+```
+
+```{r}
+any(x == 5)
+```
+
+
+```{r}
+x <- c(6, 5)
+
+x <- if_else(any(x == 5), x + 1, x - 1)
+```
+
+```{r}
+x <- if_else(any(x == 5), "yes equal to 5", "no not equal to 5")
+
+x
+```
+
+##For loops
+
+```{r}
+fruits <- c("apples", "oranges", "pineapple")
+
+for (emma in fruits) {
+    print(emma)
+}
+```
+
+For every column in this dataset I would like to take its mean if it is numeric
+```{r}
+library(nycflights13)
+
+
+flights
+```
+
+Lets get the names of the columns
+```{r}
+col_names <- names(flights)
+
+col_names
+```
+
+```{r}
+col_names[13]
+```
+
+
+Pull each column out and check if it is numeric.
+```{r}
+pull(flights, col_names[13]) %>% is.numeric()
+```
+if I wanted to repeat it for 1
+```{r}
+pull(flights, col_names[1]) %>% is.numeric()
+```
+
+```{r}
+pull(flights, col_names[4]) %>% is.numeric()
+```
+
+```{r}
+col_names
+```
+
+```{r}
+1:length(col_names)
+```
+
+```{r}
+1:0
+```
+
+
+```{r}
+seq_along(col_names)
+```
+
+```{r}
+for(i in seq_along(col_names)) {
+    print(i)
+}
+```
+```{r}
+col_names
+```
+
+
+```{r}
+for(i in seq_along(col_names)) {
+    print(col_names[i])
+}
+```
+
+```{r}
+col_names
+```
+
+
+
+```{r}
+for(i in col_names) {
+    print(i)
+}
+```
+
+
+Lets say I want to store the output insteadf printing it
+```{r}
+output <- vector(mode = "character", length = length(col_names))
+
+for(i in seq_along(col_names)) {
+    output[i] <- paste(col_names[i], "is the", i, "column")
+}
+
+output
+```
+```{r}
+flights
+```
+
+
+```{r}
+output <- vector(mode = "numeric", length = length(col_names))
+
+for(i in seq_along(col_names)) {
+
+    ##pull the ith column
+    col_data <- pull(flights, )
+
+    
+    ##check if it is numeric
+    if(is.numeric(col_data)) {
+        ##store output
+        output[i] <- mean(col_data, na.rm = T) %>% round(digits = 2)
+    } else {
+        output[i] <- 1
+    }
+    
+}
+
+output
+```
+
+
+After class
+
+THere are two types of subsets in R. Simplifying vs preserving.
+```{r}
+flights %>% 
+    select(1)
+```
+
+```{r}
+flights %>% 
+    pull(1) %>% 
+    str()
+```
+
+The base R version of select
+```{r}
+flights[1] %>% str()
+```
+
+
+```{r}
+flights[[1]] %>% str()
+```
+
+More commonly
+```{r}
+flights$year %>% str()
+```
+
+```{r}
+is.numeric(c(NA, 1, 2, 3))
+```
+
+
+
+

@@ -1,0 +1,23 @@
+---
+title: "Class 17 - Lecture"
+author: Hari Subhash
+date: "Date created: `r Sys.Date()`"
+output:
+  html_notebook:
+    highlight: haddock
+    smart: yes
+    theme: readable
+    df_print: paged
+---
+
+## **Learning objectives**
+1. Write a for loop
+2. Learn when to use a for loop and when to vectorize
+3. Write our first function
+4. Map that function to elements of a vector
+
+## **Topics**
+1. For loops
+2. First function
+3. Map
+

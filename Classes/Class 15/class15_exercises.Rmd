@@ -298,12 +298,7 @@ gapminder %>%
 ```
 
 
-##Task Set 3: Write a for loop
-1. Create a sequence of numbers from 1 to 50 store it in a variable
 
-2. Write a for loop that returns "even" if a number in the vector you created above is even and "odd" otherwise. Store the results from this in a variable called odds_evens. You can initiate the `odds_evens` vector like this - `odds_evens <- vector("character", length = length(x))`. You can establish if a value is even by checking if the remainder when you divide it by 2 is zero. The syntax for this is `value %% 2 == 0`, where value is the number you are comparing.
-
-3. Now do the same thing with an `if_else()` statement and store the results in a 
 
 
 

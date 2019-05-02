@@ -4,7 +4,16 @@
 
 This repository contains all the material for the R4D course - March 2019
 
-**[Practice Practice Practice](https://puzhu.github.io/R4D/Assignments/Nuggets/practice.nb.html)**
+## Practice
+
+1. **[Week 3 Daily Nuggets](https://puzhu.github.io/R4D/Assignments/Nuggets/nugget_3.nb.html)**
+2. **[Practice Practice Practice](https://puzhu.github.io/R4D/Assignments/Nuggets/practice.nb.html)** This is a work in progress. I will complete this with the intention of it being a guide book + practice that you can use even after the class.
+
+## Reference material
+
+1. [R for data science](https://r4ds.had.co.nz/)
+2. [R Markdown: The Definitive Guide](https://bookdown.org/yihui/rmarkdown/)
+3. [R Graphics Cookbook, 2nd edition](https://r-graphics.org/)
 
 ## Week 1
 
@@ -34,8 +43,6 @@ This repository contains all the material for the R4D course - March 2019
 1. Class 4 - March 19th, 2019 - [Class Lecture](https://puzhu.github.io/R4D/Classes/Class%204/class4_lecture.nb.html) | [Class Exercises](https://puzhu.github.io/R4D/Classes/Class%204/class4_exercises.nb.html) | [Class Video](https://youtu.be/gTG62gKanUQ)
 2. Class 5 - March 21st, 2019 - [Class Lecture](https://puzhu.github.io/R4D/Classes/Class%205/class5_lecture.nb.html) | [Class Exercises](https://puzhu.github.io/R4D/Classes/Class%205/class5_exercises.nb.html) | [Class Video](https://youtu.be/OuEfeF0D24E)
 
-**[Week 3 Daily Nuggets](https://puzhu.github.io/R4D/Assignments/Nuggets/nugget_3.nb.html)**
-
 ## Week 4
 
 1. Class 6 - March 26th, 2019 - [Class Lecture](https://puzhu.github.io/R4D/Classes/Class%206/class6_lecture.nb.html) | [Class Exercises](https://puzhu.github.io/R4D/Classes/Class%206/class6_exercises.nb.html) | [Class Video]()
@@ -63,4 +70,9 @@ This repository contains all the material for the R4D course - March 2019
 ## Week 8
 
 1. Class 14 - April 23rd - [Class Lecture](https://puzhu.github.io/R4D/Classes/Class%2014/class14_lecture.nb.html) | [Class Exercises](https://puzhu.github.io/R4D/Classes/Class%2014/class14_exercises.nb.html) | [Class Video](https://youtu.be/YuUhc3pwQtk)
-1. Class 15 - April 25th - [Class Lecture](https://puzhu.github.io/R4D/Classes/Class%2015/class15_lecture.nb.html) | [Class Exercises](https://puzhu.github.io/R4D/Classes/Class%2015/class15_exercises.nb.html) | [Class Video](https://youtu.be/lPwDeXHg84g)
+2. Class 15 - April 25th - [Class Lecture](https://puzhu.github.io/R4D/Classes/Class%2015/class15_lecture.nb.html) | [Class Exercises](https://puzhu.github.io/R4D/Classes/Class%2015/class15_exercises.nb.html) | [Class Video](https://youtu.be/lPwDeXHg84g)
+
+## Week 9
+
+1. Class 16 - April 30th - [Class Lecture](https://puzhu.github.io/R4D/Classes/Class%2016/class16_lecture.nb.html) | [Class Exercises](https://puzhu.github.io/R4D/Classes/Class%2016/class16_exercises.nb.html) | [Class Video](https://youtu.be/PgomjCGX-aE)
+2. Class 17 - May 2nd - [Class Slides](https://puzhu.github.io/R4D/Classes/Class%2017/class17_slides.html) | [Class Lecture](https://puzhu.github.io/R4D/Classes/Class%2017/class17_lecture.nb.html) | [Class Exercises](https://puzhu.github.io/R4D/Classes/Class%2017/class17_exercises.nb.html) | [Class Video]()
