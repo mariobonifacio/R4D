@@ -1,38 +1,86 @@
 ---
-title: "R Notebook"
-output: html_notebook
+title: "ss_v_midclass"
+author: "Mario"
+date: 'Date created: `r Sys.Date()`'
+output:
+  html_notebook:
+    code_folding: hide
+    df_print: paged
+    highlight: kate
+    smart: yes
+    theme: paper
+    toc: no
+  html_document:
+    toc: no
 ---
+# {.tabset} 
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+## abstract
 
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+ojfowj
 
+## background
+
+## setup
+
+Install and load packages
 ```{r}
-library(tidyverse); library(lubridate)
 
-povertyline_hist <- read.csv(file = 'hstpov1.csv', header = T, na.strings = '***')
-
-ss_cola <- read_delim(delim = ' '
-             , file = 'cola_1975-2019.txt'
-             , col_names = c('month', 'year', 'rmv', 'percent')) %>%
-    select(-rmv)
-  
-ss_cola %>%
-  mutate(percent = sub('%', '', percent)
-         ,percent = as.numeric(percent)) 
-
-read_csv(file = 'some_socsec.csv', col_names = T) %>%
-  mutate(MonthYear = dmy(paste('1-', MonthYear))
-         ,year = year(MonthYear)
-         ,month = month(MonthYear)) %>%
-  select(year, Couple)
-
-sub('%', '', x = ss_cola[,3])
-
+# install.packages('gapminder')
+library(tidyverse); library(lubridate); library(gapminder)
 ```
 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+Load poverty guideline data
+```{r}
 
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+povertyline_hist <- read.csv(file = 'hstpov1.csv', header = T, na.strings = '***') %>%
+  mutate(yr = year
+         ,yr_mth = yr * 100 + 7) %>%
+  select(yr_mth, X2_senior, X1_senior, X4_all)
+```
 
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+Load social security cost of living adjustment data
+```{r}
+
+ss_cola <- read_delim(delim = ' '
+             ,file = 'cola_1975-2019.txt'
+             ,col_names = c('mth_name', 'yr', 'rmv', 'percent')) %>%
+  mutate(mth_name = trimws(mth_name)
+         ,mth = match(mth_name, month.name)
+         ,yr_mth = yr*100 + mth) %>%
+  select(yr_mth, percent)
+```
+
+Load social security historic benefits data
+```{r}
+
+socsec_hist <- read_csv(file = 'some_socsec.csv', col_names = T) %>%
+  mutate(MonthYear = dmy(paste('1-', MonthYear))
+         ,yr = year(MonthYear)
+         ,mth = month(MonthYear)
+         ,yr_mth = yr * 100 + mth
+         ,ss_2 = Couple) %>%
+  select(yr_mth, ss_2)
+```
+
+Load median income data
+```{r}
+
+mdn_y_hist <- read.csv(file = 'mdn_house-fam_y.csv', na.strings = 'NULL') %>%
+  mutate(yr = if_else(year(mdy(DATE)) < 2020
+                      ,year(mdy(DATE))
+                      ,year(mdy(DATE)) - 100)
+         ,mth = month(mdy(DATE))
+         ,yr_mth = yr * 100 + mth) %>%
+  select(yr_mth, mdn_house_y, mdn_fam_y)
+```
+
+First, join socsec cola and benefits data to fill missing years
+```{r}
+
+socsec_hist %>%
+  full_join(p)
+```
+
+
+
