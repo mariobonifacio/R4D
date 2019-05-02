@@ -8,35 +8,27 @@ This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute
 Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
 
 ```{r}
-library(tidyverse); library(nycflights13)
+library(tidyverse); library(lubridate)
 
-col_names <- names(flights)
+povertyline_hist <- read.csv(file = 'hstpov1.csv', header = T, na.strings = '***')
 
-output <- vector(mode = 'numeric', length = length(col_names))
+ss_cola <- read_delim(delim = ' '
+             , file = 'cola_1975-2019.txt'
+             , col_names = c('month', 'year', 'rmv', 'percent')) %>%
+    select(-rmv)
+  
+ss_cola %>%
+  mutate(percent = sub('%', '', percent)
+         ,percent = as.numeric(percent)) 
 
-for(i in seq_along(col_names)) {
-  col_data <- flights[col_names[i]]
-  if(is.numeric(col_data)) {
-    output[i] <-mean(col_data, na.rm = T) %>%
-      round(2)
-  } else {output[i] <- 1}
-}
+read_csv(file = 'some_socsec.csv', col_names = T) %>%
+  mutate(MonthYear = dmy(paste('1-', MonthYear))
+         ,year = year(MonthYear)
+         ,month = month(MonthYear)) %>%
+  select(year, Couple)
 
-for(i in seq_along(col_names)) {
-  col_data <- flights[col_names[1]]
-  if(is.numeric(unlist(col_data))) {
-    output[i] <-mean(col_data, na.rm = T) %>%
-      round(2)
-  } else {output[i] <- 1}
-}
-?unlist
-output
+sub('%', '', x = ss_cola[,3])
 
-
-
-?is.numeric
-
-str(col_data)
 ```
 
 Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.

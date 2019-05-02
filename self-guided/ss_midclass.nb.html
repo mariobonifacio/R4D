@@ -248,14 +248,28 @@ $(document).ready(function () {
 <p>Try executing this chunk by clicking the <em>Run</em> button within the chunk or by placing your cursor inside it and pressing <em>Ctrl+Shift+Enter</em>.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc3RyKGNvbF9kYXRhKVxuXG5gYGAifQ== -->
-<pre class="r"><code>str(col_data)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmVhZF9jc3YoZmlsZSA9ICdzb21lX3NvY3NlYy5jc3YnLCBjb2xfbmFtZXMgPSBUKSAlPiVcbiAgbXV0YXRlKE1vbnRoWWVhciA9IGRteShwYXN0ZSgnMS0nLCBNb250aFllYXIpKVxuICAgICAgICAgLHllYXIgPSB5ZWFyKE1vbnRoWWVhcilcbiAgICAgICAgICxtb250aCA9IG1vbnRoKE1vbnRoWWVhcikpICU+JVxuICBzZWxlY3QoeWVhciwgQ291cGxlKVxuXG5gYGAifQ== -->
+<pre class="r"><code>read_csv(file = 'some_socsec.csv', col_names = T) %&gt;%
+  mutate(MonthYear = dmy(paste('1-', MonthYear))
+         ,year = year(MonthYear)
+         ,month = month(MonthYear)) %&gt;%
+  select(year, Couple)
 </code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiQ2xhc3NlcyDigJh0YmxfZGbigJksIOKAmHRibOKAmSBhbmQgJ2RhdGEuZnJhbWUnOlx0MzM2Nzc2IG9icy4gb2YgIDEgdmFyaWFibGU6XG4gJCB5ZWFyOiBpbnQgIDIwMTMgMjAxMyAyMDEzIDIwMTMgMjAxMyAyMDEzIDIwMTMgMjAxMyAyMDEzIDIwMTMgLi4uXG4ifQ== -->
-<pre><code>Classes ‘tbl_df’, ‘tbl’ and 'data.frame':   336776 obs. of  1 variable:
- $ year: int  2013 2013 2013 2013 2013 2013 2013 2013 2013 2013 ...</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiUGFyc2VkIHdpdGggY29sdW1uIHNwZWNpZmljYXRpb246XG5jb2xzKFxuICBNb250aFllYXIgPSBcdTAwMWJbMzFtY29sX2NoYXJhY3RlcigpXHUwMDFiWzM5bSxcbiAgQ291cGxlID0gXHUwMDFiWzMybWNvbF9kb3VibGUoKVx1MDAxYlszOW1cbilcbiJ9 -->
+<pre><code>Parsed with column specification:
+cols(
+  MonthYear = [31mcol_character()[39m,
+  Couple = [32mcol_double()[39m
+)</code></pre>
 <!-- rnb-output-end -->
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbInNwZWNfdGJsX2RmIiwidGJsX2RmIiwidGJsIiwiZGF0YS5mcmFtZSJdLCJuY29sIjoyLCJucm93Ijo4fSwicmRmIjoiSDRzSUFBQUFBQUFBQmd0eWlURGlpdUJpWUdCZ1ltQm1aV1pnWWdZeVdaaUFCQ01EQ3dNbmlLNWdZR0FXQml0Z1lPQURZZzZIZVRjWVFBQkIzNEhTRDZEMEV5ajlBa3EvZ2RJZkdLQUFZazZXQTBROE93RkM1MDQyQmdHSC9NcVpRRERMb1dBMWhGOTRFTUl2YmprREJHY2R5Z0tneHFBNGxEVTVKN0c0R01nUVFCTGtTa2tzU2RSTEswck1UVVZUemxtVVg2NlhCeFFIYWVFRithOEJTUHovLy84SHVya3dSUUxnUUlBSXNsU21KaFpCMld6TythVUZPVUR6R2Y2aGFXWFBMeWpKek04RGFtWUNoU0FybXVNWWk5QUVCRXJ6UUphbDZDWm5sT1psNnhwWmdId0Fsb2NBWGlpYkE0bk5CTEdUNVQvVUxGYVlxMUx6MGpQelVtR2V5RWxNU3MyQmN2aUFYZ2Q3U3ErZ0tET3ZCQlpVUU5GaXZaTDhra1NZT3E3ay9CeVlDTmh6RFA4QWpPcFhzakFDQUFBPSJ9 -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["year"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["Couple"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"1974","2":"210.0"},{"1":"1974","2":"219.0"},{"1":"1975","2":"236.6"},{"1":"1976","2":"251.8"},{"1":"1977","2":"266.7"},{"1":"1978","2":"284.1"},{"1":"1979","2":"312.3"},{"1":"1980","2":"357.0"}],"options":{"columns":{"min":{},"max":[10],"total":[2]},"rows":{"min":[10],"max":[10],"total":[8]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-frame-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Add a new chunk by clicking the <em>Insert Chunk</em> button on the toolbar or by pressing <em>Ctrl+Alt+I</em>.</p>
@@ -263,7 +277,7 @@ $(document).ready(function () {
 <p>The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike <em>Knit</em>, <em>Preview</em> does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.</p>
 <!-- rnb-text-end -->
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpUaGlzIGlzIGFuIFtSIE1hcmtkb3duXShodHRwOi8vcm1hcmtkb3duLnJzdHVkaW8uY29tKSBOb3RlYm9vay4gV2hlbiB5b3UgZXhlY3V0ZSBjb2RlIHdpdGhpbiB0aGUgbm90ZWJvb2ssIHRoZSByZXN1bHRzIGFwcGVhciBiZW5lYXRoIHRoZSBjb2RlLiANCg0KVHJ5IGV4ZWN1dGluZyB0aGlzIGNodW5rIGJ5IGNsaWNraW5nIHRoZSAqUnVuKiBidXR0b24gd2l0aGluIHRoZSBjaHVuayBvciBieSBwbGFjaW5nIHlvdXIgY3Vyc29yIGluc2lkZSBpdCBhbmQgcHJlc3NpbmcgKkN0cmwrU2hpZnQrRW50ZXIqLiANCg0KYGBge3J9DQpsaWJyYXJ5KHRpZHl2ZXJzZSk7IGxpYnJhcnkobnljZmxpZ2h0czEzKQ0KDQpjb2xfbmFtZXMgPC0gbmFtZXMoZmxpZ2h0cykNCg0Kb3V0cHV0IDwtIHZlY3Rvcihtb2RlID0gJ251bWVyaWMnLCBsZW5ndGggPSBsZW5ndGgoY29sX25hbWVzKSkNCg0KZm9yKGkgaW4gc2VxX2Fsb25nKGNvbF9uYW1lcykpIHsNCiAgY29sX2RhdGEgPC0gZmxpZ2h0c1tjb2xfbmFtZXNbaV1dDQogIGlmKGlzLm51bWVyaWMoY29sX2RhdGEpKSB7DQogICAgb3V0cHV0W2ldIDwtbWVhbihjb2xfZGF0YSwgbmEucm0gPSBUKSAlPiUNCiAgICAgIHJvdW5kKDIpDQogIH0gZWxzZSB7b3V0cHV0W2ldIDwtIDF9DQp9DQoNCmZvcihpIGluIHNlcV9hbG9uZyhjb2xfbmFtZXMpKSB7DQogIGNvbF9kYXRhIDwtIGZsaWdodHNbY29sX25hbWVzWzFdXQ0KICBpZihpcy5udW1lcmljKHVubGlzdChjb2xfZGF0YSkpKSB7DQogICAgb3V0cHV0W2ldIDwtbWVhbihjb2xfZGF0YSwgbmEucm0gPSBUKSAlPiUNCiAgICAgIHJvdW5kKDIpDQogIH0gZWxzZSB7b3V0cHV0W2ldIDwtIDF9DQp9DQo/dW5saXN0DQpvdXRwdXQNCg0KDQoNCj9pcy5udW1lcmljDQoNCnN0cihjb2xfZGF0YSkNCmBgYA0KDQpBZGQgYSBuZXcgY2h1bmsgYnkgY2xpY2tpbmcgdGhlICpJbnNlcnQgQ2h1bmsqIGJ1dHRvbiBvbiB0aGUgdG9vbGJhciBvciBieSBwcmVzc2luZyAqQ3RybCtBbHQrSSouDQoNCldoZW4geW91IHNhdmUgdGhlIG5vdGVib29rLCBhbiBIVE1MIGZpbGUgY29udGFpbmluZyB0aGUgY29kZSBhbmQgb3V0cHV0IHdpbGwgYmUgc2F2ZWQgYWxvbmdzaWRlIGl0IChjbGljayB0aGUgKlByZXZpZXcqIGJ1dHRvbiBvciBwcmVzcyAqQ3RybCtTaGlmdCtLKiB0byBwcmV2aWV3IHRoZSBIVE1MIGZpbGUpLg0KDQpUaGUgcHJldmlldyBzaG93cyB5b3UgYSByZW5kZXJlZCBIVE1MIGNvcHkgb2YgdGhlIGNvbnRlbnRzIG9mIHRoZSBlZGl0b3IuIENvbnNlcXVlbnRseSwgdW5saWtlICpLbml0KiwgKlByZXZpZXcqIGRvZXMgbm90IHJ1biBhbnkgUiBjb2RlIGNodW5rcy4gSW5zdGVhZCwgdGhlIG91dHB1dCBvZiB0aGUgY2h1bmsgd2hlbiBpdCB3YXMgbGFzdCBydW4gaW4gdGhlIGVkaXRvciBpcyBkaXNwbGF5ZWQuDQo=</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpUaGlzIGlzIGFuIFtSIE1hcmtkb3duXShodHRwOi8vcm1hcmtkb3duLnJzdHVkaW8uY29tKSBOb3RlYm9vay4gV2hlbiB5b3UgZXhlY3V0ZSBjb2RlIHdpdGhpbiB0aGUgbm90ZWJvb2ssIHRoZSByZXN1bHRzIGFwcGVhciBiZW5lYXRoIHRoZSBjb2RlLiANCg0KVHJ5IGV4ZWN1dGluZyB0aGlzIGNodW5rIGJ5IGNsaWNraW5nIHRoZSAqUnVuKiBidXR0b24gd2l0aGluIHRoZSBjaHVuayBvciBieSBwbGFjaW5nIHlvdXIgY3Vyc29yIGluc2lkZSBpdCBhbmQgcHJlc3NpbmcgKkN0cmwrU2hpZnQrRW50ZXIqLiANCg0KYGBge3J9DQpsaWJyYXJ5KHRpZHl2ZXJzZSk7IGxpYnJhcnkobHVicmlkYXRlKQ0KDQpwb3ZlcnR5bGluZV9oaXN0IDwtIHJlYWQuY3N2KGZpbGUgPSAnaHN0cG92MS5jc3YnLCBoZWFkZXIgPSBULCBuYS5zdHJpbmdzID0gJyoqKicpDQoNCnNzX2NvbGEgPC0gcmVhZF9kZWxpbShkZWxpbSA9ICcgJw0KICAgICAgICAgICAgICwgZmlsZSA9ICdjb2xhXzE5NzUtMjAxOS50eHQnDQogICAgICAgICAgICAgLCBjb2xfbmFtZXMgPSBjKCdtb250aCcsICd5ZWFyJywgJ3JtdicsICdwZXJjZW50JykpICU+JQ0KICAgIHNlbGVjdCgtcm12KQ0KICANCnNzX2NvbGEgJT4lDQogIG11dGF0ZShwZXJjZW50ID0gc3ViKCclJywgJycsIHBlcmNlbnQpDQogICAgICAgICAscGVyY2VudCA9IGFzLm51bWVyaWMocGVyY2VudCkpIA0KDQpyZWFkX2NzdihmaWxlID0gJ3NvbWVfc29jc2VjLmNzdicsIGNvbF9uYW1lcyA9IFQpICU+JQ0KICBtdXRhdGUoTW9udGhZZWFyID0gZG15KHBhc3RlKCcxLScsIE1vbnRoWWVhcikpDQogICAgICAgICAseWVhciA9IHllYXIoTW9udGhZZWFyKQ0KICAgICAgICAgLG1vbnRoID0gbW9udGgoTW9udGhZZWFyKSkgJT4lDQogIHNlbGVjdCh5ZWFyLCBDb3VwbGUpDQoNCnN1YignJScsICcnLCB4ID0gc3NfY29sYVssM10pDQoNCmBgYA0KDQpBZGQgYSBuZXcgY2h1bmsgYnkgY2xpY2tpbmcgdGhlICpJbnNlcnQgQ2h1bmsqIGJ1dHRvbiBvbiB0aGUgdG9vbGJhciBvciBieSBwcmVzc2luZyAqQ3RybCtBbHQrSSouDQoNCldoZW4geW91IHNhdmUgdGhlIG5vdGVib29rLCBhbiBIVE1MIGZpbGUgY29udGFpbmluZyB0aGUgY29kZSBhbmQgb3V0cHV0IHdpbGwgYmUgc2F2ZWQgYWxvbmdzaWRlIGl0IChjbGljayB0aGUgKlByZXZpZXcqIGJ1dHRvbiBvciBwcmVzcyAqQ3RybCtTaGlmdCtLKiB0byBwcmV2aWV3IHRoZSBIVE1MIGZpbGUpLg0KDQpUaGUgcHJldmlldyBzaG93cyB5b3UgYSByZW5kZXJlZCBIVE1MIGNvcHkgb2YgdGhlIGNvbnRlbnRzIG9mIHRoZSBlZGl0b3IuIENvbnNlcXVlbnRseSwgdW5saWtlICpLbml0KiwgKlByZXZpZXcqIGRvZXMgbm90IHJ1biBhbnkgUiBjb2RlIGNodW5rcy4gSW5zdGVhZCwgdGhlIG91dHB1dCBvZiB0aGUgY2h1bmsgd2hlbiBpdCB3YXMgbGFzdCBydW4gaW4gdGhlIGVkaXRvciBpcyBkaXNwbGF5ZWQuDQo=</div>
 
 
 
