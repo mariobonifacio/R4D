@@ -1,0 +1,109 @@
+---
+title: "Class 17 - In class exercises"
+author: Hari Subhash
+date: "Date created: `r Sys.Date()`"
+output:
+  html_notebook:
+    highlight: haddock
+    smart: yes
+    theme: readable
+    df_print: paged
+---
+
+### Task Set 1 : Put the pieces together
+1. Use `vector()` to initiate a numeric vector of length 20
+2. Initiate a vector with mode set to list and length that is same as the length of the vector x below.
+
+```{r}
+my_x <- vector(mode = 'numeric', length = 20)
+
+x <- 1:5
+
+vector(mode = 'list', length = length(x))
+
+```
+
+3. I want a loop that will take different columns (either character or numeric) from a tibble that has 10 columns total and calculate the sum if the column is numeric and create a concatenated character string that combines all the characters if it is a character. What should be the length of the output vector? What should be its mode? Create this output vector.
+
+10, list
+
+```{r}
+my_list <- vector(mode = 'list', length = length(x))
+
+## for(i in 1:10){my_temp <- gapminder[[,i]]
+##    my_list[i] <- if_else(is.numeric(my_temp)##
+#                       ,mean(my_temp, na.rm = T)
+#                       ,for(j in seq_along(my_temp)){}  #stumped here paste(my_temp[[seq_along(temp)]])}
+```
+
+
+4. See the gapminder data below.
+```{r}
+library(gapminder); library(tidyverse)
+gapminder 
+```
+
+4.a Use `seq_along()` to identify the indices of all the columns in it. Store it in a variable called `mt_cols`
+
+```{r}
+mt_cols <- seq_along(colnames(gapminder))
+```
+
+4.b Compare the length of `mt_cols` with `ncol()`s in gapminder to see that they match.
+
+```{r}
+identical(length(mt_cols), ncol(gapminder))
+```
+
+
+5. Complete the code below to create a simple for loop
+```{r}
+for(i in c("a", "b", "c", "d")) {
+    print(i)
+}
+```
+
+6. Create a sequence of numbers from 1 to 50 store it in a variable x
+```{r}
+x <- 1:50 ## Freebie!
+```
+
+
+7. Complete the code below to write a for loop that returns "even" if a number in the vector you created above is even and "odd" otherwise.
+```{r}
+odds_evens <- vector("character", length = length(x))
+for (i in seq_along(x)) {
+    odds_evens[[]] <- if ( %% 2 == 0) { } else { }
+}
+
+odds_evens
+```
+
+8. Now complete the code below to do the same thing with an `if_else()` statement and store the results in a variable called odds_evens2
+
+```{r}
+odds_evens2 <- if_else()
+
+odds_evens2
+```
+
+9. Use the `identical()` function to check if the odds_evens is identical to odds_evens2.
+
+### Task Set 2: Make a for loop
+
+1. Take the gapminder dataset. Loop through its columns. If a column is numeric then store the output of the `summary()` command. If it is not numeric, then store NULL. Print the ouput
+
+2. Use `names(gapminder)` to identify the names of columns and set these as the names of the output vector you created.
+
+### Task Set 3: Functions
+
+1. Create a function that takes two numbers (i.e. atomic vectors of length one) and returns the square of whichever number is the greatest. Use `stop("Your error message here")` to throw an error if the input vector is greater than 1 in length. Test your function to make sure it works.
+
+2. Create a function that takes an atomic vector (of any length) as its input. If it numeric then use the `hist()` function from base to plot a histogram else return an error using `stop()`. See the code below for an illustration of the `hist()` command. Test your function to make sure it works.
+
+```{r}
+hist(gapminder$lifeExp)
+```
+
+
+

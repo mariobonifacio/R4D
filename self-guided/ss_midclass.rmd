@@ -24,7 +24,7 @@ ojfowj
 ## setup
 
 Install and load packages
-```{r}
+```{r message=FALSE, warning=FALSE}
 
 # install.packages('gapminder')
 library(tidyverse); library(lubridate); library(gapminder)
