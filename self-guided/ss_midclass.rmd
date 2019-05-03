@@ -21,44 +21,49 @@ ojfowj
 
 ## background
 
+Empirically, Social Security is one of the U.S.'s most successful social programs.
+
 ## setup
 
 Install and load packages
-```{r message=FALSE, warning=FALSE}
+```{r message=FALSE, message=FALSE, warning=FALSE}
 
-# install.packages('gapminder')
-library(tidyverse); library(lubridate); library(gapminder)
+# install.packages('gapminder'); install.packages('DiagrammeR')
+library(tidyverse); library(lubridate); library(gapminder); library(DiagrammeR)
 ```
 
 Load poverty guideline data
 ```{r}
-
 povertyline_hist <- read.csv(file = 'hstpov1.csv', header = T, na.strings = '***') %>%
   mutate(yr = year
-         ,yr_mth = yr * 100 + 7) %>%
+         ,yr_mth = yr + 0.54) %>%
   select(yr_mth, X2_senior, X1_senior, X4_all)
 ```
 
 Load social security cost of living adjustment data
 ```{r}
-
-ss_cola <- read_delim(delim = ' '
+ss_cola <- read.delim(sep = ' '
              ,file = 'cola_1975-2019.txt'
-             ,col_names = c('mth_name', 'yr', 'rmv', 'percent')) %>%
+             ,strip.white = T
+             ,header = F
+             ,col.names = c(1:4,'mth_name', 'yr', 'rmv', 'cola')) %>%
   mutate(mth_name = trimws(mth_name)
          ,mth = match(mth_name, month.name)
-         ,yr_mth = yr*100 + mth) %>%
-  select(yr_mth, percent)
+         ,yr_mth = yr + round(((mth - 0.5) / 12), 2)
+         ,cola = as.numeric(sub(x= cola, '%', '')) / 100) %>%
+  select(yr_mth, cola)
+
+
 ```
 
 Load social security historic benefits data
 ```{r}
 
-socsec_hist <- read_csv(file = 'some_socsec.csv', col_names = T) %>%
+socsec_hist <- read.csv(file = 'some_socsec.csv', header = T) %>%
   mutate(MonthYear = dmy(paste('1-', MonthYear))
          ,yr = year(MonthYear)
          ,mth = month(MonthYear)
-         ,yr_mth = yr * 100 + mth
+         ,yr_mth = yr + round(((mth - 0.5) / 12), 2)
          ,ss_2 = Couple) %>%
   select(yr_mth, ss_2)
 ```
@@ -71,16 +76,34 @@ mdn_y_hist <- read.csv(file = 'mdn_house-fam_y.csv', na.strings = 'NULL') %>%
                       ,year(mdy(DATE))
                       ,year(mdy(DATE)) - 100)
          ,mth = month(mdy(DATE))
-         ,yr_mth = yr * 100 + mth) %>%
+         ,yr_mth = yr + round(((mth - 0.5) / 12), 2)) %>%
   select(yr_mth, mdn_house_y, mdn_fam_y)
 ```
 
 First, join socsec cola and benefits data to fill missing years
 ```{r}
 
-socsec_hist %>%
-  full_join(p)
+my_work <- socsec_hist %>%
+  full_join(ss_cola, by = 'yr_mth') %>%
+  arrange(yr_mth)
+
 ```
 
+Next, fill in missing ss_2 values using cola
+```{r}
 
+for(i in seq_along(my_work$ss_2)) {
+  my_work$ss_2[i] <- if_else(condition = is.na(my_work$ss_2[i])
+                             & !is.na(my_work$ss_2[i-1])
+                             & !is.na(my_work$cola[i])
+          ,true = my_work$ss_2[i-1] * my_work$cola[i]
+          ,false = my_work$ss_2)
+  
+  
+  
+  
+  
+  
+}
+```
 
