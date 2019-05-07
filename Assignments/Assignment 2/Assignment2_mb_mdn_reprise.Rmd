@@ -24,40 +24,69 @@ I then use a logistic regression model, and find that all five independent varia
 
 > Probability of departure delay = 1 / (1 + e^-(0.27 - 0.0012 * difference between 8pm and scheduled departure time in minutes))
 
-```{r echo=FALSE}
-library(tidyverse); library(nycflights13); library(stringr); library(lubridate) ## Loading  these
+```{r echo=FALSE, message=FALSE, warning=FALSE, r echo=FALSE}
+## Load needed packages
+library(tidyverse); library(nycflights13); library(stringr); library(lubridate); library(ggthemes)
+```
 
-test_a <- flights %>% ### 
+```{r echo=FALSE}
+## Filter out entries where departure delay is NULL
+## Because observed probability will be used as a benchmark to test the model, remove departure times with limited observations
+test_a <- flights %>% 
   filter(!is.na(dep_delay) == T) %>% 
   group_by(sched_dep_time) %>%
-  filter(n() >= 100) %>%
-  mutate(colon_time = hm(paste(trunc(sched_dep_time/100)
-                            ,str_sub(sched_dep_time,-2,-1)
-                            ,sep = ':')))
-    
-    
-    is_delay = if_else(dep_delay > 0, 1, 0)
-           ,diff_20h = if_else(sched_dep_time < 2000
-                            ,1960 - sched_dep_time
-                            ,sched_dep_time - 2000)) %>%
-  group_by(diff_20h) %>%
-  mutate(op_diff20 = sum(is_delay) / length(is_delay)) %>%
+  filter(n() >= 100) %>% 
   ungroup()
 
-test_b <- cbind(test_a, tibble(sched_dep_time_diff_8pm = sample(0:1460, nrow(test_a),replace=T))) %>%
-  mutate(prob_delay = 1/(1+exp(-(0.2746527 - 0.001169423 * sched_dep_time_diff_8pm))))
+test_a
+```
 
+```{r echo=FALSE}
+## Next, mutate scheduled departure time from integer to time object to do time operations on it
+test_b <- test_a %>%
+  mutate(dep_time_object = hm(paste
+                              (trunc(sched_dep_time/100) ## This line provides the hour
+                                ,str_sub(sched_dep_time,-2,-1)))) ## This line provides the minute
+test_b
+```
 
-test_b %>%
-  ggplot(aes(sched_dep_time_diff_8pm, prob_delay)) +
-  geom_line(size = 1.5, color = 'orange') +
+```{r echo=FALSE}
+## Next, mutate delay time to a binary i.e. Is it delayed (YN)
+## Find time difference between scheduled departure time and 8 pm
+## Find the observed probability by time i.e. delayed flights / all flights
+
+test_c <- test_b %>%
+  mutate(is_delay = if_else(dep_delay > 0, 1, 0)
+         ,diff_20h = abs(as.numeric(dep_time_object - hm('20:00'), units = 'minutes'))) %>%
+  group_by(diff_20h) %>%
+  mutate(op_diff20 = mean(is_delay, na.rm = T)) %>%
+  ungroup()
+
+test_c
+```
+
+```{r echo=FALSE}
+## Use the bivariate model to predict probability for each scheduled departure time
+test_d <- test_c %>%
+  mutate(pred_bivar = 1/(1+exp(-(0.2746527 - 0.001169423 * diff_20h))))
+```
+
+```{r}
+
+ggplot(data = test_d, mapping = aes(x = diff_20h, y = op_diff20, color = 'observed probability')) +
+  geom_point() +
+  geom_line(data = test_d, mapping = aes(x = diff_20h, y = pred_bivar, color = 'predicted probability'), size = 1.5) +
+  geom_hline(yintercept = 0.39094, size = 1) +
   ggtitle('Fly in the morning to lower your chance for delay') +
-  scale_color_fivethirtyeight() +
-  theme_fivethirtyeight() +
-  geom_point(data = test_b, aes(x = diff_20h, y = op_diff20), color = 'gray') +
-  geom_hline(yintercept = 0.39094, color='blue', size = 1)
+  scale_color_fivethirtyeight(labels = c('observed probability', 'predicted probability', 'baseline prediction')) +
+  theme_fivethirtyeight()
+  
 
 ```
+
+
+
+
 
 
 
