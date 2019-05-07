@@ -36,7 +36,6 @@ Load poverty guideline data
 ```{r}
 poverty_hist <- read.csv(file = 'hstpov1.csv', header = T, na.strings = '***') %>%
   mutate(yr = year
-         ,yr_mth = yr + 0.54) %>%
          ,yr_mth = yr + 0.04) %>%
   select(yr_mth, X2_senior, X1_senior, X4_all)
 ```
