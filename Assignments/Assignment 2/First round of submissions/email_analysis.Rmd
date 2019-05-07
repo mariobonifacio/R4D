@@ -1,0 +1,155 @@
+---
+title: "The Wilderness Society - Email Marketing Data Analysis"
+output: html_notebook
+---
+
+```{r}
+# load libraries
+library(tidyverse)
+```
+
+```{r}
+# load downloaded data
+email_data <- read_csv('data/emails_data.csv') %>% 
+    rename_all(funs(make.names(.)))
+
+# clean data for charting
+email_data_clean <- email_data %>%
+  select(-grep('Click|Actions|Notes|Complaints|X34', current_vars())) %>% 
+  separate(Date, into = c('Date', 'Time'), sep = ' ') %>% 
+  separate(Date, into = c('Year', 'Month', 'Date')) %>% 
+  mutate_at(c('Year', 'Month', 'Date', 'Sent', 'Opened', 'Total.Gifts', 'Total.Raised', 'Bounces', 'Unsubscribed'), as.numeric) %>% 
+  filter(Sent > 10000 & Total.Gifts > 0)
+
+email_data_clean$Month <- month.abb[email_data_clean$Month]
+```
+
+
+##How are open rates (opens / sends) trending over time?
+```{r}
+#min and org data for performance
+email_data_short <- email_data_clean %>% 
+  mutate(openRate = Opened / Sent) %>% 
+  group_by(Year, Month) %>% 
+  summarize(meanOpenRate = mean(openRate), totalSent = sum(Sent), na.rm = T) %>% 
+  arrange(Year, Month)
+```
+
+
+##How does this correspond to overall list size (sends)?
+
+###Open Rate over time
+```{r}
+#They specifically wanted these titles - I know they are bad
+email_data_short %>% 
+  ggplot(aes(Month, meanOpenRate, group=factor(Year), color=factor(Year))) +
+  geom_line(na.rm = T) +
+  geom_point(na.rm = T) +
+  labs(title = "Mean Open Rate / Month", x="Month", color="Year") +
+  scale_x_discrete(limits = month.abb)
+```
+
+
+###Total Sent over time
+```{r}
+email_data_short %>% 
+  ggplot(aes(Month, totalSent, group=factor(Year), color=factor(Year))) +
+  geom_line(na.rm = T) +
+  geom_point(na.rm = T) +
+  labs(title = "Total Sent / Month", x="Month", y="Total Sent", color="Year") +
+  scale_x_discrete(limits = month.abb) +
+  ylim(0, 15000000) +
+  facet_grid(Year ~ .)
+```
+
+
+##What were the top 3 emails in the last year by (for example): open rate, conversion rate (gifts / opens), revenue per 1000 recipients (sends), average gift (revenue / donations). Look at this outside of EOY (i.e. excluding mid Nov-December).
+```{r}
+#reorg data for performance in new subtask
+email_data_1 <- email_data_clean %>% 
+  filter(Month != 'Dec' & Month != 'Nov') %>% 
+  select(1:3, Opened, Sent, Campaign, Total.Gifts, Total.Raised) %>% 
+  mutate(openRate = (Opened / Sent), conversionRate = (Total.Gifts / Opened), averageGift = (Total.Raised / Total.Gifts))
+```
+
+
+###Top 3: open rate
+```{r}
+top_n(email_data_1, 3, openRate)
+```
+
+
+###Top 3: conversion rate (gifts / opens)
+```{r}
+top_n(email_data_1, 3, conversionRate)
+```
+
+
+###Top 3: average gift (revenue / donations)
+```{r}
+top_n(email_data_1, 3, averageGift)
+```
+
+
+###Top 3: revenue per 1000 recipients (sends)
+```{r}
+email_data_1 %>% 
+  mutate(Revenue.PerK = Total.Raised / (Sent / 1000)) %>% 
+  top_n(., 3, Revenue.PerK)
+```
+
+
+##How do bounce and/or opt out rates (per send) correlate with list size?
+```{r}
+email_data_2 <- email_data_clean %>% 
+  filter(Month != 'Dec' & Month != 'Nov') %>% 
+  select(1:3, Opened, Sent, Campaign, Total.Gifts, Total.Raised, Bounces, Unsubscribed) %>% 
+  mutate(openRate = (Opened / Sent), conversionRate = (Total.Gifts / Opened), averageGift = (Total.Raised / Total.Gifts), bounceRate = (Bounces / Sent), unsubscribedRate = (Unsubscribed / Opened))
+
+ggplot(email_data_2, aes(Sent, bounceRate)) +
+  geom_point(na.rm = T) +
+  scale_x_continuous(breaks = pretty(email_data_2$Sent, n = 10)) +
+  labs(title = "List Size is a poor predictor of Bounce Rate", x="List Size (Sent)", y="Bounce Rate")
+```
+
+```{r}
+ggplot(email_data_2, aes(Sent, unsubscribedRate)) +
+  geom_point(na.rm = T) +
+  scale_x_continuous(breaks = pretty(email_data_2$Sent, n = 15)) +
+  labs(title = "", x="List Size (Sent)", y="Opt Out Rate")
+```
+
+
+##Which 3 emails have the highest opt-out rate (Unsubscribe)?
+```{r}
+email_data_new <- email_data_clean %>%
+  filter(Year > 2017) %>% 
+  mutate(openRate = (Opened / Sent)) %>% 
+  top_n(., 3, Unsubscribed)
+
+print(email_data_new)
+```
+
+
+
+
+##IGNORE
+```{r eval=FALSE}
+## just playing around with http request functionalities
+library(httr)
+library(jsonlite)
+
+## helper functions
+
+# format httr GET request as text and then parse json to table format
+json_parse <- function(req) {
+  text <- content(req, 'text', 'UTF-8')
+  if (identical(text, '')) warn('No output to parse.')
+  fromJSON(text);
+}
+
+ships_req <- GET('https://swapi.co/api/starships')
+ships_req_parsed <- json_parse(ships_req)
+ships <- ships_req_parsed$results
+names(ships)
+```
