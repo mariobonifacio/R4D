@@ -13,11 +13,138 @@ output:
 ## **Learning objectives**
 1. Write a for loop
 2. Learn when to use a for loop and when to vectorize
-3. Write our first function
-4. Map that function to elements of a vector
+
 
 ## **Topics**
 1. For loops
 2. First function
 3. Map
+
+##Illustration of a slightly more complicated for loop
+I would like to take gapminder data set and create a histogram if it is a continous variable and bar chart for  continent and do nothing for country.
+
+
+```{r}
+gapminder
+```
+
+
+Step 1 setup the output vector.
+```{r}
+out_gap <- vector(mode = "list", length = ncol(gapminder))
+
+```
+
+
+Step 2 setup iterator
+
+```{r}
+seq_along(gapminder)
+```
+
+Double brackets first.
+
+```{r}
+gapminder[1]
+```
+
+```{r}
+gapminder[1] %>% str()
+```
+
+```{r}
+gapminder[[1]] %>% str()
+```
+
+```{r}
+identical(gapminder$country, gapminder[[1]])
+```
+
+```{r}
+identical(gapminder$country, gapminder[1])
+```
+
+```{r}
+for (i in seq_along(gapminder)) {
+  print(paste("This is the", i, "iteration", "and the mean is", mean(gapminder[[i]])))
+}
+```
+
+I need an if else statement to control the flow of code.
+```{r}
+for (i in seq_along(gapminder)) {
+  ## pull out ith col from gapminder
+  col_data <- gapminder[[i]]
+  
+  if (is.numeric(col_data)) { ##check if numeric
+    print("numeric")
+  } else {
+    print("non numeric")
+  }
+}
+
+```
+
+
+```{r}
+is.numeric(gapminder[1])
+```
+
+```{r}
+for (i in seq_along(gapminder)) {
+  ## pull out ith col from gapminder
+  col_data <- gapminder[i]
+  col_atomic <- gapminder[[i]]
+  col_name <- names(gapminder)[i]
+  
+  if (is.numeric(col_atomic)) { ##check if numeric
+    print(paste("The column is", col_name, "its mean is", mean(col_atomic)))
+  } else {
+    print("non numeric")
+  }
+}
+```
+
+```{r}
+names(gapminder) %>% str()
+```
+
+
+```{r}
+for (i in seq_along(gapminder)) {
+  ## pull out ith col from gapminder
+  col_data <- gapminder[i]
+  col_atomic <- gapminder[[i]]
+  col_name <- names(gapminder)[[i]]
+  
+  if (is.numeric(col_atomic)) { ##check if numeric
+    ggplot(data = col_data, aes(col_name[i]))
+  } else {
+    print("non numeric")
+  }
+}
+```
+
+```{r}
+colnames(gapminder)
+```
+
+```{r}
+ggplot(data = gapminder, aes(gdpPercap)) + geom_histogram()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

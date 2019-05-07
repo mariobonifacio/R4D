@@ -12,43 +12,105 @@ output:
 
 ### Task Set 1 : Put the pieces together
 1. Use `vector()` to initiate a numeric vector of length 20
+
+```{r}
+vector(mode = "numeric", length = 20)
+```
+
 2. Initiate a vector with mode set to list and length that is same as the length of the vector x below.
 
 ```{r}
 x <- 1:5
 
+vector(mode = "list", length = length(x))
 ```
 
-3. I want a loop that will take different columns (either character or numeric) from a tibble that has 10 columns total and calculate the sum if the column is numeric and create a concatenated character string that combines all the characters if it is a character. What should be the length of the output vector? What should be its mode? Create this output vector.
+3. Say, I want to create a loop that will take different columns (either character or numeric) from a tibble that has 10 columns total and calculate the sum if the column is numeric and create a concatenated character string that combines all the characters if it is a character. Don't create this loop but answer the questions below.
+
+What should be the length of the output vector that will store the output from this loop? 
+
+10
+
+What should be its mode? 
+
+list
+
+Initiate this output vector.
+
+```{r}
+out_cols <- vector(mode = "list", length = 10)
+
+out_cols
+```
+
 
 4. See the gapminder data below.
 ```{r}
 gapminder
 ```
 
+```{r}
+glimpse(gapminder)
+```
+
 4.a Use `seq_along()` to identify the indices of all the columns in it. Store it in a variable called `mt_cols`
 
+Lets try out a few different applications of seq_along()
+
+```{r}
+x <- sample(1:100, size = 10)
+
+x
+```
+If I want the indices of x
+```{r}
+seq_along(x)
+```
+```{r}
+x[3]
+```
+
+```{r}
+mt_cols <- seq_along(gapminder)
+mt_cols
+```
+
 4.b Compare the length of `mt_cols` with `ncol()`s in gapminder to see that they match.
+```{r}
+ncol(gapminder) == length(mt_cols)
+```
 
 5. Complete the code below to create a simple for loop
 
 ```{r}
-for( in c("a", "b", "c", "d")) {
+for(i in c("a", "b", "c", "d")) {
     print(i)
 }
 ```
 
-6. Create a sequence of numbers from 1 to 50 store it in a variable x
+6. Create a sequence of numbers from store it in a variable x
+
 ```{r}
-x <- 1:50
+x <- sample(1:1000, size = 50)
+x
 ```
 
+```{r}
+seq_along(x)
+```
+
+```{r}
+x[1]
+```
 
 7. Complete the code below to write a for loop that returns "even" if a number in the vector you created above is even and "odd" otherwise.
 ```{r}
+##setup the output
 odds_evens <- vector("character", length = length(x))
+
 for (i in seq_along(x)) {
-    odds_evens[[]] <- if ( %% 2 == 0) { } else { }
+    
+    odds_evens[[i]] <- if (x[[i]] %% 2 == 0) { "even" } else { "odd" }
 }
 
 odds_evens
@@ -57,12 +119,27 @@ odds_evens
 8. Now complete the code below to do the same thing with an `if_else()` statement and store the results in a variable called odds_evens2
 
 ```{r}
-odds_evens2 <- if_else()
+odds_evens2 <- if_else(x %% 2 == 0, "even", "odd")
 
 odds_evens2
 ```
 
 9. Use the `identical()` function to check if the odds_evens is identical to odds_evens2.
+
+
+```{r}
+identical(odds_evens, odds_evens2)
+```
+
+```{r}
+x + 1
+```
+
+
+```{r}
+sum(x)
+```
+
 
 ### Task Set 2: Make a for loop
 

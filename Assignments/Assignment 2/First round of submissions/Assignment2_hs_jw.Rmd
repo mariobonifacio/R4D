@@ -1,0 +1,362 @@
+---
+title: "Assignment 2"
+author: Hari Subhash
+date: "Date created: `r Sys.Date()`"
+output:
+  html_notebook:
+    highlight: kate
+    smart: yes
+    theme: cosmo
+    code_folding: show
+    df_print: paged
+---
+
+# {.tabset .tabset-fade .tabset-pills}
+
+## Comments
+
+1. Change author name in YAML
+2. ~~Output from `skim()` is not being displayed because you have set `results = "hide"`~~
+3. Incorrect use of asterisk. You need to close them to get desired effect (italic, bold)
+4. Avoid printing out entire vectors since their outputs will take up a lot of space (`unique(flights$arr_delay)`). Moreover, a bunch of numbers on the screen does give the reader any further insights.
+5. Consider removing groups with low number of observations from consideration since they could skew your results
+6. General convention - explainatory variable is on the x-axis, variable being explained on y. In our case, y - axis should be the delay variables. You have this reversed for most of your charts. Flip this around.
+7. Based on your analysis there seems to be a relationship between distance and delays with shorter flights being more delayed. Why is this? Explore this further.
+8. Consider cutting continous variables like distance in intervals (look at `cut_*()` set of function under ggplot)
+9. Explore your explainatory variable more thoroughly before the analysis
+10. Create a single dataset for weather + flights and use it for all the weather based analysis instead of creating separate ones each time.
+11. Use snake_case for naming your variables.
+12. Explain what is happening in each chart and your logic for trying something out. For instance, you are interested in precip vs delay because xyz.
+13. Another way to look at this would be to consider extreme values of delay and see the relationship between that and the explainatory variable.
+14. Consider tabsets `# {.tabset .tabset-fade .tabset-pills}`
+15. Take logs when you have a skewed variable (that spans a large range) (check out `scale_x_log10()`)
+16. Make things more attractive
+
+
+
+
+**Due Date**: Sunday, April 28th
+
+**Keyboard Shortcuts**:
+
+1. Assignment operator (<-) is `Alt+-` for Windows and `Option+-` for Mac
+2. Insert new code chunk `Ctrl+Alt+I` for Windows and `Command+Option+I` for Mac
+3. Run a line of code `Ctrl+Enter` for Windows and `Command+Enter` for Mac
+4. Run all the code within a chunk `Ctrl+Shift+Enter` for Windows and `Command+Shift+Enter` for Mac
+5. Insert a pipe operator (%>%) `Ctrl+Shift+M` for Windows and `Command+Shift+M` for Mac
+
+**General Instructions**
+
+1. Create a new notebook (copy parts of the YAML header you are interested in keeping) to work on your assignment.
+2. The assignment should be submitted via a shareable github link that points to your notebook (.nb.html) file to me on Slack.
+3. Make sure the notebook is neatly formatted, and that all the charts and tables and look good when you preview it.
+
+**Task**: Explore at least 5 different causes for departure and arrival delays (combined - not 5 each). Its not necessary that you find a definitive answer for what causes a delay, instead I want you to showcase your ability to explore the data with a combination of analytical text, tables and charts. The final output should be something you can show a prospective employer or client as proof of you ability to work with data in R.
+
+
+```{r, results='hide', echo=FALSE}
+library(tidyverse)
+library(nycflights13)
+library(skimr)
+
+skim(weather)
+```
+
+```{r, results='hide', echo=FALSE}
+skim(flights)
+```
+
+
+## Let's talk game plan
+
+I want to try: distance, month, dest, precip, temp, visib
+for all of these, I may want to split by origin.
+My graph options include histogram, geom_point (scatter), geom_jitter, geom_smooth(method=lm), 
+geom_line for line chart, geom_col for discrete x continuous y, geom_boxplot, geom_count and for one var, geom_hist, geom_density,
+geom_dotplot.
+
+** Important notes you have never got re summarise. Group by the "background" vars you want to see compared to your dependent var.**
+  ** use the summarize command to perform functions on the dependent var. Don't group by the dependent var**
+
+*Section One
+First hypothesis: Distance and arrival delay, let's see if there is a relationship.
+REMAINDERS: Charts A-3 and A-5 have wasted space in some of the origin facets.
+REMAINDERS: What we found would make it interesting to check dep_delay and Distance.
+
+A-1: Let's look at the data.
+
+```{r}
+  unique(flights$arr_delay)
+  unique(flights$distance)
+  
+flights %>% 
+  group_by(distance, origin) %>% 
+  summarise(meandelayQ101 = mean(arr_delay, na.rm = T)) %>% 
+  arrange(distance)
+```
+Nothing too obvious here.
+A-2: Let's check out distance outliers. 
+```{r}
+flights %>% 
+  ggplot(aes(x = distance)) +
+  geom_histogram()
+```
+
+There are some.
+
+A-3 - Let's facet by origin for our first major two-variable graph.
+```{r}
+flights %>% 
+  group_by(distance, origin) %>% 
+  summarise(meandelayQ101 = mean(arr_delay, na.rm = T)) %>% 
+  arrange(distance) %>% 
+  ggplot(aes(y = meandelayQ101, x = distance)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  facet_wrap(~ origin, scales = "free_x") ##hari made this change on scales
+```
+
+```{r}
+flights
+```
+
+
+```{r}
+flights %>% 
+    filter(!is.na(distance) & !is.na(air_time)) %>% 
+    group_by(distance) %>% 
+    summarise(meanSpeed = mean(distance, na.rm = T)/mean(air_time, na.rm = T))
+```
+
+```{r}
+flights %>% 
+    filter(!is.na(tailnum)) %>% 
+    group_by(month, day, tailnum) %>% 
+    summarise(nLegs = n(),
+              meanDistance = mean(distance, na.rm = T)) %>% 
+    arrange(desc(nLegs))
+```
+
+It looks like distance falls as arrival delay increases, except at LaGuardia. A little weird.
+The segmentation of origin I did is a bit random. 
+
+A-4: Does the relationship hold across the combined airports?
+
+```{r}
+flights %>% 
+  group_by(distance, origin) %>% 
+  summarise(meandelayQ101 = mean(arr_delay, na.rm = T)) %>% 
+  arrange(distance) %>% 
+  ggplot(aes(x = meandelayQ101, y = distance)) +
+  geom_point() +
+  geom_smooth(method = lm)
+```
+
+
+It does. 
+A-5: Let's try minus outlier distances. 
+
+```{r}
+flights %>% 
+  group_by(distance, origin) %>% 
+  filter(distance < 3000) %>% 
+  summarise(meandelayQ101 = mean(arr_delay, na.rm = T)) %>% 
+  arrange(distance) %>% 
+  ggplot(aes(x = distance, y = meandelayQ101)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  facet_wrap(~ origin)
+```
+
+Result: still a negative relationship between distance and delay. weird. Mean delay is highest for very short flights.
+A-6: Let's remove the origin faceting and check one more time.
+```{r}
+flights %>% 
+  group_by(distance, origin) %>% 
+  filter(distance < 3000) %>% 
+  summarise(meandelayQ101 = mean(arr_delay, na.rm = T)) %>% 
+  arrange(distance) %>% 
+  ggplot(aes(x = distance, y = meandelayQ101)) +
+  geom_point() +
+  geom_smooth(method = lm) 
+```
+ 
+There is a trend here.
+
+*SECTION TWO
+Hypothesis Two: there is a relationship between Precip in weather and Departure Delay.
+(Spends a full hour understanding joins again)
+B-1: Let's make our dataset. Right now, Precip and flights are separated.
+```{r}
+weather
+
+```
+
+
+
+```{r}
+Preciptest <- flights %>%
+  select(time_hour, origin, dep_delay) %>% 
+  left_join(
+    x = .,
+    y = weather,
+    by = c("origin", "time_hour"))
+```
+Ok, we have a dataset.
+Let's look at precip.
+
+##Never finished this
+```{r}
+Preciptest 
+```
+
+```{r}
+Preciptest %>% 
+  group_by(precip, origin) %>% 
+  summarise(meandepdelayQ201 = mean(dep_delay, na.rm = T)) %>% 
+  arrange(meandepdelayQ201) %>% 
+  ggplot(aes(meandepdelayQ201, y = precip)) +
+  geom_point() +
+  geom_smooth(method = lm)
+
+```
+
+Looks like a bingo.
+Let's wrap it by origin.
+```{r}
+Preciptest %>% 
+  group_by(precip, origin) %>% 
+  summarise(meandepdelayQ201 = mean(dep_delay, na.rm = T)) %>% 
+  arrange(meandepdelayQ201) %>% 
+  ggplot(aes(meandepdelayQ201, y = precip)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  facet_wrap(~ origin)
+
+```
+
+What else can we facet wrap?
+
+```{r}
+Preciptest <- flights %>%
+  select(time_hour, carrier, origin, dep_delay) %>% 
+  left_join(
+    x = .,
+    y = weather,
+    by = c("origin", "time_hour"))
+
+Preciptest %>% 
+  group_by(precip, carrier) %>% 
+  summarise(meandepdelayQ201 = mean(dep_delay, na.rm = T)) %>% 
+  arrange(meandepdelayQ201) %>% 
+  ggplot(aes(meandepdelayQ201, y = precip)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  facet_wrap(~ carrier)
+
+```
+Interesting and a bit hard to parse, but the relationship certainly varies by carrier.
+
+```{r}
+geom_
+```
+
+
+SECTION THREEE
+##Exploring Visib and arrival delay
+
+##get the joins going
+```{r}
+library(tidyverse)
+library(nycflights13)
+DataSet4 <- flights %>% 
+  select(time_hour, origin, arr_delay) %>% 
+  left_join(weather, by = c("origin", "time_hour"))
+
+```
+##Remind myself what flights looks like.
+
+```{r}
+str(flights)
+```
+
+##Check our combined dataset to make sure it looks right
+```{r}
+str(DataSet4)
+```
+
+#Let's look at Visib
+```{r}
+DataSet4 %>% 
+  ggplot(aes(x = visib)) +
+  geom_histogram()
+  
+```
+
+##Hmm, looks discrete
+```{r}
+DataSet4$visib %>% 
+  sort() %>% 
+  unique()
+```
+After Trial and Error, arrive at this, which is ugly and needs improvement 
+
+```{r}
+DataSet4 %>% 
+  ggplot(aes(x = visib, y = arr_delay)) +
+  geom_point() +
+  geom_smooth(method = lm)
+```
+
+So the LM line appears to visually disagree with the superficial impression of the points. 
+Are outliers affecting this? Let's check sample sizes.
+
+```{r}
+DataSet4 %>% 
+  group_by(visib) %>% 
+  summarise(nObs = n())
+```
+Sizes are acceptable.
+I'm not sure what to think about this relationship. The scale of the graph could be affecting the line. Let's try a box plot.
+First, i think I need to purge the NAs.
+First, how many rows are there before I start.
+```{r}
+DataSet4 %>% 
+  nrow()
+
+```
+Ok, let's try something re NA purge.
+```{r}
+DataSet4 %>% 
+  filter(visib == visib, na.rm = T)
+```
+  
+  This is what I have in mind, but it doesn't work yet.
+```{r}
+ 
+DataSet4 %>% 
+  group_by(visib) %>% 
+ggplot(aes(x = as.factor(visib), y = arr_delay), na.rm = T ) +
+  geom_boxplot()
+```
+  
+ Okay, this kinda works! You could sort of read a trend into this, but it seems to decline around "1"
+ 
+```{r}
+ DataSet4 <- DataSet4 %>%
+  filter(visib > 0.11)
+
+DataSet4 %>% 
+  ggplot(aes(x = visib, y = arr_delay)) +
+  geom_point() +
+  geom_smooth(method = lm)
+```
+ 
+ A clearer relationship now, via cheating :-D
+ 
+
+ 
+ 
+
+
+

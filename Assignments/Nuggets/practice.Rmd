@@ -9,34 +9,12 @@ output:
     theme: readable
     df_print: paged
 ---
-```{r}
-library(nycflights13)
 
-#Setting up weathered flights
-weatheredFlights <- flights %>% 
-  select(origin, time_hour, dep_delay) %>% 
-  left_join(weather, by = c("origin", "time_hour")) 
-
-#Let's explore how precip and temp relate to delay
-weatheredFlights %>% 
-  filter(dep_delay > 0 & !is.na(dep_delay)) %>% 
-  mutate(tempGroup = cut_interval(temp, length = 10, na.rm = T)) %>%
-  #mutate(tempGroup = cut(temp, seq(from = min(temp, na.rm = T), to = max(temp, na.rm = T), 10))) %>% # A more roundabout alternative code
-  mutate(precipGroup = cut_interval(precip, length = 0.3, na.rm = T)) %>%   
-  group_by(precip, tempGroup) %>% 
-  summarise(meanDelay = mean(dep_delay, na.rm = T),
-            nObs = n()) %>% 
-  ggplot(aes(precip, nObs))+
-  geom_point() +
-    geom_smooth(method = "lm") +
-    facet_wrap(~tempGroup, scales = "free_x")
-```
-
-#Instructions {.tabset .tabset-fade}
+# Instructions {.tabset .tabset-fade}
 This notebook contains practice material. The aim is to get you to revise and practice some of the concepts that we have learnt so far.
 
-##Subset
-###Setup
+## Subset
+### Setup
 While we have used the `dplyr` package to extract rows and columns from tibbles, it is useful to keep the base R syntax for this handy. I will use the `gapminder` dataset for this section. Lets load it along with the tidyverse. Lets use the `skim()` function from `skimr` to look at the gapminder data before we go further.
 
 ```{r, message=FALSE}
@@ -46,7 +24,7 @@ skimr::skim(gapminder)
 
 Now let's practice.
 
-###Pulling columns
+### Pulling columns
 There are multiple ways in which you can pull columns in base R. The first is using the `$` notation. Lets use this to select the continents column from gapminder.
 
 ```{r}
@@ -189,7 +167,7 @@ gapminder %>%
 
 ```
 
-###Filter rows
+### Filter rows
 You can extract rows from a data frame in several ways in base R. The first way is to use a number specifying the position of a row. The code below slices the first row out from the gapminder data using an index. Notice that the syntax is slightly different from what we used to pull and select in the earlier sections. Instead of a single value within the square bracket notation there is now space for two that are separated by a comma. The syntax can be illustrated as follows - `df[rows, columns]`. The part before the comma is used to subset rows while that after the comma is used for columns. In our case, we would like to slice the entire first row. So we have left the subset command for columns empty which selects all of them.
 ```{r}
 gapminder[1, ]
@@ -279,7 +257,7 @@ gapminder %>%
 
 ```
 
-###Put it all together
+### Put it all together
 Now let'd combine both row and column subsets. The code below selects all the columns other than the 4th and 6th and filters rows for which the year is greater than 1990.
 ```{r}
 gapminder[gapminder$year > 1990, c(-4, -6)] %>% 
@@ -308,7 +286,7 @@ gapminder %>%
     head()
 ```
 
-##Mutate
+## Mutate
 I will use a random sample of 10 rows of the gapminder data for this section. Let's create that first.
 ```{r}
 gapSmall <- sample_n(gapminder, size = 10)
@@ -361,7 +339,7 @@ Notice how I have to use the assignment operator to reassign the value of gapSma
 
 **Task 2**: Do the same thing with `dplyr` syntax.
 
-##Summarise
+## Summarise
 When given a dataset we want to be able to have a feel for all the variables within it. What are their typical ranges? What is their central tendency (fancy word for mean/median/mode)? If given a value for one of the variables how expected or unexpected is it given its range and measures of central tendency.
 
 All these key statistics can be arrived at by summarising the data. The `skim()` function from the `skimr` package is a handy tool for giving us a quick snapshot of the data.
@@ -394,14 +372,14 @@ ggplot(data = gapminder, mapping = aes(x = continent)) +
 
 
 
-##Group
+## Group
 Coming soon
 
-##Join
+## Join
 Coming soon
 
-##Visualize
+## Visualize
 Coming soon
 
-##Reshape
+## Reshape
 Coming soon
