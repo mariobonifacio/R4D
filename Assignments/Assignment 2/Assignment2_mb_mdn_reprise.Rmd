@@ -22,29 +22,27 @@ Unpredictable flight delays are a costly problem, forcing travelers to choose be
 
 I then use a logistic regression model, and find that all five independent variables display a correlative relationship with departure delay at a 0.1% significance level and that scheduled departure time may be used to estimate the probability of departure delay as follows:
 
-> Probability of departure delay = 1 / (1 + e^-(0.27 - 0.0012 * time between scheduled departure in military time and 8 pm))
+> Probability of departure delay = 1 / (1 + e^-(0.27 - 0.0012 * difference between 8pm and scheduled departure time in minutes))
 
 ```{r echo=FALSE}
-test_a <- flights %>% ### flights[sample(nrow(flights),100),] %>% # Use this for sampling
-  select(sched_dep_time, dep_delay) %>%
-  filter(!is.na(dep_delay) == T) %>%
-  filter(sched_dep_time %in% (flights %>%
-             group_by(sched_dep_time) %>%
-             summarise(n = length(sched_dep_time)) %>%
-             filter(n >= 100) %>%
-             select(sched_dep_time) %>%
-             unique() %>%
-             unlist() %>%
-             as.character() %>%
-             as.integer())) %>%
-  mutate(is_delay = if_else(dep_delay > 0, 1, 0)
+library(tidyverse); library(nycflights13); library(stringr); library(lubridate) ## Loading  these
+
+test_a <- flights %>% ### 
+  filter(!is.na(dep_delay) == T) %>% 
+  group_by(sched_dep_time) %>%
+  filter(n() >= 100) %>%
+  mutate(colon_time = hm(paste(trunc(sched_dep_time/100)
+                            ,str_sub(sched_dep_time,-2,-1)
+                            ,sep = ':')))
+    
+    
+    is_delay = if_else(dep_delay > 0, 1, 0)
            ,diff_20h = if_else(sched_dep_time < 2000
                             ,1960 - sched_dep_time
                             ,sched_dep_time - 2000)) %>%
   group_by(diff_20h) %>%
   mutate(op_diff20 = sum(is_delay) / length(is_delay)) %>%
-  ungroup() %>%
-  as_tibble()
+  ungroup()
 
 test_b <- cbind(test_a, tibble(sched_dep_time_diff_8pm = sample(0:1460, nrow(test_a),replace=T))) %>%
   mutate(prob_delay = 1/(1+exp(-(0.2746527 - 0.001169423 * sched_dep_time_diff_8pm))))
@@ -103,7 +101,7 @@ To set up, I'll do the following:
 # install.packages('ggthemes'); install.packages('DiagrammeR')
 
 # This line enable packages
-library(tidyverse); library(skimr); library(nycflights13); library(lubridate); library(ggthemes); library(reshape2); library(DiagrammeR)
+library(tidyverse); library(nycflights13); library(lubridate); library(ggthemes); library(reshape2); library(DiagrammeR); library(skimr)
 ```
 
 

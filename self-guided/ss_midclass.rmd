@@ -29,15 +29,17 @@ Install and load packages
 ```{r message=FALSE, message=FALSE, warning=FALSE}
 
 # install.packages('gapminder'); install.packages('DiagrammeR')
-library(tidyverse); library(lubridate); library(gapminder); library(DiagrammeR)
+library(tidyverse); library(lubridate); library(gapminder); library(DiagrammeR); library(ggthemes)
 ```
 
 Load poverty guideline data
 ```{r}
-povertyline_hist <- read.csv(file = 'hstpov1.csv', header = T, na.strings = '***') %>%
+poverty_hist <- read.csv(file = 'hstpov1.csv', header = T, na.strings = '***') %>%
   mutate(yr = year
          ,yr_mth = yr + 0.54) %>%
   select(yr_mth, X2_senior, X1_senior, X4_all)
+
+## Source: https://www2.census.gov/programs-surveys/cps/tables/time-series/historical-poverty-people/
 ```
 
 Load social security cost of living adjustment data
@@ -53,57 +55,82 @@ ss_cola <- read.delim(sep = ' '
          ,cola = as.numeric(sub(x= cola, '%', '')) / 100) %>%
   select(yr_mth, cola)
 
-
+## Source: https://www.ssa.gov/cola/
 ```
 
-Load social security historic benefits data
+Load Social Security historic benefits received data
 ```{r}
 
-socsec_hist <- read.csv(file = 'some_socsec.csv', header = T) %>%
-  mutate(MonthYear = dmy(paste('1-', MonthYear))
-         ,yr = year(MonthYear)
-         ,mth = month(MonthYear)
-         ,yr_mth = yr + round(((mth - 0.5) / 12), 2)
-         ,ss_2 = Couple) %>%
-  select(yr_mth, ss_2)
+ss_hist <- read.csv(file = 'some_socsec.csv'
+                    ,header = T
+                    ,col.names = c('mth_day_yr', 'beneficiaries', 'mean_ss')) %>%
+  mutate(mth_day_yr = mdy(mth_day_yr)
+         ,yr = year(mth_day_yr)
+         ,mth = month(mth_day_yr)
+         ,yr_mth = yr + round(((mth - 0.5) / 12), 2)) %>%
+  select(yr_mth, beneficiaries, mean_ss)
+
+## Source: https://www.ssa.gov/cgi-bin/currentpay.cgi
 ```
 
-Load median income data
+Load income data
 ```{r}
 
-mdn_y_hist <- read.csv(file = 'mdn_house-fam_y.csv', na.strings = 'NULL') %>%
+y_hist <- read.csv(file = 'mdn_house-fam_y.csv', na.strings = 'NULL') %>%
   mutate(yr = if_else(year(mdy(DATE)) < 2020
                       ,year(mdy(DATE))
                       ,year(mdy(DATE)) - 100)
          ,mth = month(mdy(DATE))
          ,yr_mth = yr + round(((mth - 0.5) / 12), 2)) %>%
   select(yr_mth, mdn_house_y, mdn_fam_y)
+
+## Source: https://www.census.gov/topics/income-poverty/income.html
 ```
 
-First, join socsec cola and benefits data to fill missing years
+Load household data
+```{r}
+house_hist <- read.csv(file = 'house_size.csv'
+                       ,na.strings = 'NULL'
+                       ,skip = 1) %>%
+  mutate(yr_mth = as.numeric(substr(Year, 1, 4)) + 0.54
+         ,households = as.integer(sub(x = households, ',', ''))) %>%
+  select(yr_mth, households, mean_ppl_per_house)
+
+```
+
+
+Join Social Security data to median household income and poverty data
+```{r}
+my_test <- ss_hist %>%
+  full_join(y_hist, by = 'yr_mth') %>%
+  full_join(poverty_hist, by = 'yr_mth') %>%
+  select(yr_mth, mdn_house_y) %>%
+  filter(!is.na(mdn_house_y))
+  
+
+```
+
 ```{r}
 
-my_work <- socsec_hist %>%
-  full_join(ss_cola, by = 'yr_mth') %>%
-  arrange(yr_mth)
+
+
+
+
+my_work %>%
+  full_join(poverty_hist, by = 'yr_mth') %>%
+  arrange(yr_mth) %>%
+  ggplot(mapping = aes(yr_mth, mean_ss)) +
+  geom_line(mapping = aes(yr_mth, 24 * mean_ss / x2_senior), na.rm = T, color = 'orange', size = 1.5) +
+  geom_line(data = mdn_y_hist, mapping = aes(yr_mth, 24 * mean_ss / 0.6667 / mdn_house_y), na.rm = T, color = 'red', size = 1.5) +
+  labs(title = 'Mean social security benefits')
+  
+  
+  
+  
+
 
 ```
 
-Next, fill in missing ss_2 values using cola
-```{r}
 
-for(i in seq_along(my_work$ss_2)) {
-  my_work$ss_2[i] <- if_else(condition = is.na(my_work$ss_2[i])
-                             & !is.na(my_work$ss_2[i-1])
-                             & !is.na(my_work$cola[i])
-          ,true = my_work$ss_2[i-1] * my_work$cola[i]
-          ,false = my_work$ss_2)
-  
-  
-  
-  
-  
-  
-}
-```
+
 
