@@ -1,0 +1,90 @@
+---
+title: "Class 18 - In class exercises"
+author: Hari Subhash
+date: "Date created: `r Sys.Date()`"
+output:
+  html_notebook:
+    highlight: haddock
+    smart: yes
+    theme: readable
+    df_print: paged
+---
+
+### Task Set 1: For loop
+
+Go here to check out the [basic elements of a for loop](https://puzhu.github.io/R4D/Classes/Class%2017/class17_slides.html#/a-common-recipe). 
+
+**TASK 1**: Load the gapminder dataset. Loop through its columns. If a column is numeric then store the output of the `summary()` command. If it is not numeric, then store NULL. Print the output.
+
+```{r}
+##make your loop here
+```
+
+
+You can use `names()` to both get and set the names of a vector. The code below `gets` the names of the `mtcars` dataset.
+
+```{r}
+names(mtcars)
+```
+
+In the code below I use `names()` to set the column headers of a copy of the `mtcars` dataset called `mtcars_2`. See the output to notice how the column headings have been changed.
+```{r}
+## create a copy of the mtcars data
+mtcars_2 <- mtcars
+
+names(mtcars_2) <- paste0(names(mtcars), "_2")
+
+mtcars_2
+```
+
+**TASK 2**: Replicate the code to get `names()` of gapminder and append the string "_out" to each of them and set them as the names of the output vector you created in task 1.
+
+### Task Set 2: Functions
+
+**Task 1**: Create a function called `square_greater()` that takes two arguments x and y that are numbers (i.e. atomic vectors of length one) and returns the square of whichever number is the greatest. Use `stopifnot(condition1, condition2)` to throw an error if any of the two input values are greater than 1 in length. 
+```{r}
+##define your function here
+square_greater <- function(){
+    
+}
+```
+
+
+Test your function to make sure it works.
+```{r}
+##run this after you define your function
+square_greater(x = 32, y = 87) ## this should work
+
+square_greater(x = 3.2, y = "4") ## this should work
+
+square_greater(x = 23:45, y = 89) ## this should throw an error
+```
+
+The `hist()` command is from base R and takes a numeric vector as its input. See the code below for an illustration using the `wt` column from the `mtcars` dataset.
+```{r}
+hist(mtcars$wt)
+```
+
+**Task 2**: Create a function called `draw_hist()` that takes an atomic vector (of any length) as its input. If it numeric then use the `hist()` function from base to draw a histogram else return an error with a custom message of your choosing using `stop()`. 
+
+```{r}
+##create your function
+draw_hist
+```
+
+
+Test your function to make sure it works.
+```{r}
+library(gapminder)
+latest_gap <- gapminder %>% 
+                   filter(year == max(year, na.rm = T))
+
+draw_hist(pull(latest_gap, lifeExp)) ## this should plot a histogram of life expectancy
+draw_hist(rnorm(n = 1000, mean = 20, sd = 4)) ## this should plot a histogram of a numeric vector with mean 20 and std dev of 4
+draw_hist(pull(latest_gap, continent)) ## this should throw an error
+```
+
+
+
+
+
