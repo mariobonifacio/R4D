@@ -37,9 +37,8 @@ Load poverty guideline data
 poverty_hist <- read.csv(file = 'hstpov1.csv', header = T, na.strings = '***') %>%
   mutate(yr = year
          ,yr_mth = yr + 0.54) %>%
+         ,yr_mth = yr + 0.04) %>%
   select(yr_mth, X2_senior, X1_senior, X4_all)
-
-## Source: https://www2.census.gov/programs-surveys/cps/tables/time-series/historical-poverty-people/
 ```
 
 Load social security cost of living adjustment data
@@ -55,82 +54,86 @@ ss_cola <- read.delim(sep = ' '
          ,cola = as.numeric(sub(x= cola, '%', '')) / 100) %>%
   select(yr_mth, cola)
 
-## Source: https://www.ssa.gov/cola/
+
 ```
 
-Load Social Security historic benefits received data
+Load social security historic benefits data
 ```{r}
 
-ss_hist <- read.csv(file = 'some_socsec.csv'
-                    ,header = T
-                    ,col.names = c('mth_day_yr', 'beneficiaries', 'mean_ss')) %>%
-  mutate(mth_day_yr = mdy(mth_day_yr)
-         ,yr = year(mth_day_yr)
-         ,mth = month(mth_day_yr)
+socsec_hist <- read.csv(file = 'some_socsec.csv', header = T) %>%
+  mutate(month_day_year = mdy(month) 
+         ,yr = year(month_day_year)
+         ,mth = month(month_day_year)
          ,yr_mth = yr + round(((mth - 0.5) / 12), 2)) %>%
-  select(yr_mth, beneficiaries, mean_ss)
-
-## Source: https://www.ssa.gov/cgi-bin/currentpay.cgi
+  select(yr_mth, mean_ss)
 ```
 
-Load income data
+
+Load average household size historic data
 ```{r}
 
-y_hist <- read.csv(file = 'mdn_house-fam_y.csv', na.strings = 'NULL') %>%
+house_hist <- read.csv(file = "hh4.csv", skip = 2, header = T) %>%
+  mutate(yr_mth = as.numeric(str_sub(year,1,4)) + 0.04) %>%
+  select(yr_mth, mean_house_size) %>%
+  arrange(yr_mth)
+```
+
+
+Load median income data. This is the final load.
+```{r}
+
+mdn_y_hist <- read.csv(file = 'mdn_house-fam_y.csv', na.strings = 'NULL') %>%
   mutate(yr = if_else(year(mdy(DATE)) < 2020
                       ,year(mdy(DATE))
                       ,year(mdy(DATE)) - 100)
          ,mth = month(mdy(DATE))
          ,yr_mth = yr + round(((mth - 0.5) / 12), 2)) %>%
   select(yr_mth, mdn_house_y, mdn_fam_y)
-
-## Source: https://www.census.gov/topics/income-poverty/income.html
 ```
 
-Load household data
-```{r}
-house_hist <- read.csv(file = 'house_size.csv'
-                       ,na.strings = 'NULL'
-                       ,skip = 1) %>%
-  mutate(yr_mth = as.numeric(substr(Year, 1, 4)) + 0.54
-         ,households = as.integer(sub(x = households, ',', ''))) %>%
-  select(yr_mth, households, mean_ppl_per_house)
+### Standardizing the data
 
+To test the hypothesis, I'll standardize the numbers for two elderly recipients for a whole year. There are poverty guidelines for each size of household and elderly-specific guidelines for a household of two, so those can be loaded as is.
+```{r}
+
+my_work <- poverty_hist %>%
+  mutate(poverty_2seniors = X2_senior) %>%
+  select(yr_mth, poverty_2seniors)
 ```
 
-
-Join Social Security data to median household income and poverty data
+Average Social Security benefits received is for only one recipient and is monthly, so will need to be doubled and multiplied for 12 months.
 ```{r}
-my_test <- ss_hist %>%
-  full_join(y_hist, by = 'yr_mth') %>%
-  full_join(poverty_hist, by = 'yr_mth') %>%
-  select(yr_mth, mdn_house_y) %>%
-  filter(!is.na(mdn_house_y))
-  
 
+my_work <- my_work %>%
+  full_join(y = socsec_hist %>%
+              mutate(mean_ss_2seniors = 2 * 12 * mean_ss) %>%
+              select(yr_mth, mean_ss_2seniors)
+            ,by = 'yr_mth')
 ```
 
+Median household income is given as an annual amount, but the size of a household varies by year. I'll divide by mean household size then multiply by 2
 ```{r}
 
+my_work <- mdn_y_hist %>%
+  full_join(house_hist, by = 'yr_mth') %>%
+  mutate(mdn_y_2seniors = mdn_house_y * 2 / mean_house_size) %>%
+  full_join(my_work, by = 'yr_mth') %>%
+  arrange(yr_mth) %>%
+  select(yr_mth, mdn_y_2seniors, poverty_2seniors, mean_ss_2seniors) %>%
+  filter(!is.na(mdn_y_2seniors) | !is.na(poverty_2seniors | !is.na(mean_ss_2seniors)))
+```
 
-
-
+Now to see whether seniors have ever been middle class, and if so, whetgher remained middle class
+```{r}
 
 my_work %>%
-  full_join(poverty_hist, by = 'yr_mth') %>%
-  arrange(yr_mth) %>%
-  ggplot(mapping = aes(yr_mth, mean_ss)) +
-  geom_line(mapping = aes(yr_mth, 24 * mean_ss / x2_senior), na.rm = T, color = 'orange', size = 1.5) +
-  geom_line(data = mdn_y_hist, mapping = aes(yr_mth, 24 * mean_ss / 0.6667 / mdn_house_y), na.rm = T, color = 'red', size = 1.5) +
-  labs(title = 'Mean social security benefits')
-  
-  
-  
-  
+  mutate(ss_as_mdn = mean_ss_2seniors / mdn_y_2seniors
+         ,pov_as_ss = poverty_2seniors / mean_ss_2seniors) %>%
+  ggplot(mapping = aes(yr_mth, mdn_y_2seniors)) +
+  geom_point() +
+  geom_line(mapping = aes(yr_mth, mean_ss_2seniors), color = 'darkred') +
+  theme(legend.position="right")
 
-
+##  theme_fivethirtyeight() +
+##  legend(legend = 'ss_as_mdn', x = 'right')
 ```
-
-
-
-
