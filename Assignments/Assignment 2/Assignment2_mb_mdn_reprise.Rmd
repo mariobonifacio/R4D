@@ -24,7 +24,7 @@ I then use a logistic regression model, and find that all five independent varia
 
 > Probability of departure delay = 1 / (1 + e^-(0.27 - 0.0012 * difference between 8pm and scheduled departure time in minutes))
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, r echo=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 ## Load needed packages
 library(tidyverse); library(nycflights13); library(stringr); library(lubridate); library(ggthemes)
 ```
@@ -38,7 +38,6 @@ test_a <- flights %>%
   filter(n() >= 100) %>% 
   ungroup()
 
-test_a
 ```
 
 ```{r echo=FALSE}
@@ -47,7 +46,6 @@ test_b <- test_a %>%
   mutate(dep_time_object = hm(paste
                               (trunc(sched_dep_time/100) ## This line provides the hour
                                 ,str_sub(sched_dep_time,-2,-1)))) ## This line provides the minute
-test_b
 ```
 
 ```{r echo=FALSE}
@@ -62,13 +60,14 @@ test_c <- test_b %>%
   mutate(op_diff20 = mean(is_delay, na.rm = T)) %>%
   ungroup()
 
-test_c
 ```
 
 ```{r echo=FALSE}
 ## Use the bivariate model to predict probability for each scheduled departure time
 test_d <- test_c %>%
-  mutate(pred_bivar = 1/(1+exp(-(0.2746527 - 0.001169423 * diff_20h))))
+  mutate(pred_bivar = 1/(1+exp(-(0.2746527 - 0.001169423 * diff_20h)))) %>%
+  select(diff_20h, is_delay, pred_bivar, op_diff20, dep_time_object, sched_dep_time, dep_delay)
+
 ```
 
 ```{r}

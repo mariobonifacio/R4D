@@ -17,7 +17,37 @@ Go here to check out the [basic elements of a for loop](https://puzhu.github.io/
 **TASK 1**: Load the gapminder dataset. Loop through its columns. If a column is numeric then store the output of the `summary()` command. If it is not numeric, then store NULL. Print the output.
 
 ```{r}
+library(gapminder); library(tidyverse); library(lubridate)
 ##make your loop here
+
+res_list <- list()
+
+for(i in seq_along(names(gapminder))){
+res_list[i] <- if(is.numeric(gapminder[[i]])){
+  gapminder[[i]] %>%
+    summary() %>%
+    as.matrix()
+  }
+else {
+  NULL
+  } 
+}
+
+ 
+
+for(i in seq_along(names(gapminder))){
+res_list[i] <- if_else(is.numeric(gapminder[[i]])
+  ,paste('min',(summary(gapminder[[i]]))[1],
+        '1Q',(summary(gapminder[[i]]))[2],
+        'mdn',(summary(gapminder[[i]]))[3],
+        'mean',(summary(gapminder[[i]]))[4],
+        '3Q',(summary(gapminder[[i]]))[5],
+        'max',(summary(gapminder[[i]]))[6])
+  ,NULL)
+}
+print(res_list)
+
+
 ```
 
 
@@ -44,9 +74,15 @@ mtcars_2
 **Task 1**: Create a function called `square_greater()` that takes two arguments x and y that are numbers (i.e. atomic vectors of length one) and returns the square of whichever number is the greatest. Use `stopifnot(condition1, condition2)` to throw an error if any of the two input values are greater than 1 in length. 
 ```{r}
 ##define your function here
-square_greater <- function(){
-    
+square_greater <- function(x, y){
+  stopifnot(length(x) <= 1, length(y) <= 1)
+  stopifnot(is.numeric(x), is.numeric(y))
+  case_when(x > y, return(x)
+            ,y > x, return(y)
+            ,y = x, print('Equal'))
 }
+  
+ 
 ```
 
 
@@ -55,7 +91,7 @@ Test your function to make sure it works.
 ##run this after you define your function
 square_greater(x = 32, y = 87) ## this should work
 
-square_greater(x = 3.2, y = "4") ## this should work
+square_greater(x = 3.2, y = "4") ## this should not work
 
 square_greater(x = 23:45, y = 89) ## this should throw an error
 ```
