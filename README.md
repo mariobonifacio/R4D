@@ -79,4 +79,21 @@ This repository contains all the material for the R4D course - March 2019
 
 ## Week 10
 
-1. Class 18 - May 7th - [Class Slides](https://jamboard.google.com/d/1rlaQ5hRgZxOrWX8V89KW1fDUWMauHlbH_2vPiSHL56c/viewer) | [Class Lecture](https://puzhu.github.io/R4D/Classes/Class%2018/class18_lecture.nb.html) | [Class Exercises](https://puzhu.github.io/R4D/Classes/Class%2018/class18_exercises.nb.html) | [Class Video]()
+1. Class 18 - May 7th - [Class Slides](https://jamboard.google.com/d/1rlaQ5hRgZxOrWX8V89KW1fDUWMauHlbH_2vPiSHL56c/viewer) | [Class Lecture](https://puzhu.github.io/R4D/Classes/Class%2018/class18_lecture.nb.html) | [Class Exercises](https://puzhu.github.io/R4D/Classes/Class%2018/class18_exercises.nb.html) | [Class Video](https://youtu.be/VDsAuD8HZ5k)
+
+### A sample project folder structure
+
+```{}
+name_of_project/
+|- data
+| |- raw
+| |- processed
+|- figures
+|- reports
+|- results
+|- scripts
+| |- deprecated
+|- .gitignore
+|- name_of_project.Rproj
+|- README.md
+```

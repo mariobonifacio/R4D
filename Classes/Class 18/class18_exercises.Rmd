@@ -15,9 +15,90 @@ output:
 Go here to check out the [basic elements of a for loop](https://puzhu.github.io/R4D/Classes/Class%2017/class17_slides.html#/a-common-recipe). 
 
 **TASK 1**: Load the gapminder dataset. Loop through its columns. If a column is numeric then store the output of the `summary()` command. If it is not numeric, then store NULL. Print the output.
+```{r}
+library(gapminder)
+
+gapminder
+```
+
+
+```{r}
+seq_along(gapminder)
+```
+
+```{r}
+col_pos <- seq_along(gapminder)
+str(col_pos)
+```
+
+```{r}
+identical(1:6, seq_along(gapminder))
+```
+
+
+The way to pull out a column from a dataset using base R syntax is `df[[i]]`
+
+To get the number of columns in a df use `ncol()`
+```{r}
+ncol(gapminder)
+```
 
 ```{r}
 ##make your loop here
+
+## step 1
+out_vec <- vector(mode = "list", length = ncol(gapminder))
+out_vec
+```
+
+NOw lets setup the loop
+
+```{r}
+for (i in seq_along(gapminder)) {
+    print(i)
+}
+```
+
+```{r}
+for (i in 1:6){
+    print(i)
+}
+```
+
+The next thing we want to do is pull out gapminder columns
+```{r}
+out_vec <- vector(mode = "list", length = ncol(gapminder))
+
+for (i in seq_along(gapminder)) {
+    ##pull out the ith column from gapminder
+    gap_col <- gapminder[[i]]
+    
+    if (is.numeric(gap_col)) { ##check if this numeric
+        out_vec[[i]] <- summary(gap_col)
+    } else {
+        out_vec[[i]] <- NULL
+    }
+}
+
+
+```
+
+```{r}
+out_vec
+```
+
+```{r}
+out_vec <- vector(mode = "list", length = ncol(gapminder))
+
+for (i in seq_along(gapminder)) {
+    ##pull out the ith column from gapminder
+    gap_col <- gapminder[[i]]
+    
+    ##store the output
+    out_vec[[i]] <- if (is.numeric(gap_col)) summary(gap_col) else NULL
+}
+
+out_vec
 ```
 
 
@@ -39,14 +120,45 @@ mtcars_2
 
 **TASK 2**: Replicate the code to get `names()` of gapminder and append the string "_out" to each of them and set them as the names of the output vector you created in task 1.
 
+```{r}
+names(gapminder)
+```
+
+```{r}
+paste0(names(gapminder), "_hello")
+```
+
+```{r}
+paste(names(gapminder), "_hello", sep = "")
+```
+
+
+```{r}
+names(out_vec) <- paste0(names(gapminder), "_out")
+
+out_vec
+```
+
+```{r}
+out_vec$gdpPercap_out
+```
+
+
 ### Task Set 2: Functions
 
 **Task 1**: Create a function called `square_greater()` that takes two arguments x and y that are numbers (i.e. atomic vectors of length one) and returns the square of whichever number is the greatest. Use `stopifnot(condition1, condition2)` to throw an error if any of the two input values are greater than 1 in length. 
 ```{r}
 ##define your function here
-square_greater <- function(){
+square_greater <- function(x, y){
+    ## lets specify the check
+    stopifnot(length(x) == 1, length(y) == 1, is.numeric(x), is.numeric(y))
     
+    max(x, y) ^ 2
 }
+```
+
+```{r}
+87 ^ 2
 ```
 
 
@@ -55,7 +167,7 @@ Test your function to make sure it works.
 ##run this after you define your function
 square_greater(x = 32, y = 87) ## this should work
 
-square_greater(x = 3.2, y = "4") ## this should work
+square_greater(x = 3.2, y = "4") ## this should not work
 
 square_greater(x = 23:45, y = 89) ## this should throw an error
 ```
@@ -69,7 +181,14 @@ hist(mtcars$wt)
 
 ```{r}
 ##create your function
-draw_hist
+draw_hist <- function(num_vec) {
+    if (!is.numeric(num_vec)) stop("Please provide a numeric input")
+    
+    ##Do a whole bunch of other operation here and then plot
+    
+    ##draw a histogram
+    hist(num_vec)
+}
 ```
 
 
@@ -82,6 +201,11 @@ latest_gap <- gapminder %>%
 draw_hist(pull(latest_gap, lifeExp)) ## this should plot a histogram of life expectancy
 draw_hist(rnorm(n = 1000, mean = 20, sd = 4)) ## this should plot a histogram of a numeric vector with mean 20 and std dev of 4
 draw_hist(pull(latest_gap, continent)) ## this should throw an error
+```
+
+
+```{r}
+hist(gapminder$country)
 ```
 
 
