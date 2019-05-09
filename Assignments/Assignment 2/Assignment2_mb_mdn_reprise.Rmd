@@ -146,6 +146,8 @@ op_base <- sum(flights$dep_delay > 0, na.rm = T) / sum(!is.na(flights$dep_delay)
 ## op_base = 0.39094
 ```
 
+### JOIN DATA TABLES
+
 Link tables of flight, plane, and weather data together to create a thick data set
 ```{r}
 ### 3. Join flight, plane, and weather data into a single data frame of raw data to work with
@@ -153,6 +155,8 @@ flt_raw <- flights %>%
   left_join(rename(planes,'manuf_year' = year), by = 'tailnum') %>% ## Rename plane manufacture year from 'year' to 'manuf_year' to not confuse it with flight year
   left_join(weather, by = c('time_hour', 'origin'))
 ```
+
+### REMOVE IRRELEVANT COLUMNS
 
 Some flight, plane, and weather data are relevant or redundant and may be removed
 ```{r}
@@ -176,6 +180,8 @@ flt_test_00 <- flt_raw %>%
   
 ```
 
+### MUTATE SOME COLUMNS
+
 First, convert scheduled departure time to a time object
 ```{r}
 flt_test_01 <- flt_test_00 %>%
@@ -184,6 +190,7 @@ flt_test_01 <- flt_test_00 %>%
          ,str_sub(sched_dep_time,-2,-1)))) ## This line provides the minute
 ```
 
+Now to look at the delay data based on scheduled departure time
 ```{r}
 flt_test_01 %>%
   mutate(is_delay = if_else(dep_delay > 0, 1, 0)) %>%
@@ -194,71 +201,59 @@ flt_test_01 %>%
   ungroup() %>%
   select(sched_dep_time_metric, op_sched_dep) %>%
   unique() %>%
-     ggplot(mapping = aes(x = sched_dep_time_metric, y = op_sched_dep, color = 'op_sched_dep')) +
+     ggplot(mapping = aes(x = sched_dep_time_metric, y = op_sched_dep, color = 'delay | dep time')) +
      geom_point() +
-  geom_smooth(method = 'loess', mapping = aes(color = 'sched_dep_time_metric')) +
+  geom_smooth(method = 'loess', mapping = aes(color = 'smoothed delay | dep time')) +
   ggtitle('Likelihood of departure delay peaks around 8 p.m.') +
-  scale_color_fivethirtyeight(name = 'Time diff. of scheduled departure and 8 p.m.') +
+  scale_color_fivethirtyeight(name = 'Scheduled departure time and chance of delay') +
     theme_fivethirtyeight()
-  
-
 ```
 
+This graph appears to show that the probability of departure delay increases as the day moves along, peaks around 8 p.m., then drops again until midnight.
 
-```{r}
-test_02 <- test_01 %>%
+Based on the assumption that the delays are approximately symmetric about 8 p.m., I can mutate scheduled departure time by finding the time difference between each scheduled flight time and 8 p.m.
+```{r, message=FALSE, warning=FALSE, include=FALSE}
+flt_test_02 <- flt_test_01 %>%
   mutate(is_delay = if_else(dep_delay > 0, 1, 0)
-         ,diff_20h = abs(as.numeric(dep_time_object - hm('20:00')) / 60)) %>%
+         ,diff_20h = abs(as.numeric(sched_dep_time_object - hm('20:00')) / 60)) %>%
   group_by(diff_20h) %>%
   mutate(op_diff20 = mean(is_delay, na.rm = T)) %>%
   ungroup()
 ```
 
+Mutate the other categorical variables. Categorical variables may be used as inputs in a logistic regression. However, I'll mutate them here into an effect that reflects the difference associated with any given carrier, origin airport, and so forth:
+```{r, message=FALSE, warning=FALSE, include=FALSE}
 
-
-
-Now to mutate scheduled departure time:
-```{r}
-
-## converts
-
-flt_test_01 <- flt_test_00 %>%
-  mutate(diff_20h = if_else(sched_dep_time < 2000
-                            ,1960 - sched_dep_time
-                            ,sched_dep_time - 2000)
-                            ,dep_delay = if_else(dep_delay > 0, 1, 0)) %>%
+flt_test_03 <- flt_test_02 %>%
   group_by(carrier) %>%
-     mutate(op_carr = sum(dep_delay>0) / length(dep_delay) - op_base) %>%
+     mutate(op_carr = sum(is_delay>0) / length(is_delay) - op_base) %>%
      ungroup() %>%
   group_by(origin) %>%
-     mutate(op_ogn = sum(dep_delay>0) / length(dep_delay) - op_base) %>%
+     mutate(op_ogn = sum(is_delay>0) / length(is_delay) - op_base) %>%
      ungroup() %>%
   group_by(type) %>%
-     mutate(op_type = sum(dep_delay>0) / length(dep_delay) - op_base) %>%
+     mutate(op_type = sum(is_delay>0) / length(is_delay) - op_base) %>%
      ungroup() %>%
   group_by(manufacturer) %>%
-     mutate(op_mnf = sum(dep_delay>0) / length(dep_delay) - op_base) %>%
+     mutate(op_mnf = sum(is_delay>0) / length(is_delay) - op_base) %>%
      ungroup() %>%
   group_by(model) %>%
-     mutate(op_mdl = sum(dep_delay>0) / length(dep_delay) - op_base) %>%
+     mutate(op_mdl = sum(is_delay>0) / length(is_delay) - op_base) %>%
      ungroup() %>%
   group_by(speed) %>%
-     mutate(op_spd = sum(dep_delay>0) / length(dep_delay) - op_base) %>%
+     mutate(op_spd = sum(is_delay>0) / length(is_delay) - op_base) %>%
      ungroup() %>%
   group_by(engine) %>%
-     mutate(op_eng = sum(dep_delay>0) / length(dep_delay) - op_base) %>%
+     mutate(op_eng = sum(is_delay>0) / length(is_delay) - op_base) %>%
      ungroup()
 ```
 
-```{r}
+Because travelers may want to refer to delays associated with members of each category, the observed probabilities will be listed in the Appendix alongside their names in a table.
+```{r, message=FALSE, warning=FALSE, include=FALSE}
 ### This code creates a separate data frame which links categorical variables to their relative probabilities
-cat_facts <- flt_test %>%
-  select(15:21,23:29) %>%
-  unique()
-
-## Now, I'll gather and do a little clean-up
-
-cat_facts <- cat_facts %>%
+cat_facts <- flt_test_03 %>%
+  select(3:4, 7:9, 12:13, 28:34) %>%
+  unique() %>%
   gather(key = 'cat', value = 'obj', carrier, origin, type, manufacturer, model, speed, engine) %>%
   rename(carrier = op_carr
          ,origin = op_ogn
@@ -274,28 +269,14 @@ cat_facts <- cat_facts %>%
   filter(!is.na(obj) == T) %>%
   arrange(cat,desc(facts))
 
-cat_facts
+# cat_facts
+
+
 ```  
-  
-```{r}
-### This code removes the original categorical variables to get the data frame even skinnier; Can reference cat_facts if needed
 
-flt_test <- flt_test %>%
-  select(-(15:21))
+---  
 
-flt_test %>%
-  cor(use = 'pairwise.complete.obs') %>%
-  as_tibble() %>%
-  mutate(field = rownames(cor(flt_test))) %>%
-  filter(dep_delay < 1) %>%
-  select(field, dep_delay) %>%
-  arrange(desc(abs(dep_delay)))
-
-
-
-```
-
-^3^ A negative departure delay value would decrease a category mean as though it is "more on time," without . To better intuit this, suppose an airline has one flight that leaves 30 minutes early and another that leaves 30 minutes late. On paper it would appear that a traveler need not worry about delays when flying on this airline, but this is not the case. Because of that, I chose to zero out negative departure delay values.
+^3^ A negative departure delay value would decrease a category mean as though it is "more on time". To better intuit this, suppose an airline has one flight that leaves 30 minutes early and another that leaves 30 minutes late every day. On paper, the mean of 0 minutes delayed would appear as though a traveler need not worry about delays when flying on this airline, but this is not the case; Rather, there's a 50 percent chance they'll depart late. Because of that, I chose to zero out negative departure delay values.
 
 ## Univariate analysis
 
@@ -311,34 +292,38 @@ Doing this will expose:
 * Fields that will require transformation, and
 * Fields with too few observations or with too many missing observations to be representative
 
-### METADATA
+### ADDITIONAL METADATA
 
-The package's documentation offers extensive metadata information: [nycflights documentation](https://cran.r-project.org/web/packages/nycflights13/nycflights13.pdf "nycflights docs")
+The package's documentation offers extensive metadata information.^4^
 
 See appendix for data dictionary and data lineage
 
 ### DESCRIPTIVE STATS OF THE DEPENDENT VARIABLE:
 
-First, I'll prepare a histogram of departure delay. I'll cut off at the 97.5th percentile so it's easier to see
+First, I'll prepare a histogram of departure delay. As you'll see, the data is very concentrated near zero and heavily skewed to the right. That is, most flights were on time or nearly so, but occasionally, flights had very long delays.  I'll cut off at the 97.5th percentile so it's easier to see
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
-```{r}
 flights %>% ##
   select(dep_delay) %>%
   filter(!is.na(dep_delay) == T
-           & dep_delay < as.numeric(quantile(flights %>%
+           & dep_delay < as.numeric(quantile(flights %>% ## This filter finds the departure delay value associated with the 97.5th percentile
            filter(!is.na(dep_delay) ==T) %>%
            select(dep_delay) %>%
            as_vector(), probs = .975))) %>%
   mutate(dep_delay = (dep_delay + abs(dep_delay)) / 2) %>%
   as_tibble() %>%
-  ggplot(data = ., mapping = aes(x = dep_delay)) +
+  ggplot(data = ., mapping = aes(x = dep_delay, fill = 'departure delay (min)')) +
   geom_histogram(binwidth = 5, na.rm = T) +
   theme_fivethirtyeight() +
-  ggtitle('Departure delay is skewed right and not normally distributed')
+  ggtitle('Dep delay is concentrated near 0 and skewed right') +
+  scale_color_fivethirtyeight(name = 'Scheduled departure time and chance of delay') +
+  guides(fill = guide_legend(title = NULL)) +
+    theme_fivethirtyeight()
   
 ```
-Let's look at some percentiles to verify that this is not normal by checking the probabilities associated with one-tailed z-scores of 0.5 to 3.0
-```{r}
+Let's look at 6 percentiles to verify that this is not normal by checking the probabilities associated with one-tailed z-scores of 0.5 to 3.0, by 0.5. If this were a normal distribution, these 
+```{r, message=FALSE, warning=FALSE, include=FALSE}
+
 quantile(flights %>%
            filter(!is.na(dep_delay) ==T) %>%
            select(dep_delay) %>%
@@ -346,25 +331,32 @@ quantile(flights %>%
            as_vector(), probs = c(0.6915, 0.8413,0.9332 ## p(z < 0.5, 1.0, 1.5)
                                   ,0.9772, 0.9938, 0.9987)) ## p(z < 2.0, 2.5, 3.0)
 ```
-In a normal distribution, the distance between each of these would be equal. **I'll make a key decision here by choosing to predict the probability of any delay given other factors rather than trying to predict the length of a delay**
+In a normal distribution, the distance between each of these would be equal. **It would make more sense to predict the probability of any delay given other factors rather than trying to predict the length of a delay**
 
-Given this decision, the previous histogram doesn't make much sense. Instead, I'll find a baseline value for the probability that a flight will be delayed and produce a fairly boring graph
-```{r}
+Given this decision, the previous histogram doesn't make much sense.
+
+To start on building a logistic regression, find a baseline value for the probability that a flight will be delayed, using only the dep_delay column and produce a fairly boring graph
+```{r, message=FALSE, warning=FALSE, include=FALSE}
+
 op_base <- (flights %>% filter(dep_delay > 0) %>% nrow()) / (flights %>% filter(!is.na(dep_delay) == T) %>% nrow())
+```
 
-op_base
+That baseline is 39 percent. This needs to be graphed
+```{r, message=FALSE, warning=FALSE}
 
 as_tibble(op_base) %>%
   ggplot(mapping = aes(x=0, y=0.39094)) +
-  geom_point(size=0) +
+  geom_point(size = 0) +
   geom_abline(intercept = 0.39094, slope = 0, color = 'blue', size = 1) +
-  ylab('op_base = 0.39094') +
   scale_color_fivethirtyeight() +
   theme_fivethirtyeight() +
-  ggtitle('Assume a 39 percent chance of delay if no data')
-
+  ggtitle('Assume a 39 percent chance of delay if no data') +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())
 ```
 
+*^4^ See [nycflights documentation](https://cran.r-project.org/web/packages/nycflights13/nycflights13.pdf "nycflights docs")*
 
 ## Multivariate analysis
 
@@ -392,39 +384,40 @@ Based on the data dictionary, the following fields are either unlikely to be rel
 * Distance
 
 Only one field among those remaining, **wind gust**, is concerning due to the number of n/a entries -- 256,391 of 336,776 total. My fear is that these incomplete entries are biased -- that is, we may be telling a story that is based on a sample of the data that does not represent the poopulation.
-```{r}
+
+To test, I'll produce summary statistics for wind gusts that are present and missing:
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 ### Here, I split up all entries based on whether or not wind_gust is NULL
 ### Then, look at descriptive statistics of delay by those groups
-flt_test %>%
-  select(wind_gust,dep_delay) %>%
-  filter(is.na(dep_delay) == F) %>%
+
+flt_test_03 %>%
+  select(wind_gust, is_delay) %>%
+  filter(!is.na(is_delay)) %>%
   mutate(na_gust = if_else(is.na(wind_gust), 0, 1)) %>% 
   group_by(na_gust) %>% 
-  summarise(p_del = sum(dep_delay > 0)/length(dep_delay) 
-     ,n_del     = length(dep_delay)
-     ,min_del    = min(dep_delay,na.rm = T)
-     ,del_25qile = quantile(dep_delay,probs = 0.25,na.rm = T)
-     ,mdn_del    = median(dep_delay,na.rm = T)
-     ,del_75qile = quantile(dep_delay,probs = 0.75,na.rm = T)
-     ,max_del    = max(dep_delay, na.rm = T)) %>%
-    round(2)
+  summarise(p_del = mean(is_delay)
+     ,n_del     = length(is_delay)) %>%
+  round(2)
+```
 
-flt_test %>%
-  select(wind_gust,dep_delay) %>%
-  filter(is.na(dep_delay) == F) %>%
+The data looks similar enough. Now to see if the graphs look similar
+```{r}
+flt_test_03 %>%
+  select(wind_gust,is_delay) %>%
+  filter(is.na(is_delay) == F) %>%
   mutate(na_gust = factor(if_else(is.na(wind_gust), 0, 1)
                              ,levels = c(0,1)
                              ,labels = c('null', 'not null') )) %>%
-  ggplot(aes(dep_delay)) +
+  ggplot(aes(is_delay, fill = 'density whether wind gust is NA')) +
   geom_density() +
-  ggtitle(label = 'Dep. delay differs when wind gust is na but is good enough to use') +
-  theme_economist() +
+  ggtitle(label = 'Delay chance differs when wind gust is na but thats OK') +
+  theme_fivethirtyeight() +
   facet_wrap(~na_gust, nrow = 2, ncol = 1)
 ```
-These look similar enough to work with. To verify with numbers, I would do a z-test to see if I'm able to disprove that the means are unequal and an f-test to do the same with the standard deviations. But not today. Today, I will do neither.
+These look similar enough to work with. To further verify with numbers, I would do a z-test to see if I'm able to disprove that the means are unequal and an f-test to do the same with the standard deviations. But not today. Today, I will do neither.
+
 
 ### Explore relationships
-
 
 In testing departure delay and our other variables, I'll be looking for relationships that show a strong, correlative relationship. 
 
@@ -432,11 +425,14 @@ To do this, I'll use R's general linear model (glm) tool. This will expose the s
 
 **I will test the dataset I've created with a significance level of 0.1 percent.**
 ```{r, message=FALSE, warning=FALSE}
-glm_test <- glm(data = flt_test, dep_delay ~ diff_20h + distance + manuf_year + engines + seats + temp + dewp + humid + wind_speed + wind_gust + precip + pressure + visib + op_carr + op_ogn + op_type + op_mnf + op_mdl + op_spd + op_eng, family = binomial)
+glm_test <- glm(data = flt_test_03, is_delay ~ distance + manuf_year + engines + seats + speed + month.y + temp + dewp + humid + wind_dir + wind_speed + wind_gust + precip + pressure + visib + diff_20h + op_carr + op_ogn + op_type + op_mnf + op_mdl + op_spd + op_eng, family = binomial)
 
-glm_test <- glm(data = flt_test, dep_delay ~ diff_20h + humid + pressure + visib + op_carr + op_ogn + op_mnf + op_mdl + op_eng, family = binomial)
+summary(glm_test)
 
-(summary(glm_test))
+glm_test <- glm(data = flt_test_03, is_delay ~ month.y + temp + humid + wind_gust + diff_20h + op_carr + op_mdl, family = binomial)
+
+summary(glm_test)
+
 
 ```
 The variables that appear to have significant relationships with dep_delay are: diff_20h, humidity, pressure, visibility, op_carr, op_ogn, op_mnf, op_mdl, op_eng
@@ -471,7 +467,7 @@ Carrier is highly correlated with four variables which are also correlated with 
 This brings us to our final five variables: diff_20h, pressure, visib, op_carr, op_ogn
 
 ```{r}
-flt_final <- flt_test %>%
+flt_final <- flt_test_03 %>%
   select(dep_delay, diff_20h, pressure, visib, op_carr, op_ogn)
 ```
 
