@@ -18,9 +18,9 @@ output:
 
 ## Abstract 
 
-Unpredictable flight delays are a costly problem, forcing travelers to choose between spending unproductive time at the airport and missing a flight. In 2013, flights from the three New York area airports alone saw aggregate delays of half a million minutes. I explore the predictive capacity with respect to the probability of departure delay of five independent variables -- **scheduled departure time**, **atmomspheric pressure**, **visibility**, **the probability associated with each air carrier**, and **the probability associated with each origin airport**. Notably all five of these variables are forecasted ahead of time and made publicly available.
+Unpredictable flight delays are a costly problem, forcing travelers to choose between spending unproductive time at the airport and missing a flight. In 2013, flights from the three New York area airports alone saw aggregate delays of half a million minutes.[^1] I explore the predictive capacity with respect to the probability of departure delay of five independent variables -- **scheduled departure time**, **atmomspheric pressure**, **visibility**, **the probability associated with each air carrier**, and **the probability associated with each origin airport**. Notably all five of these variables are forecasted ahead of time and made publicly available.
 
-I then use a logistic regression model, and find that all five independent variables display a correlative relationship with departure delay at a 0.1% significance level and that scheduled departure time may be used to estimate the probability of departure delay as follows:
+I then use a logistic regression model, and find that all five independent variables display a correlative relationship with departure delay at a 0.1 percent significance level. The data also suggest that scheduled departure time may be used to estimate the probability of departure delay as follows:^2^
 
 > Probability of departure delay = 1 / (1 + e^-(0.27 - 0.0012 * difference between 8pm and scheduled departure time in minutes))
 
@@ -29,7 +29,7 @@ I then use a logistic regression model, and find that all five independent varia
 library(tidyverse); library(nycflights13); library(stringr); library(lubridate); library(ggthemes)
 ```
 
-```{r echo=FALSE}
+```{r echo=FALSE, include=FALSE, warning=F}
 ## Filter out entries where departure delay is NULL
 ## Because observed probability will be used as a benchmark to test the model, remove departure times with limited observations
 test_a <- flights %>% 
@@ -38,53 +38,57 @@ test_a <- flights %>%
   filter(n() >= 100) %>% 
   ungroup()
 
+# test_a
 ```
 
-```{r echo=FALSE}
+```{r echo=FALSE, include=FALSE, warning=F}
 ## Next, mutate scheduled departure time from integer to time object to do time operations on it
 test_b <- test_a %>%
   mutate(dep_time_object = hm(paste
                               (trunc(sched_dep_time/100) ## This line provides the hour
                                 ,str_sub(sched_dep_time,-2,-1)))) ## This line provides the minute
+# test_b
 ```
 
-```{r echo=FALSE}
+```{r echo=FALSE, include=FALSE, warning=F}
 ## Next, mutate delay time to a binary i.e. Is it delayed (YN)
 ## Find time difference between scheduled departure time and 8 pm
 ## Find the observed probability by time i.e. delayed flights / all flights
 
 test_c <- test_b %>%
   mutate(is_delay = if_else(dep_delay > 0, 1, 0)
-         ,diff_20h = abs(as.numeric(dep_time_object - hm('20:00'), units = 'minutes'))) %>%
+         ,diff_20h = abs(as.numeric(dep_time_object - hm('20:00')) / 60)) %>%
   group_by(diff_20h) %>%
   mutate(op_diff20 = mean(is_delay, na.rm = T)) %>%
   ungroup()
 
+# test_c
 ```
 
-```{r echo=FALSE}
-## Use the bivariate model to predict probability for each scheduled departure time
+```{r echo=FALSE, include=FALSE, warning=F}
+## Use the bivariate model created later to predict probability for each scheduled departure time
 test_d <- test_c %>%
-  mutate(pred_bivar = 1/(1+exp(-(0.2746527 - 0.001169423 * diff_20h)))) %>%
-  select(diff_20h, is_delay, pred_bivar, op_diff20, dep_time_object, sched_dep_time, dep_delay)
-
+  mutate(pred_bivar = 1/(1+exp(-(0.2746527 - 0.001169423 * diff_20h))))
 ```
 
-```{r}
+```{r, echo=FALSE, warning=F}
 
 ggplot(data = test_d, mapping = aes(x = diff_20h, y = op_diff20, color = 'observed probability')) +
-  geom_point() +
+  geom_point(size = 1) +
   geom_line(data = test_d, mapping = aes(x = diff_20h, y = pred_bivar, color = 'predicted probability'), size = 1.5) +
-  geom_hline(yintercept = 0.39094, size = 1) +
+  geom_hline(yintercept = 0.39094, size = 1, aes(color = 'gray')) +
   ggtitle('Fly in the morning to lower your chance for delay') +
-  scale_color_fivethirtyeight(labels = c('observed probability', 'predicted probability', 'baseline prediction')) +
+  scale_color_fivethirtyeight(labels = c('observed probability', 'predicted probability', 'baseline prediction')
+                              ,name = 'Time diff. of scheduled departure and 8 p.m.') +
   theme_fivethirtyeight()
   
 
 ```
 
+---  
 
-
+*^1^ Bureau of Transportation Statistics, "Reporting Carrier On-Time Performance", via Rstudio*  
+*^2^ e refers to Euler's number, a mathematical constant roughly equal to 2.72*
 
 
 
@@ -93,7 +97,7 @@ ggplot(data = test_d, mapping = aes(x = diff_20h, y = op_diff20, color = 'observ
 ## Background
 
 ### PROBLEM:
-Here, the problem is that flight delays are unpredictable. Not only that, mis-timing your ride to the airport could be costly; Arrive late and you may miss your flight altogether, but arrive early and you'll spend even more uncomfortable, unproductive time at the gate. In an ideal world, all flights would simply leave on time. In a second-best world, each airline would contact travelers directly with flight delay information that was accurate and timely enough to be actionable. Alas, neither of those are the case.
+Flight delays are unpredictable. Mis-timing your ride to the airport could be costly; Arrive late and you may miss your flight altogether, but arrive early and you'll spend even more uncomfortable, unproductive time at the gate. In an ideal world, all flights would simply leave on time. In a second-best world, each airline would contact travelers directly with flight delay information that was accurate and timely enough to be actionable. Alas, neither of those are the case.
 
 ### GOAL:
 My ultimate goal is to be able to best predict whether a flight will be delayed using weather, plane, and flight data.
@@ -105,12 +109,13 @@ My null hypothesis is that *no* available weather, plane, or flight data shares 
 
 To set up, I'll do the following:
 
-1. Link flight data with data to the planes flown and the weather contemporaneous to each flight
-2. Find a baseline probability for departure delay
-3. Clean and adapt the data both so that it makes sense logically and is testable; This will include:
-    a. Setting negative departure delay values equal to zero^1^
+1. Set a baseline probability
+2. Link flight data with data to the planes flown and the weather contemporaneous to each flight
+3. Find a baseline probability for departure delay
+4. Clean and adapt the data both so that it makes sense logically and is testable; This will include:
+    a. Setting negative departure delay values equal to zero^3^
     b. Replacing categorical data -- such as the name of an airline -- with an "object effect" that estimates the added chance for delay associated with any object
-4. Start an appendix of metadata, including:
+5. Start an appendix of metadata, including:
     a. A data dictionary
     b. A data lineage diagram
 
@@ -132,10 +137,16 @@ To set up, I'll do the following:
 library(tidyverse); library(nycflights13); library(lubridate); library(ggthemes); library(reshape2); library(DiagrammeR); library(skimr)
 ```
 
+### BASELINE
 
+I'll set a baseline probability by finding how many flights were delayed in 2013 and dividing by the total number of flights, while accounting for flights that didn't have delay information available.
+```{r, echo=FALSE, message=FALSE}
 
+op_base <- sum(flights$dep_delay > 0, na.rm = T) / sum(!is.na(flights$dep_delay))
+## op_base = 0.39094
+```
 
-
+Link tables of flight, plane, and weather data together to create a thick data set
 ```{r}
 ### 3. Join flight, plane, and weather data into a single data frame of raw data to work with
 flt_raw <- flights %>%
@@ -143,18 +154,75 @@ flt_raw <- flights %>%
   left_join(weather, by = c('time_hour', 'origin'))
 ```
 
+Some flight, plane, and weather data are relevant or redundant and may be removed
+```{r}
+### Remove irrelevant columns
+
+flt_test_00 <- flt_raw %>%
+  filter(!is.na(dep_delay) == T) %>%
+  select(-year.x, -month.x, -day.x, -hour.x ## Ex ante flight info 1
+         ,-minute, -sched_arr_time, -flight ## Ex ante flight info 2
+         ,-tailnum, -dest, -time_hour ## Ex ante flight info 3
+         ,-dep_time, -arr_time ## Post hoc flight info 1
+         ,-arr_delay ,-air_time ## Post hoc flight info 2
+         ,-year.y, month.y, -day.y, -hour.y) ## Weather reading time
+
+## Here's what's kept:
+##(dep_delay, sched_dep_time, distance, manuf_year, engines ## 1-5
+##         ,seats, temp, dewp, humid, wind_speed,wind_gust, precip ## 6-12
+  ##       ,pressure, visib, distance ## 13-15
+    ##     ,carrier, origin, type, manufacturer ## cat cols 16-19
+      ##   ,model, speed ,engine) %>% ## cat cols 20-22
+  
+```
+
+First, convert scheduled departure time to a time object
+```{r}
+flt_test_01 <- flt_test_00 %>%
+  mutate(sched_dep_time_object = hm(paste
+     (trunc(sched_dep_time/100) ## This line provides the hour
+         ,str_sub(sched_dep_time,-2,-1)))) ## This line provides the minute
+```
 
 ```{r}
-### 3,4. Remove irrelevant columns and transform categorical data into numbers
+flt_test_01 %>%
+  mutate(is_delay = if_else(dep_delay > 0, 1, 0)) %>%
+  group_by(as.numeric(sched_dep_time_object)) %>%
+  filter(n() > 100) %>%
+  mutate(op_sched_dep = mean(is_delay)
+         ,sched_dep_time_metric = round((sched_dep_time / 100 - trunc(sched_dep_time / 100)) * 500/3 + 100 * (trunc(sched_dep_time / 100))))  %>%
+  ungroup() %>%
+  select(sched_dep_time_metric, op_sched_dep) %>%
+  unique() %>%
+     ggplot(mapping = aes(x = sched_dep_time_metric, y = op_sched_dep, color = 'op_sched_dep')) +
+     geom_point() +
+  geom_smooth(method = 'loess', mapping = aes(color = 'sched_dep_time_metric')) +
+  ggtitle('Likelihood of departure delay peaks around 8 p.m.') +
+  scale_color_fivethirtyeight(name = 'Time diff. of scheduled departure and 8 p.m.') +
+    theme_fivethirtyeight()
+  
+
+```
 
 
-flt_test <- flt_raw %>%
-  filter(!is.na(dep_delay) == T) %>%
-  select(dep_delay, sched_dep_time, distance, manuf_year, engines ## 1-5
-         ,seats, temp, dewp, humid, wind_speed,wind_gust, precip ## 6-12
-         ,pressure, visib, distance ## 13-15
-         ,carrier, origin, type, manufacturer ## cat cols 16-19
-         ,model, speed ,engine) %>% ## cat cols 20-22
+```{r}
+test_02 <- test_01 %>%
+  mutate(is_delay = if_else(dep_delay > 0, 1, 0)
+         ,diff_20h = abs(as.numeric(dep_time_object - hm('20:00')) / 60)) %>%
+  group_by(diff_20h) %>%
+  mutate(op_diff20 = mean(is_delay, na.rm = T)) %>%
+  ungroup()
+```
+
+
+
+
+Now to mutate scheduled departure time:
+```{r}
+
+## converts
+
+flt_test_01 <- flt_test_00 %>%
   mutate(diff_20h = if_else(sched_dep_time < 2000
                             ,1960 - sched_dep_time
                             ,sched_dep_time - 2000)
@@ -227,13 +295,13 @@ flt_test %>%
 
 ```
 
-^1^ A negative departure delay value would decrease a category mean as though it *is* more on time.  A flight that leaves early should not be considered "more on time" than a flight that leaves at it's scheduled time. To better intuit this, suppose an airline has one flight that leaves 30 minutes early and another that leaves 30 minutes late. On paper it would appear that a traveler need not worry about delays when flying on this airline, but this is not the case. Because of that, I chose to zero out negative departure delay values.
+^3^ A negative departure delay value would decrease a category mean as though it is "more on time," without . To better intuit this, suppose an airline has one flight that leaves 30 minutes early and another that leaves 30 minutes late. On paper it would appear that a traveler need not worry about delays when flying on this airline, but this is not the case. Because of that, I chose to zero out negative departure delay values.
 
 ## Univariate analysis
 
 Here are the steps for this
 
-1. Explore metadata to ensure I understand what each variable represents
+1. Explore metadata to ensure understanding of what each variable represents
 2. Descriptive statics of the dependent variable, departure delay, including number of observations, mean, standard deviation, median, min, max, and interquartile measures
 3. A histogram will offer a visual representation
 
@@ -245,7 +313,7 @@ Doing this will expose:
 
 ### METADATA
 
-The package's documentation offers extensive information: [nycflights documentation](https://cran.r-project.org/web/packages/nycflights13/nycflights13.pdf "nycflights docs")
+The package's documentation offers extensive metadata information: [nycflights documentation](https://cran.r-project.org/web/packages/nycflights13/nycflights13.pdf "nycflights docs")
 
 See appendix for data dictionary and data lineage
 
@@ -265,7 +333,7 @@ flights %>% ##
   as_tibble() %>%
   ggplot(data = ., mapping = aes(x = dep_delay)) +
   geom_histogram(binwidth = 5, na.rm = T) +
-  theme_economist() +
+  theme_fivethirtyeight() +
   ggtitle('Departure delay is skewed right and not normally distributed')
   
 ```
@@ -445,7 +513,7 @@ Now that I've got this equation, I'll plot the observed probability for each gro
 ```{r}
 ### I'm starting with raw data to build this completed graph, so that it still works if I skip ahead. Also, so I can practice
 
-test_a <- flights %>% ### flights[sample(nrow(flights),100),] To sample instead use this
+test_a <- flights %>% ###
   select(sched_dep_time, dep_delay) %>%
   filter(!is.na(dep_delay) == T) %>%
   filter(sched_dep_time %in% (flights %>% ### Is the time one of those with too few entries?
@@ -628,16 +696,17 @@ See the previous section. The heavy skew of the data means that number is likely
 
 ### Test formula using a succeeding year's data
 
-There are updates to the flight data for as recently as 2017. Let's see how the formula did at predicting
+There are updates to the flight data for as recently as 2017. Let's see how the formula did at predicting. You may need to download this file and store it in the directory you have this notebook: http://mariobonifacio.github.io/flights17.rds
 
 ```{r}
 ### I can't get this download to work because of some github security probably, so just get it from here: http://mariobonifacio.github.io/flights17.rds
-#library(RCurl)
+# Then put that file in this directory
+library(RCurl)
 #
-#f <- CFILE("flights17.rds", mode="wb")
-#curlPerform(url = "http://mariobonifacio.github.io/flights17.rds", writedata = f@ref, noprogress=FALSE)
-#close(f)
-# flights_17 <- read_rds("flights17.rds")
+f <- CFILE("flights17.rds", mode="wb")
+curlPerform(url = "http://mariobonifacio.github.io/flights17.rds", writedata = f@ref, noprogress=FALSE) # If this line doesn't work, download and put in the directory of this notebook
+close(f)
+flights_17 <- read_rds("flights17.rds")
 
 flights_17 %>%
   filter(!is.na(dep_delay) == T) %>%
@@ -652,7 +721,7 @@ flights_17 %>%
     geom_point(mapping = aes(x = diff_20h, y = op_delay), color = 'gray') +
   theme_fivethirtyeight() +
   scale_color_fivethirtyeight() +
-  ggtitle('My logistic regression model works well on 2017 data')
+  ggtitle('My bivariate logistic regression model works well on 2017 data')
 
 
 ```
