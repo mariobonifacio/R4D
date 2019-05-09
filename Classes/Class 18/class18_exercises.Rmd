@@ -209,6 +209,11 @@ hist(gapminder$country)
 ```
 
 
+```{r}
+1:10
+
+mean(runif(10), trims = 2)
+```
 
 
 

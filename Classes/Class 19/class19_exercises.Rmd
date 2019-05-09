@@ -1,0 +1,59 @@
+---
+title: "Class 19 - In class exercises"
+author: Hari Subhash
+date: "Date created: `r Sys.Date()`"
+output:
+  html_notebook:
+    highlight: haddock
+    smart: yes
+    theme: readable
+    df_print: paged
+---
+
+## Function
+
+Below is a simple/trivial function that checks if it argument is numeric and if it is then returns its mean, else it prints a message. There are two arguments to the function
+
+1. The vector that we need to take the mean off
+2. The error message that needs to be printed if the input vector is not numeric
+
+Notice how I have set the default value of the `error_message` argument inside the function definition. This means that I can call this function without specifying the error_message argument and it will still work. However, I have the option to change this default argument if I want to.
+```{r}
+get_mean <- function(num_vec, error_message = "Please enter a numeric vector") {
+    if (is.numeric(num_vec)) {
+        # value to be return if numeric
+        mean(num_vec, na.rm = T) 
+    } else {
+        # value that is returned if it is not numeric
+        stop(error_message)
+    }
+}
+```
+
+lets try a few different inputs to see if they work.
+```{r}
+get_mean(num_vec = 1:34)
+```
+
+```{r}
+get_mean(num_vec = c("a", "b", "c"))
+```
+
+```{r}
+get_mean(num_vec = c("a", "b", "c"), error_message = "I changed the message")
+```
+
+**Task**: Write a function that takes three inputs - two of them numeric vectors and the third an error message. Set the default value of the error message to be "This function only accepts numeric inputs". The function should check if both the input vectors are numeric (use an AND condition here) if they are then find return a sum of both the vector, else return the error message.
+
+
+
+## Mapping
+**Task 1**: The `readxl` package loads excel files. Go to https://readxl.tidyverse.org/reference/index.html to find the function that can identify excel sheets in an excel file. Use this function to access the sheets in the file that I shared with you. Store this in a variable called `all_sheets`.
+
+**Task 2**: Use `map()` on `all_sheets` to loop through each sheet and load the data by mapping the sheet name to the `read_excel()` function. Make sure you specify the path to the file correctly. Hint: Think about how you would load one sheet using `read_excel()` and then try to extend that.
+
+**Optional task**: Replicate task 2 using a for loop.
+
+
+
+

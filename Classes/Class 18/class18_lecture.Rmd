@@ -79,7 +79,6 @@ out_stored <- sum_nums_stored(45, 90)
 out_stored
 ```
 
-
 ##Lets look at mapping
 ```{r}
 glimpse(gapminder)
