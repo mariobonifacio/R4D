@@ -222,7 +222,7 @@ temp_df <- flights %>%
          ,sched_dep_time_metric = round((sched_dep_time / 100 - trunc(sched_dep_time / 100)) * 500/3 + 
                                          100 * (trunc(sched_dep_time / 100))))
 
-results_df <- tibble(i = 1L, cor_i = 0.1234)
+results_df <- tibble(i= 1L, cor_i = 0.1234)
 
 for(i in 1:2399){results_df[i, 1] <- paste(trunc(i / 100), trunc((i %% 100) * 3 / 5), sep = ':')
   results_df[i, 2] <- cor(abs(i - temp_df$sched_dep_time_metric), temp_df$is_delay)}
@@ -777,29 +777,30 @@ There are updates to the flight data for as recently as 2017. Let's see how the 
 
 ```{r}
 ### I can't get this download to work because of some github security probably, so just get it from here: http://mariobonifacio.github.io/flights17.rds
-# Then put that file in this directory
-library(RCurl)
-#
-f <- CFILE("flights17.rds", mode="wb")
-curlPerform(url = "http://mariobonifacio.github.io/flights17.rds", writedata = f@ref, noprogress=FALSE) # If this line doesn't work, download and put in the directory of this notebook
-close(f)
-flights_17 <- read_rds("flights17.rds")
+# Then put that file in this directory. After that, select the rest of this chunk and hit command-shift-C on a Mac or Ctrl-Shift-C on a Windows machine.
 
-flights_17 %>%
-  filter(!is.na(dep_delay) == T) %>%
-  mutate(diff_20h = if_else(sched_dep_time < 2000
-                                ,1960 - sched_dep_time
-                                ,sched_dep_time - 2000)) %>%
-  group_by(diff_20h) %>%
-  summarise(op_delay = sum(dep_delay > 0) / length(dep_delay)) %>%
-  mutate(pred_prob = 1/(1+exp(-(0.2746527 - 0.001169423 * diff_20h)))) %>%
-  ggplot(mapping = aes(x = diff_20h, y = pred_prob)) +
-  geom_line(color = 'orange', size = 2) +
-    geom_point(mapping = aes(x = diff_20h, y = op_delay), color = 'gray') +
-  theme_fivethirtyeight() +
-  scale_color_fivethirtyeight() +
-  ggtitle('My bivariate logistic regression model works well on 2017 data')
-
+# library(RCurl)
+# 
+# f <- CFILE("flights17.rds", mode="wb")
+# curlPerform(url = "http://mariobonifacio.github.io/flights17.rds", writedata = f@ref, noprogress=FALSE) # If this line doesn't work, download and put in the directory of this notebook
+# close(f)
+# 
+# flights_17 <- read_rds("flights17.rds")
+# 
+# flights_17 %>%
+#   filter(!is.na(dep_delay) == T) %>%
+#   mutate(diff_20h = if_else(sched_dep_time < 2000
+#                                 ,1960 - sched_dep_time
+#                                 ,sched_dep_time - 2000)) %>%
+#   group_by(diff_20h) %>%
+#   summarise(op_delay = sum(dep_delay > 0) / length(dep_delay)) %>%
+#   mutate(pred_prob = 1/(1+exp(-(0.2746527 - 0.001169423 * diff_20h)))) %>%
+#   ggplot(mapping = aes(x = diff_20h, y = pred_prob)) +
+#   geom_line(color = 'orange', size = 2) +
+#     geom_point(mapping = aes(x = diff_20h, y = op_delay), color = 'gray') +
+#   theme_fivethirtyeight() +
+#   scale_color_fivethirtyeight() +
+#   ggtitle('My bivariate logistic regression model works well on 2017 data')
 
 ```
 Yes, I'm satisfied with this. Alternately I could update the model by replacing the 2013 data with 2017 data or combining them.
