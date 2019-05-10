@@ -222,6 +222,8 @@ temp_df <- flights %>%
          ,sched_dep_time_metric = round((sched_dep_time / 100 - trunc(sched_dep_time / 100)) * 500/3 + 
                                          100 * (trunc(sched_dep_time / 100))))
 
+results_df <- tibble(i = 1L, cor_i = 0.1234)
+
 for(i in 1:2399){results_df[i, 1] <- paste(trunc(i / 100), trunc((i %% 100) * 3 / 5), sep = ':')
   results_df[i, 2] <- cor(abs(i - temp_df$sched_dep_time_metric), temp_df$is_delay)}
 
