@@ -195,18 +195,43 @@ Now to look at the delay data based on scheduled departure time
 flt_test_01 %>%
   mutate(is_delay = if_else(dep_delay > 0, 1, 0)) %>%
   group_by(as.numeric(sched_dep_time_object)) %>%
-  filter(n() > 100) %>%
+  filter(n() > 100, sched_dep_time > 1199) %>%
   mutate(op_sched_dep = mean(is_delay)
          ,sched_dep_time_metric = round((sched_dep_time / 100 - trunc(sched_dep_time / 100)) * 500/3 + 100 * (trunc(sched_dep_time / 100))))  %>%
   ungroup() %>%
   select(sched_dep_time_metric, op_sched_dep) %>%
   unique() %>%
-     ggplot(mapping = aes(x = sched_dep_time_metric, y = op_sched_dep, color = 'delay | dep time')) +
+  ggplot(mapping = aes(x = sched_dep_time_metric, y = op_sched_dep, color = 'delay | dep time')) +
      geom_point() +
   geom_smooth(method = 'loess', mapping = aes(color = 'smoothed delay | dep time')) +
-  ggtitle('Likelihood of departure delay peaks around 8 p.m.') +
+  ggtitle('Likelihood of departure delay peaks around 7:35 p.m.') +
   scale_color_fivethirtyeight(name = 'Scheduled departure time and chance of delay') +
     theme_fivethirtyeight()
+
+temp_df <- flights %>%
+  filter(!is.na(dep_delay)) %>%
+  mutate(is_delay = if_else(dep_delay > 0, 1, 0)
+         ,sched_dep_time_metric = round((sched_dep_time / 100 - trunc(sched_dep_time / 100)) * 500/3 + 
+                                         100 * (trunc(sched_dep_time / 100)))) %>%
+  select(sched_dep_time_metric, is_delay)
+
+results_df <- tibble(i = 0L, cor_i = 0.1234)
+
+for(i in 1:2399){
+  results_df[i, 1] <- i
+  results_df[i, 2] <- cor(abs(i - temp_df$sched_dep_time_metric), temp_df$is_delay)
+}
+
+results_df %>% arrange(desc(abs(cor_i)))
+
+summary(lm(data = temp_df, formula = is_delay ~ sched_dep_time_metric))
+
+ggplot(results_df, aes(i, cor_i, color = 'corr')) +
+  geom_line() +
+  theme_fivethirtyeight() +
+  scale_color_fivethirtyeight() +
+geom_line(aes(i, abs(cor_i)/max(abs(cor_i)), color = 'abs_corr'))
+  
 ```
 
 This graph appears to show that the probability of departure delay increases as the day moves along, peaks around 8 p.m., then drops again until midnight.
