@@ -45,7 +45,30 @@ get_mean(num_vec = c("a", "b", "c"), error_message = "I changed the message")
 
 **Task**: Write a function that takes three inputs - two of them numeric vectors and the third an error message. Set the default value of the error message to be "This function only accepts numeric inputs". The function should check if both the input vectors are numeric (use an AND condition here) if they are then find return a sum of both the vector, else return the error message.
 
+```{r}
+get_sum <- function(num_vec1, num_vec2, error_message = "This function only accepts numeric inputs") {
+    if (is.numeric(num_vec1) & is.numeric(num_vec2)) {
+        # value to be return if numeric
+        sum(num_vec1, num_vec2)
+    } else {
+        # value that is returned if it is not numeric
+        stop(error_message)
+    }
+}
+```
 
+```{r}
+get_sum(num_vec1 = 1:2, num_vec2 = 3:4)
+```
+
+```{r}
+get_sum(c("a", "b"), num_vec2 = 2:3)
+```
+
+
+```{r}
+get_sum(c("a", "b"), num_vec2 = 2:3, error_message = "My fancy message")
+```
 
 ## Mapping
 **Task 1**: The `readxl` package loads excel files. Go to https://readxl.tidyverse.org/reference/index.html to find the function that can identify excel sheets in an excel file. Use this function to access the sheets in the file that I shared with you. Store this in a variable called `all_sheets`.
