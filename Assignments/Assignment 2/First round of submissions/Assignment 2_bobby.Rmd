@@ -1,0 +1,122 @@
+---
+title: " Flight delays an R analysis"
+author: "Bobby Mammen"
+date: 'Date created: `r Sys.Date()`'
+output: html_notebook
+
+---
+
+
+# {.tabset .tabset-fade .tabset-pills}
+
+## Comments
+1. Excellent job with the addition of pictures.
+2. Great use of the lead up text to set the stage
+3. Remove elements that you don't need to make your case
+4. Explain charts. What is happing in the boxplot?
+5. Apply a [theme](https://bookdown.org/yihui/rmarkdown/html-document.html#appearance-and-style)
+6. Elaborate more on your answers, bring more complexity to your analysis i.e. what are some of the follow up questions you might have from these two charts?
+
+## Introduction
+
+![Delayed flights are a pain](Flight Delays.jpg)
+
+**Impact of flight delays**
+In a study commissioned by FAA - flight delays have a major impact on the airline business and passenger time loss
+
+"Flight delay is a serious and widespread problem in the United States. Increasing flight delays place a significant strain on the U.S. air travel system and cost airlines,    passengers and society many billions of dollars each year. The $8.3 billion airline component consists of increased expenses for crew, fuel and maintenance, among others. The $16.7 billion passenger component is based on the passenger time lost due to schedule buffer, delayed flights, flight cancellations and missed connections. The $2.2 billion cost from lost demand is an estimate of the welfare loss incurred by passengers who avoid air travel as the result of delays."
+
+**To know more**.
+I am studying the flights data from NYC during 2013 to learn what are the reasons for flight delays. 
+
+**My initial hypothesis deals with 3 elements:**
+
+1. Airport Congestion 
+
+2. Weather elements 
+
+3. Airline challenges 
+
+With These 3 elements I want to see if I can develop a Regression model that brings in these factor to say what is my average deal given the variables at the time of the departure. 
+
+## Airport Congestion
+![Flights are back to back](Airport Congestion.jpg)
+Airport congestion is one theme I have been looking into.
+
+The best way to analyse congestion is 
+
+1. The number of flights in a given airport or 
+
+2. The number of flights leaving from an airport at any given time
+
+I want to focus more on the number of flights leaving from an airport at any given time.
+
+
+**My null hypothesis**:  the number of flights leaving from an airport at any given time is not having an impact on flight delays
+I am looking to disprove this null hypothesis
+```{r}
+flights
+```
+
+
+```{r,fig.width=9}
+## Does the number of flights leaving from an airport affect mean departure delay
+library(tidyverse); library(nycflights13)
+flights %>% 
+  filter(dep_delay > 30) %>%
+  group_by(origin,time_hour) %>% 
+  summarise(meanDelay = mean((dep_delay), na.rm = T),
+              nFlights = n())%>% 
+  ungroup() %>% 
+  filter(nFlights<20)%>%
+   ggplot(aes(x = factor(nFlights), y = meanDelay)) +
+  geom_boxplot(outlier.shape=NA)+
+  facet_wrap(~origin)+
+  scale_y_continuous(limits=c(25,200))
+    # geom_point(aes(colour = origin)) +
+    # geom_smooth(method = "lm")
+
+
+```
+
+## Airline challenges
+Airline challenges is the second theme I have been looking into. This theme can influence both arrival and departure delayes
+
+There can be a number of airline issues sucj
+
+1. The plane used by the airline is old / the engine type which could delay arrival times
+
+2. A given plane / airline doing mutliple trips in a given days that could lead to departure delays
+
+
+I want to focus more on the number of flights for a given plane if a flight has done 2 or more trips in a given day out of an airport .
+
+
+**My null hypothesis**:  departure delay is not influenced if a flight has done 2 or more trip in a given day out of an airport
+I am looking to disprove this null hypothesis
+
+```{r}
+
+```
+
+
+```{r}
+#Does the departure delay increases if a flight has done 2 or more trip in a given day out of an airport
+library(tidyverse); library(nycflights13)
+left_join(flights %>% 
+              select(1:3, tailnum,origin,time_hour,dep_delay), 
+          planes %>%
+              select(tailnum, manufacturer), 
+          by = "tailnum") %>% 
+  filter(dep_delay > 30) %>% 
+  group_by(origin, month, day, tailnum) %>% 
+  summarise(meanDelay = mean((dep_delay), na.rm = T),
+              nObs = n()) %>% 
+  ungroup() %>% 
+  filter(nObs > 0)%>% 
+   ggplot(aes(x = nObs, y = meanDelay)) +
+    geom_point(aes(colour = origin)) +
+    geom_smooth(method = "lm")
+
+ 
+```

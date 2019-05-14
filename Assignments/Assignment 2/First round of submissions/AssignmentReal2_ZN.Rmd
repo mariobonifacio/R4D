@@ -1,0 +1,296 @@
+---
+title: "Assignment 2"
+author: "Zeenat Nazir"
+date: "Date created: `r Sys.Date()`"
+output:
+  html_notebook: 
+    df_print: paged
+    highlight: haddock
+    theme: readable
+---
+
+# {.tabset .tabset-fade}
+
+## Feedback
+1. Not a good idea to create a single "full" dataset. This is the STATA way of working. Instead follow a more deliberate approach of only bringing in variables that you are interested into a particular dataset.
+2. Use the `head()` command to only print a few of the rows instead of all of them.
+3. Use a tabbed layout `# {.tabset .tabset-fade .tabset-pills}`
+4. Only keep chunks of code that are necessary for the analysis
+5. Avoid using pipes for single function calls `df %>% str()` for instance.
+6. Remove redundant axis titles from charts
+7. Look `forcats` package to reorder factors and generate labels for values
+8. Use `fig.width` and `fig.height` chunk options to set plot sizes
+9. Describe the insight from each chart
+10. `broom`
+11. `write_csv()`
+
+### Checking
+
+## group nest
+
+```{r}
+# grouped_flights <- flights %>% 
+#     group_nest(carrier) %>% 
+#     map(data, model_func) %>% 
+#     map(data, extract_model_char)
+
+# grouped_flights
+```
+
+
+## Question
+
+**CHEATSHEETS**
+
+1. [Data visualization](https://github.com/rstudio/cheatsheets/blob/master/data-visualization-2.1.pdf)
+2. [Data Manipulation](https://github.com/rstudio/cheatsheets/blob/master/data-transformation.pdf)
+
+
+Create a new notebook (copy parts of the YAML header you are interested in keeping) to work on your assignment.
+The assignment should be submitted via a shareable github link that points to your notebook (.nb.html) file to me on Slack.
+Make sure the notebook is neatly formatted, and that all the charts and tables and look good when you preview it.
+Task: Explore at least 5 different causes for departure and arrival delays (combined - not 5 each). Its not necessary that you find a definitive answer for what causes a delay, instead I want you to showcase your ability to explore the data with a combination of analytical text, tables and charts. The final output should be something you can show a prospective employer or client as proof of you ability to work with data in R.
+
+## Explore
+```{r, message=FALSE}
+library(tidyverse); library(nycflights13); library(skimr); library(timeDate); library(ggthemes) 
+#install.packages("timeDate")
+#install.packages("lubridate")
+library(lubridate)
+```
+
+
+```{r}
+skim(flights)
+```
+
+```{r}
+weather 
+  #skim(weather)
+```
+```{r}
+airports
+#skim(airports)
+```
+
+```{r}
+airlines
+```
+
+```{r}
+planes
+```
+
+## Create the data 
+#### *Ignoring airports for the purpose of this assignment. Starting with a full merged dataset (and narrow down later by hypothesis).
+
+### We start first by exploring keys for different datasets
+```{r}
+#This is exploring keys to merge weather to flights and the other relevant datasets
+weather %>% 
+  group_by(time_hour, origin) %>% 
+  #summarise(nobs = n()) #This is just to explore how many obs (count) per group
+  filter(n() > 1)
+```
+```{r}
+#This is exploring keys to merge planes to flights and the other relevant datasets
+planes %>% 
+  group_by(tailnum) %>% 
+  #summarise(nobs = n()) #This is just to explore how many obs (count) per group
+  filter(n() > 1)
+```
+
+### Merging weather and airlines and planes to flights with established keys
+```{r}
+weatheredFlights <- flights %>% 
+  left_join(weather, by = c("origin", "time_hour")) %>% 
+  left_join(airlines, by = c("carrier")) %>% 
+  left_join(planes, by = c("tailnum"))
+  weatheredFlights
+```
+
+## Analysis
++ **Question 1: Is there a relationship between the carrier you fly and delays. That is, do certain airlines have a track record of departure delays?**
+
+### Examining data sources and independent var
+```{r}
+weatheredFlights %>% 
+names()
+```
+
+### Examining how many observations (flights) per airline
+```{r}
+weatheredFlights %>% 
+  filter(dep_delay > 0) %>% 
+  group_by(name) %>% 
+  count(name) %>% 
+  arrange(n)
+```
+
+### Examining avg departure delay by carrier
+```{r fig.width=9}
+weatheredFlights %>% 
+  filter(dep_delay > 0) %>% 
+  group_by(name) %>% 
+  summarise(meanDelay = mean(dep_delay, na.rm = T)) %>% 
+  arrange(desc(meanDelay)) %>% 
+  ggplot(aes(x = reorder(name, meanDelay), y = meanDelay)) +
+  geom_col() +
+  coord_flip() +
+    labs(
+    x = "Airline",
+    y = "Average Departure Delay (in minutes)",
+    title = "Regional airlines tend to have higher departure delays",
+    subtitle = "Among the larger domestic airlines, United's avg delayed departures are lowest"
+  ) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5))
+```
+
+
+
+
++ **Question 2: Which days (if any) of the week have higher departure delays and if so, which airports have relatively high dep delays?**
+
+### Identifying and using the right variable to extract day of the week. And then summarising dep delays by day of the week. Question for Hari - how do I reverse the appearance of the legend such that LGA is top and EWR bottom to more cleanly align with the bars?
+```{r}
+weatheredFlights %>% 
+mutate(date = as.Date(time_hour)) %>% 
+mutate(dayofweek = wday(date, label = TRUE)) %>% 
+  filter(dep_delay > 0) %>% 
+  group_by(dayofweek, origin) %>% 
+  summarise(meanDelay = mean(dep_delay, na.rm = T)) %>% 
+  arrange(desc(meanDelay)) %>% 
+  ggplot(aes(dayofweek, meanDelay, fill = origin)) +
+   geom_bar(stat = 'identity', position=position_dodge()) +
+   geom_text(aes(label= round(meanDelay)), vjust=0.4, color="black", hjust = -0.05, 
+            position = position_dodge(1), size=3.2) +
+  scale_fill_brewer(palette= "Paired") +
+    coord_flip() +
+    labs(
+    x = "Day",
+    y = "Average Departure Delay (in minutes)",
+    title = "Skip the queues, fly on weekends!"
+    ) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5))
+```
+
+
++ **Question 3: Does visibility (along with precipitation) affect dep delays?**
+
+### Exploring the visibility var
+```{r}
+weather %>% 
+  ggplot(aes(visib)) +
+  geom_histogram(binwidth = 1)
+```
+### Exploring the precip var
+```{r}
+weather %>% 
+  ggplot(aes(precip)) +
+  geom_histogram(binwidth = 0.05)
+```
+
+
+### Exploring how visibility alone relates to delay
+```{r}
+#Explore how visibility relates to delay
+weatheredFlights %>% 
+  filter(dep_delay > 0 & !is.na(dep_delay) & !is.na(visib)) %>% 
+  group_by(visib) %>% 
+  summarise(meanDelay = mean(dep_delay, na.rm = T)) %>% 
+  ggplot(aes(visib, meanDelay))+
+  geom_point() +
+    geom_smooth(method = "lm") +
+  #panel.background = element_rect(fill = NA) +
+    labs(
+    x = "Visibility (Feet)",
+    y = "Average Departure Delay (minutes)",
+    title = "Lower visibility translates to higher departure delays"
+    ) +
+  theme_economist() +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5))
+
+```
+
+### Exploring how visibility along with precipitation relates to delay. Question for Hari - how do I add label to visib? Also, how do I get both visib groups into the same chart with different colors and lines.
+```{r}
+#Let's explore how precip and visibility relate to delay
+weatheredFlights %>% 
+  filter(dep_delay > 0 & !is.na(dep_delay) & !is.na(temp) & !is.na(visib)) %>% 
+  mutate(visibGroup = cut_interval(visib, length = 5, na.rm = T)) %>%
+  group_by(precip, visibGroup) %>% 
+  summarise(meanDelay = mean(dep_delay, na.rm = T)) %>% 
+  ggplot(aes(precip, meanDelay))+
+  geom_point() +
+    geom_smooth(method = "lm") +
+    facet_wrap(~visibGroup) +
+      labs(
+    x = "Precipitation (in inches)",
+    y = "Average Departure Delay (in minutes)",
+    title = "As rain and fog increases, so do delays",
+    subtitle = "Visibility"
+    ) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5))
+
+```
+
+
++**Question 4: Does the volume of flights on any given day affect delays?**
+Hari - this was a very roundabout way of doing this. Would appreciate thoughts on a simpler solution.
+```{r}
+# Creating a variable called depDate in order to create another variable containing number of flights per depDate called flightVol. Then summarising to create a mean delay var grouped by depDate. Saving this to a tibble
+depdatemeandel <- weatheredFlights %>% 
+  mutate(depDate = paste(year.x, month.x, day.x, sep = "-")) %>% 
+  group_by(depDate) %>% 
+  mutate(flightVol = n()) %>% 
+  filter(dep_delay > 0 & !is.na(dep_delay) & !is.na(depDate)) %>% 
+  summarise(meanDelay = mean(dep_delay, na.rm = T))
+depdatemeandel
+
+# Creating again just a tibble like above without summarising mean delay. calling it fightvoltibble
+flightvoltibble <- weatheredFlights %>% 
+  mutate(depDate = paste(year.x, month.x, day.x, sep = "-")) %>% 
+  group_by(depDate) %>% 
+  mutate(flightVol = n()) %>% 
+  select(depDate, flightVol)
+flightvoltibble
+
+# Finally, joining these 2 tibbles and then extracting only distinct values for each depdate
+newqfourtibble <- depdatemeandel %>% 
+  left_join(flightvoltibble, by = c("depDate")) %>% 
+  distinct()
+  newqfourtibble
+  
+ # Plotting flightvol against meandelay
+  newqfourtibble %>% 
+    ggplot(aes(flightVol, meanDelay))+
+  geom_point() +
+    geom_smooth(method = "lm") +
+    #facet_wrap(~visibGroup) +
+      labs(
+    x = "Number of Flights Per Day",
+    y = "Average Departure Delay (in minutes)",
+    title = "Depature delays are higher on busier days"
+    ) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5))
+
+```
+simpler way
+```{r}
+flights %>% 
+    group_by(month, day) %>% 
+    summarise(n_flights = n(), 
+              mean_delay = mean(dep_delay, na.rm = T)) %>% 
+    ggplot(aes(x = n_flights, y = mean_delay)) +
+    geom_point() +
+    geom_smooth(method = "lm")
+```
+
+
+*Question 5: 
+
+

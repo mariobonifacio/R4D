@@ -80,7 +80,11 @@ This repository contains all the material for the R4D course - March 2019
 ## Week 10
 
 1. Class 18 - May 7th - [Class Slides](https://jamboard.google.com/d/1rlaQ5hRgZxOrWX8V89KW1fDUWMauHlbH_2vPiSHL56c/viewer) | [Class Lecture](https://puzhu.github.io/R4D/Classes/Class%2018/class18_lecture.nb.html) | [Class Exercises](https://puzhu.github.io/R4D/Classes/Class%2018/class18_exercises.nb.html) | [Class Video](https://youtu.be/VDsAuD8HZ5k)
-2. Class 19 - May 9th - [Class Lecture](https://puzhu.github.io/R4D/Classes/Class%2019/class19_lecture.nb.html) | [Class Exercises](https://puzhu.github.io/R4D/Classes/Class%2019/class19_exercises.nb.html) | [Class Video]()
+2. Class 19 - May 9th - [Class Lecture](https://puzhu.github.io/R4D/Classes/Class%2019/class19_lecture.nb.html) | [Class Exercises](https://puzhu.github.io/R4D/Classes/Class%2019/class19_exercises.nb.html) | [Class Video](https://youtu.be/uCgagdcApgQ)
+
+## Week 11
+
+1. Class 20 - May 9th - [Class Exercises](https://puzhu.github.io/R4D/Classes/Class%2020/class20_exercises.nb.html) | [Class Video]()
 
 ### A sample project folder structure
 
