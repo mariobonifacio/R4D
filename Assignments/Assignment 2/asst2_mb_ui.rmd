@@ -1,0 +1,44 @@
+---
+title: "Overdue: An empirical study of flight delays and models that seek to predict their occurrence"
+author: "~~Hari Subhash~~ Mario"
+date: 'Date created: `r Sys.Date()`'
+output:
+  html_notebook:
+    code_folding: hide
+    df_print: paged
+    highlight: kate
+    smart: no
+    theme: paper
+  html_document:
+    toc: no
+---
+
+# {.tabset .tabset-fade .tabset-pills}
+
+## Find the probability of delay based on time of flight
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+## load necessary libraries
+
+library(tidyverse); library(nycflights13); library(stringr); library(lubridate); library(shiny)
+
+pred_prob <- function() {
+print('Some examples of properly formatted times: 3:12, 11:05, 18:29')
+user_time <- readline(prompt = 'Enter the scheduled departure time of your flight in the H:mm format using the 24-hour clock: ')
+if (is.na(hm(user_time))) {
+  print('You entered time incorrectly')
+  stop()
+} else {
+  diff_1935h <- abs(as.numeric(hm(user_time) - hm('19:35')) / 60)
+  pred_prob_pct <- 100/(1+exp(-(0.279603750 - 0.001999519 * diff_1935h))) %>% round(0)
+  print(paste('There is a', pred_prob_pct, 'percent chance for a departure delay'))  
+}
+}
+  
+pred_prob()
+
+
+```
+
+## Choose the most reliably on-time airline based on departure airport
