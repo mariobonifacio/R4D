@@ -21,13 +21,15 @@ Excellent work in general. This is above an beyond anything I have seen on this.
 
 1. What's `page.print = F` doing?
 2. You can add r commands in line with markdown content like this (see rmd) `r sum(1:100)`
-3. What's stuff like this `color = 'delay | dep time'` within your `aes()` call doing? See below
+3. What's stuff like this `color = 'delay | dep time'` within your `aes()` call doing? See below for why this will not give you the result you expect.
 ```{r}
 library(gapminder)
 gapminder %>% group_by(year) %>% summarise(pop = sum(pop, na.rm = T)) %>% 
 ggplot(., aes(x = year, y = pop, color = "black")) + ## the color should be set outside the aes call otherwise it is mapped as a data
   geom_line()
 ```
+4. Add the comma to the end of an operation not at the beginning.
+5. What's the reason for not summarising the data for the first chart? You are essentially plotting the same point on top of each other.
 
 ## Abstract 
 
@@ -119,6 +121,40 @@ ggplot(data = test_d, mapping = aes(x = sched_dep_time_metric, y = op_diff1935, 
   theme_fivethirtyeight()
   
 
+```
+
+This is the correct way to do it. There seems to be some differences in the metric t
+
+```{r}
+test_b %>%
+  mutate(is_delay = if_else(dep_delay > 0, 1, 0),
+         diff_1935h = abs(as.numeric(dep_time_object - hm('19:35')) / 60)) %>%
+  mutate(pred_bivar = 1/(1+exp(-(0.279603750 - 0.001999519 * diff_1935h)))) %>% 
+  group_by(diff_1935h) %>%
+  summarise(nObs = n_distinct(sched_dep_time_metric)) %>% 
+  filter(nObs > 1)
+
+
+  summarise(op_diff1935 = mean(is_delay, na.rm = T),
+            pred_bivar = mean(pred_bivar)) 
+```
+
+```{r}
+test_b %>%
+  mutate(is_delay = if_else(dep_delay > 0, 1, 0),
+         diff_1935h = abs(as.numeric(dep_time_object - hm('19:35')) / 60)) %>%
+  mutate(pred_bivar = 1/(1+exp(-(0.279603750 - 0.001999519 * diff_1935h)))) %>% 
+  group_by(sched_dep_time_metric) %>%
+  summarise(op_diff1935 = mean(is_delay, na.rm = T),
+            pred_bivar = mean(pred_bivar)) %>% 
+  ggplot(mapping = aes(x = sched_dep_time_metric, y = op_diff1935, color = 'observed probability')) +
+  geom_point(size = 1) +
+  geom_line(mapping = aes(x = sched_dep_time_metric, y = pred_bivar, color = 'predicted probability'), size = 1.5) +
+  geom_line(size = 1, aes(x = sched_dep_time_metric, y = 0.39094, color = 'gray')) +
+  ggtitle('Fly in the morning to lower your chance for delay') +
+  scale_color_fivethirtyeight(labels = c('baseline p', 'observed p', 'pred. p')
+                              ,name = 'Prob. of delay given sched. dep. time') +
+  theme_fivethirtyeight()
 ```
 
 

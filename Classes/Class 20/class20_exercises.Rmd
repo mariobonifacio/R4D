@@ -13,50 +13,250 @@ output:
 ## Select and pull columns
 
 1. Load the 'tidyverse' and `gapminder` datasets
+```{r}
+library(tidyverse); library(gapminder)
+```
+
 2. Use the `names()` function to show the names of the gapminder dataset
+```{r}
+names(gapminder)
+```
+
 3. Use `skim()` from the `skimr` package to show its characteristics
+```{r}
+skimr::skim(gapminder)
+```
+
 4. Use the `select()` command to select any one column of your liking from the gapminder dataset. Store it in a variable called `gap_col_sel`
+```{r}
+select(.data = gapminder, gdpPercap)
+```
+
+```{r}
+select(.data = gapminder, 6)
+```
+
+```{r}
+gap_col_sel <- gapminder %>% 
+  select(gdpPercap)
+gap_col_sel
+```
+
+
 5. Apply the `str()` function on `gap_col_sel`
+
+```{r}
+str(gap_col_sel)
+```
+
 6. Do the same using base R syntax (`gapminder[]`)
+```{r}
+gapminder["gdpPercap"]
+```
+
+
+```{r}
+gapminder[6]
+```
+```{r}
+str(gapminder[6])
+```
+
 7. Now use the `pull()` command to pull the same column from gapminder and store it as `gap_col_pull`.
+```{r}
+gap_col_pull <- pull(.data = gapminder, gdpPercap)
+```
+
 8. Use the `str()` on `gap_col_pull`. Notice how this is different from the output for the `str()` on gap_col_sel. 
+```{r}
+str(gap_col_pull)
+```
+
 9. Do the same with base R syntax using `$` and then using `[[]]`
+```{r}
+str(gapminder$gdpPercap)
+```
+```{r}
+str(gapminder[["gdpPercap"]])
+```
+
 10. Can you explain why the output from the select and pull are different?
+
+```{r}
+gapminder[[1, 2]]
+```
+
+```{r}
+gapminder %>% 
+  pull(1, 2)
+```
+
+
 11. Use the `rename(new_name = old_name)` function to rename the gdpPercap column as gdp_percap.
+```{r}
+gapminder %>% 
+  rename(gdp_percap = gdpPercap)
+```
+
 12. How would you do this using `names()`?
+
+```{r}
+names(gapminder)[6] <- "gdp_percap"
+```
+
+```{r}
+col_names <- names(gapminder)
+
+names(gapminder["gdp_percap"])
+names(gapminder$gdp_percap)
+```
+
+```{r}
+col_names[col_names == "gdp_percap"]
+```
 
 ## Filter
 1. Use the `max()` command to find the latest year in the gapminder dataset. Use the `$` notation to pull out the latest year as an atomic vector.
+```{r}
+max(gapminder$year, na.rm = T)
+```
+
 2. The following code uses base syntax to filter the most recent year of data from the gapminder data. Replicate this using `filter()` and store this as `gap_latest`.
 ```{r}
 gapminder[gapminder$year == max(gapminder$year, na.rm = F), ]
 ```
-3. Update the value of gap_latest by using the `%in%` operator to keep only the continents "Asia" and "Africa" in it. 
-4. Use `quantile()` on the lifeExp column from `gap_latest` to see the 0% (min), 25%, 50% (median), 75% and 100% (max) value of lifeExp in `gap_latest`. Store this in a variable called `gap_latest_quantile`
+
+```{r}
+gap_latest <- gapminder %>% 
+  filter(year == max(year, na.rm = T))
+```
+You should not write it this way but this also works.
+```{r}
+gapminder %>% 
+  filter(gapminder$year == max(gapminder$year, na.rm = F))
+```
+3. Update the value of gap_latest by using the `%in%` operator to keep only the continents "Asia" and "Africa" in it.
+```{r}
+gap_latest <- gap_latest %>% 
+  filter(continent %in% c("Asia", "Africa"))
+
+gap_latest
+```
+
+4. Use `quantile()` on the lifeExp column from `gap_latest` (pull it as an atomic vector) to see the 0% (min), 25%, 50% (median), 75% and 100% (max) value of lifeExp in `gap_latest`. Store this in a variable called `gap_latest_quantile`
+```{r}
+gap_latest_quantile <- quantile(gap_latest$lifeExp)
+
+gap_latest_quantile
+```
+
+```{r}
+gap_latest %>% 
+  filter(lifeExp == median(lifeExp))
+```
+
+
 5. Run an `str()` on gap_latest_quantile. See how it is a simple numeric vector (atomic) with names.
+
+```{r}
+str(gap_latest_quantile)
+```
+
 6. Extract the 25th percentile value of lifeExp from the `gap_latest_quantile` vector (using the index or gap_latest_quantile["name_of_elem"])
+```{r}
+gap_latest_quantile[1]
+```
+```{r}
+gap_latest_quantile["0%"]
+```
+
 7. Update the  `gap_latest` data using `|` (or) operator to keep all rows that are above the 75th percentile or below the 25th percentile lifeExp in the `gap_latest`.
+```{r}
+gap_latest <- gap_latest %>% 
+  filter(lifeExp < gap_latest_quantile["25%"] | lifeExp > gap_latest_quantile["75%"])
+
+gap_latest
+```
+
 8. Combine all the filter steps that we have done so far in a single `filter()` function applied to the gapminder dataset.
+```{r}
+gapminder %>% 
+  filter(year == max(year, na.rm = T)  & 
+           continent %in% c("Asia", "Africa")) %>% 
+  filter(lifeExp < quantile(lifeExp)["25%"] | lifeExp > quantile(lifeExp)["75%"])
+```
+You can also do it this way.
+```{r}
+gapminder %>% 
+  filter(year == max(year)) %>% 
+  filter(continent %in% c("Asia", "Africa")) %>% 
+  filter(lifeExp < quantile(lifeExp)["25%"] | lifeExp > quantile(lifeExp)["75%"])
+```
+
 9. Hard task: Try doing the same using base R syntax.
+```{r}
+gap_latest_base <- gapminder[gapminder$year == max(gapminder$year) & gapminder$continent %in% c("Asia", "Africa"), ]
+gap_latest_base <- gap_latest_base[gap_latest_base$lifeExp < quantile(gap_latest_base$lifeExp)["25%"] | gap_latest_base$lifeExp > quantile(gap_latest_base$lifeExp)["75%"], ]
+
+gap_latest_base
+```
+
 
 ## Mutate
 1. Update the `gap_latest` using `mutate()` to create a new column called gdpPercapEUR that convert the gdpPercap column to Euros from USD (using the current exchange rate of 0.89).
-2. Update  `gap_latest` with a new column that calculates the [z-score](https://en.wikipedia.org/wiki/Standard_score), call it `gdpPercapZ`.
-3. Create a new variable called `afg_gap` by filtering all the rows for the country "Afghanistan" from gapminder.
-4. Update the `afg_gap` data by creating a new column called lagGDP that contains the lagged value of gdpPercap using `lag()`.
-5. Update the `afg_gap` by calculating the gdpPercap growth rate`gdpPercapGr` by calculating (gdpPercap - lagGDP)/lagGDP.
-6. Update the `gap_latest` with a new column `gdpPercapLevel` that marks everything below the 25th percentile as "Low GDP per cap", those above 75th percentile as "High GDP per cap" and everything else as "Medium GDP per cap". Use either a nested `if_else()` or better a `case_when()`.
-
-## Group and do things
-1. Use summarise to calculate the mean population for the `gap_latest` dataset
-2. Repeat the same step after grouping by continent.
-3. Group the gapminder dataset and show the number of distinct countries in each continent in the data.
-4. Group the gapminder dataset and filter the countries that have the highest and lowest lifeExp for each continent for each year.
-5. Group the gapminder dataset by year and calculate the median lifeExp per year. Don't use a summarise, instead use a `mutate()` to create this new column. Store this as `gap_year`
-6. The following command calculates the number of values of gdpPercap in the gapminder dataset that are above 5000 USD. This works by first computing the output of `gapminder$gdpPercap > 5000`, which returns a logical vector of TRUE and FALSE, and since TRUE and FALSE are really 1 and 0, `sum(gapminder$gdpPercap > 5000)` returns the total number of cases where the gdpperCap was greater than 5000. Now apply the same logic within a summarise command on the `gap_year` tibble to find the number of countries that are above the median lifeExp for each year for each continent, and the number that are below.
 ```{r}
-sum(gapminder$gdpPercap > 5000)
+gapminder %>% 
+  mutate(gdpPercapEUR = gdpPercap * 0.89)
 ```
+
+2. Update  `gap_latest` with a new column that calculates the [z-score](https://en.wikipedia.org/wiki/Standard_score), call it `gdpPercapZ`.
+```{r}
+gap_latest <- gap_latest %>% 
+  mutate(gdpPercapZ = (gdpPercap - mean(gdpPercap)) / sd(gdpPercap))
+
+gap_latest
+```
+
+
+3. Create a new variable called `afg_gap` by filtering all the rows for the country "Afghanistan" from gapminder.
+```{r}
+afg_gap <- gapminder %>% 
+  filter(country == "Afghanistan")
+
+afg_gap
+```
+
+4. Update the `afg_gap` data by creating a new column called lagGDP that contains the lagged value of gdpPercap using `lag()`.
+```{r}
+afg_gap <- afg_gap %>% 
+  mutate(lagGDP = lag(gdpPercap))
+
+afg_gap
+```
+
+```{r}
+afg_gap %>% 
+  arrange(desc(lifeExp)) %>% 
+  mutate(lagGDP = lag(gdpPercap))
+```
+
+```{r}
+gapminder %>% 
+  arrange(year, pop)
+```
+
+5. Update the `afg_gap` by calculating the gdpPercap growth rate`gdpPercapGr` by calculating (gdpPercap - lagGDP)/lagGDP.
+```{r}
+afg_gap <- afg_gap %>% 
+  mutate(gdpPercapGr = (gdpPercap - lagGDP)/lagGDP)
+
+afg_gap
+```
+6. Update the `gap_latest` with a new column `gdpPercapLevel` that marks everything below the 25th percentile as "Low GDP per cap", those above 75th percentile as "High GDP per cap" and everything else as "Medium GDP per cap". Use either a nested `if_else()` or better a `case_when()`.
+```{r}
+
+```
+
 
 
 

@@ -1,0 +1,74 @@
+---
+title: "Class 21 - In class exercises"
+author: Hari Subhash
+date: "Date created: `r Sys.Date()`"
+output:
+  html_notebook:
+    highlight: haddock
+    smart: yes
+    theme: readable
+    df_print: paged
+---
+
+## Recap
+1. Load the gapminder and tidyverse packages
+2. Use `max()`, `min()` and `quantile()` commands on the `gdpPercap` variable. Use the `$` sign to pull the column. Visually confirm that the max and min values are also there in the quantile values
+3. Repeat the same steps as above but this time use `pull()` from dplyr instead of `$`. Pipe users get extra points.
+4. Repeat the same steps as 2 but this time with `[[]]`.
+5. The default specification of `quantile()` gives the 0th (min), 25th, 50th (median), 75th and 100th (max) percentile values in a numeric vector. You can change these using the `probs` argument. Set probs to c(0.4, 0.6) to find the 40th and 60th percentile values of gdpPercap.
+6. Show the most recent year of data for Afghanistan. You can find the most recent year by setting year to be equal to the max year value.
+7. Follow the same logic to show the oldest row of data for Afghanistan.
+8. Use `quantile()` and filter rows that are below the 2nd percentile value of gdpPercap in the most recent year of the data. If you are getting two rows in your output, think about the data that quantile sees when it calculates the 2nd percentile. The correct answer should have Burundi in it as well.
+9. Create a new column in the gapminder using `mutate()` that is the square root of gdp per cap. Call it anything you want. You can find the square root of a number as follows `100 ^ 0.5`.
+10. Filter the earlier year in the data and create a new column using `mutate()` that checks if `lifeExp` is below the median and `gdpPercap` is below the median. If yes, mark as "High mortality and poverty" else mark as "Other". Use an `if_else()` statement to do this. Keep only this new column along with country, year and lifeExp.
+11. Filter the earliest year in the data and create a new column `gdpPercapLevel` that marks everything below the 25th percentile of gdpPercap as "Low GDP per cap", those above 75th percentile of gdpPercap as "High GDP per cap" and everything else as "Medium GDP per cap". Use either a nested `if_else()` or better a `case_when()`.
+
+## Group and do things
+1. Use summarise to calculate the mean population for gapminder
+2. Repeat the same step after grouping by continent.
+3. Repeat the same after grouping by continent and year.
+4. Use `n_distinct()` to find the number of distinct countries in the gapminder data. Use any of the simplifying subset operators (`$`, `[[]]` or `pull()`) to pull the countries variable from gapminder.
+5. Combine 3 and 4 to create a table that shows the distinct number of countries and the mean population in every continent for each year. You can create multiple summarised columns by separating them within the summarise command using commas.
+6. Now group the data to show the distinct number of countries in every continent for every year. Use `n_distinct()` to find the number of distinct countries.
+7. Group the gapminder dataset and filter the countries that have the highest or lowest lifeExp for each continent for each year. Arrange the output by year,  continent and lifeExp.
+8. Filter the most recent year of the data and remove the continent Oceania from it. Create a new variable that is marked "Above average income" if the gdpPercap is greater than the average gdpPercap for the continent it belongs to and "Below average income" if it is below. Use `group_by()` with `mutate()` for this.
+
+
+## ggplot
+
+1. The code below creates a scatter plot (geom_point()). Update the aesthetics so that the colour of the dots reflect the continents.
+
+```{r}
+ggplot(gapminder, aes(x = year, y = pop)) +
+    geom_point()
+```
+
+2. Update this plot by adding a title using `labs()`. Use the `title` argument to set the title.
+3. The code below removes the x-axis title "year" by setting the element to blank (see the difference from above). Update this by also removing the y-axis label using `axis.title.y`.
+
+```{r}
+ggplot(gapminder, aes(x = year, y = pop)) +
+    geom_point() +
+    theme(axis.title.x = element_blank())
+```
+
+4. The code below changes the angle of the x axis labels. Replicate this for the y-axis. Set whatever you would like. 
+
+```{r}
+ggplot(gapminder, aes(x = year, y = pop)) +
+    geom_point() +
+    theme(axis.title.x = element_blank(),
+          axis.text.x = element_text(angle = 45))
+```
+
+5. Go to the tidyverse reference for ggplot to see other parameters that you can control within element_text. Use this to also set the color of the y-axis labels.
+6. In the code below I use an external variable to set the colour based on whether a country is India/China or not. Use the same logic to set the alpha parameter to either 1 if India/China or 0.3 otherwise.
+
+```{r}
+india_china_color <- if_else(gapminder$country %in% c("China", "India"), "pink", "black")
+ggplot(gapminder, aes(x = year, y = pop)) +
+    geom_point(colour = india_china_color) 
+```
+
+
+
