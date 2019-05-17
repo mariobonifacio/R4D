@@ -3,7 +3,7 @@ function(input, output, session) {
   # Combine the selected variables into a new data frame
 library(lubridate); library(tidyverse)
     user_sched_dep <- reactive({
-      hm(paste(input$user_hr, input$user_min))
+      hm(paste(input[1], input[2]))
           
   })
   
