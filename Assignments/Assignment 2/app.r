@@ -10,21 +10,19 @@ library(lubridate); library(tidyverse); library(shiny); library(nycflights13); l
 
 server <- function(input, output) { ## Define the server code
     output$plot <- renderPlot({
-    plot(x = c(if_else(input$min >= 15, hm(paste(input$hr, input$min - 15)), hm(paste(input$hr - 1, input$min + 45))),
-               hm(paste(input$hr, input$min)),
-               if_else(input$min <= 44, hm(paste(input$hr, input$min + 15)), hm(paste(input$hr + 1, input$min - 45)))),
-         y = tibble(sched_dep_time_metric = c(if_else(input$min >= 15, input$hr * 100 + (input$min - 15) * 5 / 3, (input$hr - 1) * 100 + (input$min + 45) * 5 /3),
-                                              input$hr * 100 + input$min * 5 / 3,
-                                              if_else(input$min <= 44, input$hr * 100 + (input$min + 15) * 5 / 3, (input$hr + 1) * 100 + (input$min - 45) * 5 /3))) %>%
-           mutate(diff_1935h = abs(sched_dep_time_metric - 1958.33),
-                  pred_prob = as.integer(100/(1+exp(-(0.279603750 - 0.001999519 * diff_1935h))))) %>%
+    plot(x = c(as.POSIXct(as.character(if_else(input$min >= 15, input$hr * 100 + input$min - 15, (input$hr - 1) * 100 + input$min + 45)), format = '%H%M'),
+               as.POSIXct(as.character(input$hr * 100 +input$min), format = '%H%M'),
+               as.POSIXct(as.character(if_else(input$min <= 44, input$hr * 100 + input$min + 15, (input$hr + 1) * 100 + input$min - 45)), format = '%H%M')),
+         y = tibble(diff_1935h = abs(c(input$hr * 60 + input$min - 15 - 1175, input$hr * 60 + input$min - 1175, input$hr * 60 + input$min + 15 - 1175))) %>%
+                  mutate(pred_prob = 100/(1+exp(-(0.279603750 - 0.001999519 * diff_1935h)))) %>%
            pull(pred_prob), 
          type = 'l',
          col = 'red',
          lwd = 3,
+         tck = .01,
          xlab = 'Scheduled departure time',
          ylab = 'Percent chance of delay',
-         main = paste('Plan around a chance of delay of ', ))
+         main = paste('Plan around a chance of delay of ', input$hr * 100 + input$min))
   })
 }
 
