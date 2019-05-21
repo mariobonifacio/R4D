@@ -1,0 +1,450 @@
+---
+title: "Assignment 2"
+author: "Jordan Willcox"
+date: 'Date created: `r Sys.Date()`'
+output:
+  html_notebook:
+    code_folding: show
+    df_print: paged
+    highlight: kate
+    smart: yes
+    theme: cosmo
+  html_document:
+    df_print: paged
+---
+
+# {.tabset .tabset-fade .tabset-pills}
+
+## Tab 1 Intro
+
+**Hari's Comments**
+
+
+4. Avoid printing out entire vectors since their outputs will take up a lot of space (`unique(flights$arr_delay)`). Moreover, a bunch of numbers on the screen does give the reader any further insights.
+5. Consider removing groups with low number of observations from consideration since they could skew your results
+
+7. Based on your analysis there seems to be a relationship between distance and delays with shorter flights being more delayed. Why is this? Explore this further.
+8. Consider cutting continous variables like distance in intervals (look at `cut_*()` set of function under ggplot)
+
+10. Create a single dataset for weather + flights and use it for all the weather based analysis instead of creating separate ones each time.
+11. Use snake_case for naming your variables.
+12. Explain what is happening in each chart and your logic for trying something out. For instance, you are interested in precip vs delay because xyz.
+13. Another way to look at this would be to consider extreme values of delay and see the relationship between that and the explainatory variable.
+15. Take logs when you have a skewed variable (that spans a large range) (check out `scale_x_log10()`)
+16. Make things more attractive
+
+
+
+
+**Due Date**: Sunday, April 28th
+
+**Keyboard Shortcuts**:
+
+1. Assignment operator (<-) is `Alt+-` for Windows and `Option+-` for Mac
+2. Insert new code chunk `Ctrl+Alt+I` for Windows and `Command+Option+I` for Mac
+3. Run a line of code `Ctrl+Enter` for Windows and `Command+Enter` for Mac
+4. Run all the code within a chunk `Ctrl+Shift+Enter` for Windows and `Command+Shift+Enter` for Mac
+5. Insert a pipe operator (%>%) `Ctrl+Shift+M` for Windows and `Command+Shift+M` for Mac
+
+**General Instructions**
+
+1. Create a new notebook (copy parts of the YAML header you are interested in keeping) to work on your assignment.
+2. The assignment should be submitted via a shareable github link that points to your notebook (.nb.html) file to me on Slack.
+3. Make sure the notebook is neatly formatted, and that all the charts and tables and look good when you preview it.
+
+**Task**: Explore at least 5 different causes for departure and arrival delays (combined - not 5 each). Its not necessary that you find a definitive answer for what causes a delay, instead I want you to showcase your ability to explore the data with a combination of analytical text, tables and charts. The final output should be something you can show a prospective employer or client as proof of you ability to work with data in R.
+
+**Let's talk game plan**
+
+I want to try: distance, month, dest, precip, temp, visib
+for all of these, I may want to split by origin.
+My graph options include histogram, geom_point (scatter), geom_jitter, geom_smooth(method=lm), 
+geom_line for line chart, geom_col for discrete x continuous y, geom_boxplot, geom_count and for one var, geom_hist, geom_density,
+geom_dotplot.
+
+
+## **Section One: Distance and arrival delay** 
+
+First hypothesis: Distance and arrival delay, let's see if there is a relationship.
+REMAINDERS: Charts A-3 and A-5 have wasted space in some of the origin facets.
+REMAINDERS: What we found would make it interesting to check dep_delay and Distance.
+REMAINDERS: regression coefficients would be good here.
+
+A-1: Let's look at the data.
+I want to see what the output of arr_delay and distance look like but I'm hiding the output
+because it's not interesting to the audience
+
+```{r, results='hide', echo=FALSE}
+library(tidyverse)
+library(nycflights13)
+library(skimr)
+
+skim(weather)
+```
+
+```{r, results='hide', echo=FALSE}
+skim(flights)
+```
+
+```{r, results='hide', echo=FALSE}
+unique(flights$arr_delay)
+unique(flights$distance)
+```
+
+Let's look at our delays to be explained with histograms of arrival and departure delay, in that order.
+
+```{r}
+flights %>% 
+  ggplot(aes(arr_delay)) +
+  geom_histogram()
+```
+
+```{r}
+flights %>% 
+  ggplot(aes(dep_delay)) +
+  geom_histogram()
+```
+
+
+
+Let's make a table that looks at distance and some mean delays
+```{r}
+flights %>% 
+  group_by(distance, origin) %>% 
+  summarise(meandelayQ101 = mean(arr_delay, na.rm = T)) %>% 
+  arrange(distance)
+```
+Nothing too obvious here.
+
+A-2: Let's check out distance outliers. 
+```{r}
+flights %>% 
+  ggplot(aes(x = distance)) +
+  geom_histogram()
+```
+
+There are some outliers.
+
+
+A-3: Is there a general relationship between distance and arrival delay?
+
+```{r}
+flights %>% 
+  group_by(distance, origin) %>% 
+  summarise(meandelayQ101 = mean(arr_delay, na.rm = T)) %>% 
+  arrange(distance) %>% 
+  ggplot(aes(x = distance, y = meandelayQ101)) +
+  geom_point() +
+  geom_smooth(method = lm)
+```
+
+It appears that there is. Arrival delay seems to decrease with distance.
+
+A-4 - Let's facet by origin to see how this persists across airports. Note that I am adusting
+the x-axis to fit the range of x value data per origin airport.
+```{r}
+flights %>% 
+  group_by(distance, origin) %>% 
+  summarise(meandelayQ101 = mean(arr_delay, na.rm = T)) %>% 
+  arrange(distance) %>% 
+  ggplot(aes(y = meandelayQ101, x = distance)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  facet_wrap(~ origin, scales = "free_x") ##hari made this change on scales
+```
+
+
+It looks like distance falls as arrival delay increases, except (perhaps) at LaGuardia. A little weird.
+The segmentation of origin I did is a bit random. 
+
+
+A-5: Let's try minus outlier distances. 
+
+```{r}
+flights %>% 
+  group_by(distance, origin) %>% 
+  filter(distance < 3000) %>% 
+  summarise(meandelayQ101 = mean(arr_delay, na.rm = T)) %>% 
+  arrange(distance) %>% 
+  ggplot(aes(x = distance, y = meandelayQ101)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  facet_wrap(~ origin, scales = "free_x")
+```
+
+Result: still a negative relationship between distance and delay. weird. Mean delay is highest for very short flights.
+
+A-6: Let's remove the origin faceting and check one more time.
+```{r}
+flights %>% 
+  group_by(distance, origin) %>% 
+  filter(distance < 3000) %>% 
+  summarise(meandelayQ101 = mean(arr_delay, na.rm = T)) %>% 
+  arrange(distance) %>% 
+  ggplot(aes(x = distance, y = meandelayQ101)) +
+  geom_point() +
+  geom_smooth(method = lm) 
+```
+ 
+ 
+
+NEW WORK. I'm curious if shorter flights having higher arrival delay might be because highly delayed longer flights accelerate to reduce their delay on arrival. Let's see. I will calculate mean speed by dividing distance by airtime and graph it
+against departure delay.
+
+
+```{r}
+flights %>% 
+    filter(!is.na(distance) & !is.na(air_time)) %>% 
+    group_by(distance, dep_delay) %>% 
+    summarise(meanSpeed = mean(distance, na.rm = T)/mean(air_time, na.rm = T)) %>% 
+    ggplot(aes(meanSpeed, y = dep_delay)) +
+     geom_point() +
+     geom_smooth(method = lm)
+```
+
+---
+
+### Hari comment
+
+I don't understand the logic behind the groups you have used here. Could you spell that out i.e. explain what the code is doing?
+
+If you are trying to argue that arrival delay is reduced by speed then one way to study that would to compare speed with to time saved in air (dep_delay - arr_delay) to show the obvious link between the two.
+```{r}
+flights %>% 
+  mutate(time_saved = dep_delay - arr_delay,
+         speed = distance / air_time) %>% 
+  filter(dep_delay > 0 & !is.na(speed)) %>% 
+  group_by(speed) %>% 
+  summarise(time_saved = mean(time_saved)) %>% 
+  ggplot(aes(x = speed, y = time_saved)) + 
+  geom_point(alpha = 0.3) +
+  geom_smooth(method = "lm")
+  
+```
+
+The next argument seems to be that speed and distance are somewhow related i.e. shorter flights are slower (on top of giving you less time to make up the departure delays). See below.
+
+```{r}
+flights %>% 
+  group_by(distance) %>% 
+  summarise(mean_speed = mean(distance, na.rm = T) / mean(air_time, na.rm = T)) %>% 
+  filter(!is.na(mean_speed) & distance < 3000) %>% 
+  ggplot(aes(x = distance, y = mean_speed)) +
+  geom_point() +
+  geom_smooth(method = "loess")
+```
+
+This also seems to be true. This might be because of the types of planes that fly short distances. 
+
+
+Next follow up task for JW to investigate: Are certain types of planes faster than others? Do slower planes tend to fly shorter distances?
+
+----
+
+```{r}
+flights %>% 
+  filter(dep_delay > 0) %>% 
+  group_by(distance) %>% 
+  summarise(mean_delay = mean(dep_delay, na.rm = T)) %>% 
+  ggplot(aes(x = distance, y = mean_delay)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+```
+
+
+Here we see some positive correlation between mean airspeed and departure delay. If this relationship dissapears when 
+we look at arrival delay, this is evidence that the reason shorter flights have more arrival delay
+might be in part that speed erases delay on longer flights.
+
+
+
+```{r}
+flights %>% 
+    filter(!is.na(distance) & !is.na(air_time)) %>% 
+    group_by(distance, arr_delay) %>% 
+    summarise(meanSpeed = mean(distance, na.rm = T)/mean(air_time, na.rm = T)) %>% 
+    ggplot(aes(meanSpeed, y = arr_delay)) +
+     geom_point() +
+     geom_smooth(method = lm)
+ 
+```
+ Sure enough, mean speed is somewhat negatively correlated with arrival delay! Clearly, speed can be used to erase
+ flight delay, allowing longer flights to have less delay.
+ 
+```{r}
+flights %>% 
+    filter(!is.na(tailnum)) %>% 
+    group_by(month, day, tailnum) %>% 
+    summarise(nLegs = n(),
+              meanDistance = mean(distance, na.rm = T)) %>% 
+    arrange(desc(nLegs))
+``` 
+ 
+
+## **SECTION TWO**: Precip and Departure Delay
+
+Hypothesis Two: there is a relationship between Precip in weather and Departure Delay.
+
+B-1: Let's make our dataset. Right now, Precip and flights are separated. We'll join them,
+then graph precipitation vs mean departure delay.
+
+
+```{r}
+Preciptest <- flights %>%
+  select(time_hour, origin, dep_delay, carrier) %>% 
+  left_join(
+    x = .,
+    y = weather,
+    by = c("origin", "time_hour"))
+```
+
+
+
+```{r}
+Preciptest %>% 
+  group_by(precip, origin) %>% 
+  summarise(meandepdelayQ201 = mean(dep_delay, na.rm = T)) %>% 
+  arrange(meandepdelayQ201) %>% 
+  ggplot(aes(precip, y = meandepdelayQ201)) +
+  geom_point() +
+  geom_smooth(method = lm)
+```
+
+Looks like precipitation increases mean depature delay.
+Let's wrap the graph by origin. Again, I'm scaling x-axis based on the x-values available.
+
+
+```{r}
+Preciptest %>% 
+  filter(precip < 0.7) %>% 
+  group_by(precip, origin) %>% 
+  summarise(meandepdelayQ201 = mean(dep_delay, na.rm = T)) %>% 
+  arrange(meandepdelayQ201) %>% 
+  ggplot(aes(precip, y = meandepdelayQ201)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  facet_wrap(~ origin, scales = "free_x")
+```
+
+It seems that the relationship remains true across airports. What else can we facet wrap?
+
+```{r}
+Preciptest %>% 
+  group_by(precip, carrier) %>% 
+  summarise(meandepdelayQ201 = mean(dep_delay, na.rm = T)) %>% 
+  arrange(meandepdelayQ201) %>% 
+  ggplot(aes(precip, y = meandepdelayQ201)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  facet_wrap(~ carrier, scales = "free_x")
+```
+
+Interesting and a bit hard to parse, but the relationship certainly varies by carrier.
+
+---
+
+### Hari comments
+
+Whats the theory behind carrier + precipiation?
+
+LGA seems to be affected a lot more by precipation. Why? Develop some theories around this.
+
+---
+
+## **SECTION THREE** Exploring Visib and arrival delay
+
+
+**get the joins going**
+
+```{r}
+DataSet4 <- flights %>% 
+  select(time_hour, origin, arr_delay) %>% 
+  left_join(weather, by = c("origin", "time_hour"))
+```
+**Remind myself what flights looks like.**
+
+```{r}
+str(flights)
+```
+
+**Check our combined dataset to make sure it looks right**
+```{r}
+str(DataSet4)
+```
+
+**Let's look at Visib**
+```{r}
+DataSet4 %>% 
+  ggplot(aes(x = visib)) +
+  geom_histogram()
+```
+
+Hmm, looks discrete. Let's confirm that there's only a few values.
+
+```{r}
+DataSet4$visib %>% 
+  sort() %>% 
+  unique()
+```
+After Trial and Error, arrive at this, which is ugly and needs improvement 
+
+```{r}
+DataSet4 %>% 
+  ggplot(aes(x = visib, y = arr_delay)) +
+  geom_point() +
+  geom_smooth(method = lm)
+```
+
+So the LM line appears to visually disagree with the superficial impression of the points. 
+Are outliers affecting this? Let's check sample sizes.
+
+```{r}
+DataSet4 %>% 
+  group_by(visib) %>% 
+  summarise(nObs = n())
+```
+Sizes are acceptable.
+I'm not sure what to think about this relationship. The scale of the graph could be affecting the line. Let's try a box plot.
+First, i think I need to purge the NAs.
+First, how many rows are there before I start.
+```{r}
+DataSet4 %>% 
+  nrow()
+```
+Ok, let's try to purge NAs
+```{r}
+DataSet4 <- DataSet4 %>% 
+  filter(!is.na(visib)) %>% 
+  nrow()
+```
+ 
+ Anyway, let's graph visibility against arrival delay, using a box plot. 
+ 
+```{r}
+DataSet4 %>% 
+  group_by(visib) %>% 
+ggplot(aes(x = as.factor(visib), y = arr_delay), na.rm = T ) +
+  geom_boxplot()
+```
+  
+ Okay, this kinda works! You could sort of read a trend into this, but it seems to decline around "1"
+ Let's try again, removing values of less than 0.11.
+ 
+```{r}
+ DataSet4 <- DataSet4 %>%
+  filter(visib > 0.11)
+
+DataSet4 %>% 
+  ggplot(aes(x = visib, y = arr_delay)) +
+  geom_point() +
+  geom_smooth(method = lm)
+```
+ 
+ A clearer relationship now, via cheating :-D. I'd like the regression coefficients here.
+ 
+
+ 
+ 
+
+
+

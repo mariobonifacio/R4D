@@ -85,7 +85,11 @@ This repository contains all the material for the R4D course - March 2019
 ## Week 11
 
 1. Class 20 - May 14th - [Class Exercises](https://puzhu.github.io/R4D/Classes/Class%2020/class20_exercises.nb.html) | [Class Video](https://youtu.be/vbj3OwErP38)
-2. Class 21 - May 16th - [Class Exercises](https://puzhu.github.io/R4D/Classes/Class%2021/class21_exercises.nb.html) | [Class Video]()
+2. Class 21 - May 16th - [Class Exercises](https://puzhu.github.io/R4D/Classes/Class%2021/class21_exercises.nb.html)
+
+## Week 12
+
+1. Class 22 - May 16th - [Class Exercises](https://puzhu.github.io/R4D/Classes/Class%2022/class22_exercises.nb.html) | [Class Video]()
 
 ### A sample project folder structure
 

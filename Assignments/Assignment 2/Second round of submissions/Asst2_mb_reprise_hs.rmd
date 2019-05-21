@@ -17,19 +17,24 @@ output:
 
 ## Comments
 
-Excellent work in general. This is above an beyond anything I have seen on this. So A ++ to you.
+Excellent work in general. This is above an beyond anything I have seen on this. So A ++ to you. The code was easier to read and debug this time around.
 
-1. What's `page.print = F` doing?
+1. Add the comma to the end of an operation not at the beginning.
 2. You can add r commands in line with markdown content like this (see rmd) `r sum(1:100)`
 3. What's stuff like this `color = 'delay | dep time'` within your `aes()` call doing? See below for why this will not give you the result you expect.
 ```{r}
-library(gapminder)
+library(gapminder); library(tidyverse)
 gapminder %>% group_by(year) %>% summarise(pop = sum(pop, na.rm = T)) %>% 
-ggplot(., aes(x = year, y = pop, color = "black")) + ## the color should be set outside the aes call otherwise it is mapped as a data
-  geom_line()
+ggplot(., aes(x = year, y = pop)) + ## the color should be set outside the aes call otherwise it is mapped as a data
+  geom_line(color = "blue") +
+  labs(
+    colour = "asdfasdf"
+  )
 ```
-4. Add the comma to the end of an operation not at the beginning.
-5. What's the reason for not summarising the data for the first chart? You are essentially plotting the same point on top of each other.
+4. What's the reason for not summarising the data for the first chart? You are essentially plotting the same point on top of each other.
+5. Simplify the date time calculations. These seem to be unnecessarily complicated.
+6. Lets replace the loop with a functional map.
+6. Better equations: https://www.calvin.edu/~rpruim/courses/s341/S17/from-class/MathinRmd.html
 
 ## Abstract 
 
@@ -67,9 +72,13 @@ test_b <- test_a %>%
          ,sched_dep_time_metric = 100 * (trunc(sched_dep_time/100)) + as.numeric(str_sub(as.character(sched_dep_time), -2, -1)) / 3 * 5)
 
 # test_b
+
+# sample_n(test_b, size = 10) %>% 
+#   select(sched_dep_time, dep_time_object, sched_dep_time_metric) %>% 
+#   mutate(check = as.numeric(str_sub(as.character(sched_dep_time), -2, -1)))
 ```
 
-
+Another option for converting to a date time object.
 ```{r}
 sample_n(flights %>% select(sched_dep_time), size = 20) %>% 
   mutate(sched_dep_time_hm =  str_pad(as.character(sched_dep_time), width = 4, side = "left", pad = "0"), 
@@ -89,8 +98,8 @@ sample_n(flights %>% select(sched_dep_time), size = 20) %>%
 ## Find the observed probability by time i.e. delayed flights / all flights
 
 test_c <- test_b %>%
-  mutate(is_delay = if_else(dep_delay > 0, 1, 0)
-         ,diff_1935h = abs(as.numeric(dep_time_object - hm('19:35')) / 60)) %>%
+  mutate(is_delay = if_else(dep_delay > 0, 1, 0),
+         diff_1935h = abs(as.numeric(dep_time_object - hm('19:35')) / 60)) %>%
   group_by(diff_1935h) %>%
   mutate(op_diff1935 = mean(is_delay, na.rm = T)) %>%
   ungroup()
@@ -114,7 +123,7 @@ test_d <- test_c %>%
 ggplot(data = test_d, mapping = aes(x = sched_dep_time_metric, y = op_diff1935, color = 'observed probability')) +
   geom_point(size = 1) +
   geom_line(data = test_d, mapping = aes(x = sched_dep_time_metric, y = pred_bivar, color = 'predicted probability'), size = 1.5) +
-  geom_line(size = 1, aes(x = sched_dep_time_metric, y = 0.39094, color = 'gray')) +
+  geom_line(size = 1, aes(x = sched_dep_time_metric, y = 0.39094), color = 'gray') +
   ggtitle('Fly in the morning to lower your chance for delay') +
   scale_color_fivethirtyeight(labels = c('baseline p', 'observed p', 'pred. p')
                               ,name = 'Prob. of delay given sched. dep. time') +
@@ -126,24 +135,37 @@ ggplot(data = test_d, mapping = aes(x = sched_dep_time_metric, y = op_diff1935, 
 This is the correct way to do it. There seems to be some differences in the metric t
 
 ```{r}
-test_b %>%
-  mutate(is_delay = if_else(dep_delay > 0, 1, 0),
-         diff_1935h = abs(as.numeric(dep_time_object - hm('19:35')) / 60)) %>%
-  mutate(pred_bivar = 1/(1+exp(-(0.279603750 - 0.001999519 * diff_1935h)))) %>% 
-  group_by(diff_1935h) %>%
-  summarise(nObs = n_distinct(sched_dep_time_metric)) %>% 
-  filter(nObs > 1)
-
-
+flights %>% 
+  filter(!is.na(dep_delay) == T) %>% 
+  group_by(sched_dep_time) %>%
+  filter(n() >= 100) %>% 
+  ungroup() %>% 
+  mutate(is_delay = if_else(dep_delay > 0, 1, 0), 
+        sched_dep_time_hm =  str_pad(as.character(sched_dep_time), width = 4, side = "left", pad = "0"), 
+        sched_time_dt = paste(str_sub(sched_dep_time_hm, start = 1, end = 2), str_sub(sched_dep_time_hm, start = 3, end = 4), sep = ":") %>% 
+          hm(.),
+        diff_1935h = abs(as.numeric(sched_time_dt - hm('20:00')) / 60),
+        pred_bivar = 1 / (1 + exp(-(0.279603750 - 0.001999519 * diff_1935h)))) %>% 
+  select(sched_dep_time, sched_time_dt, diff_1935h, pred_bivar, is_delay) %>% 
+  group_by(sched_dep_time) %>%
   summarise(op_diff1935 = mean(is_delay, na.rm = T),
-            pred_bivar = mean(pred_bivar)) 
+            pred_bivar = mean(pred_bivar)) %>% 
+  ggplot(mapping = aes(x = sched_dep_time, y = op_diff1935, color = 'observed probability')) +
+  geom_point(size = 1) +
+  geom_line(mapping = aes(x = sched_dep_time, y = pred_bivar, color = 'predicted probability'), size = 1.5) +
+  geom_line(size = 1, aes(x = sched_dep_time, y = 0.39094, color = 'gray')) +
+  ggtitle('Fly in the morning to lower your chance for delay') +
+  scale_color_fivethirtyeight(labels = c('baseline p', 'observed p', 'pred. p')
+                              ,name = 'Prob. of delay given sched. dep. time') +
+  theme_fivethirtyeight()
+  
 ```
 
 ```{r}
 test_b %>%
   mutate(is_delay = if_else(dep_delay > 0, 1, 0),
          diff_1935h = abs(as.numeric(dep_time_object - hm('19:35')) / 60)) %>%
-  mutate(pred_bivar = 1/(1+exp(-(0.279603750 - 0.001999519 * diff_1935h)))) %>% 
+  mutate(pred_bivar = 1/(1 + exp(-(0.279603750 - 0.001999519 * diff_1935h)))) %>% 
   group_by(sched_dep_time_metric) %>%
   summarise(op_diff1935 = mean(is_delay, na.rm = T),
             pred_bivar = mean(pred_bivar)) %>% 
@@ -314,6 +336,12 @@ for(i in 1:2399){ ## It's a for loop for every metric time to diff from
 filter(results_df, abs(cor_i) == max(abs(cor_i))) ## This gives us the max value
 ```
 
+Suggestion from Hari: Can you do this with a map and a function? Without `pmap`, `map2`. 
+
+```{r}
+
+```
+
 
 The max correlation is at 7:35 p.m.
 
@@ -378,6 +406,8 @@ cat_facts <- flt_test_03 %>%
   filter(!is.na(obj) == T) %>%
   arrange(cat,desc(facts))
 
+
+cat_facts
 # cat_facts
 ```  
 
@@ -464,6 +494,20 @@ as_tibble(op_base) %>%
   ggplot(mapping = aes(x=0, y=0.39094)) +
   geom_point(size = 0) +
   geom_abline(intercept = 0.39094, slope = 0, color = 'blue', size = 1) +
+  scale_color_fivethirtyeight() +
+  theme_fivethirtyeight() +
+  ggtitle('Assume a 39 percent chance of delay if no data') +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())
+```
+
+```{r}
+as_tibble(op_base) %>%
+  ggplot() +
+  geom_hline(yintercept = 0.39094) +
+  # geom_point(size = 0) +
+  # geom_abline(intercept = 0.39094, slope = 0, color = 'blue', size = 1) +
   scale_color_fivethirtyeight() +
   theme_fivethirtyeight() +
   ggtitle('Assume a 39 percent chance of delay if no data') +
