@@ -1,0 +1,178 @@
+---
+title: "Class 23 - In class exercises"
+author: Hari Subhash
+date: "Date created: `r Sys.Date()`"
+output:
+  html_notebook:
+    highlight: haddock
+    smart: yes
+    theme: readable
+    df_print: paged
+---
+
+
+## Group and do things
+0. Load the gapminder and tidyverse packages
+
+```{r}
+library(gapminder); library(tidyverse)
+```
+
+
+1. Use summarise to calculate the mean population for entire gapminder dataset.
+
+```{r}
+gapminder %>%
+  filter(!is.na(pop)) %>%
+  summarise(mean_all = mean(na.rm = T, pop))
+```
+
+
+2. Repeat the same step after grouping by continent.
+
+```{r}
+gapminder %>%
+  group_by(continent) %>%
+  summarise(mean_by_cont = mean(na.rm = T, pop))
+
+```
+
+
+3. Repeat the same after grouping by continent and year.
+
+```{r}
+gapminder %>%
+  group_by(continent, year) %>%
+  summarise(mean_by_cont_year = mean(na.rm = T, pop))
+
+```
+
+
+4. Use `n_distinct()` to find the number of distinct countries in the gapminder data.
+
+```{r}
+n_distinct(gapminder$country)
+```
+
+
+5. Combine 3 and 4 to create a table that shows the distinct number of countries and the mean population in every continent for each year. You can create multiple summarised columns by separating them within the summarise command using commas 
+
+```{r}
+gapminder %>%
+  group_by(continent, year) %>%
+  summarise(mean_continent_year = mean(pop, na.rm = T),
+            countries_distinct = n_distinct(country))
+                                       
+  
+```
+
+
+`summarise(var1 = some code, var2 = some code)`.
+6. Now group the data to show the distinct number of countries in every continent for every year. Use `n_distinct()` to find the number of distinct countries/continents.
+
+```{r}
+gapminder %>%
+  group_by(continent, year) %>%
+  summarise(distinct_country_conts = n_distinct(country, continent))
+```
+
+
+7. Group the gapminder dataset and filter the countries that have the highest or lowest lifeExp for each continent for each year. Arrange the output by year,  continent and lifeExp.
+
+```{r}
+gapminder %>%
+  group_by(continent, year) %>%
+  filter(lifeExp == max(lifeExp) | lifeExp == min(lifeExp)) %>%
+  ungroup() %>%
+  arrange(year, continent, lifeExp)
+
+```
+
+
+8. Filter the most recent year of the data and remove the continent Oceania from it. Create a new variable that is marked "Above average income" if the gdpPercap is greater than the average gdpPercap for the continent it belongs to and "Below average income" if it is below. Use `group_by()` with `mutate()` for this.
+
+```{r}
+gapminder %>%
+  filter(max(year, na.rm = T) & !(continent %in% 'Oceania')) %>%
+  group_by(continent) %>%
+  mutate(rich_count = if_else(gdpPercap > mean(gdpPercap, na.rm = T), 'Above average income', 'Below average income'))
+  
+```
+
+
+
+
+## ggplot
+
+1. The code below creates a scatter plot (geom_point()). Update the aesthetics so that the colour of the dots reflect the continents.
+```{r}
+ggplot(gapminder, aes(x = year, y = pop, color = continent)) +
+    geom_point()
+```
+2. Update the plot above by adding a title using `labs()`. Use the `title` argument to set the title.
+
+```{r}
+ggplot(gapminder, aes(x = year, y = pop, color = continent)) +
+    geom_point() +
+  labs(title = 'There are at least two populous countries in Asia!')
+```
+
+
+3. The code below removes the x-axis title "year" by setting the element to blank (see the difference from above) within the `theme()`. Update this by also removing the y-axis label setting `axis.title.y` to blank.
+```{r}
+ggplot(gapminder, aes(x = year, y = pop)) +
+    geom_point() +
+    theme(axis.title.x = element_blank(), axis.title.y = element_blank())
+```
+
+4. The code below changes the angle of the x axis labels. Replicate this for the y-axis. Set whatever angle you would like. 
+
+```{r}
+ggplot(gapminder, aes(x = year, y = pop)) +
+    geom_point() +
+    theme(axis.title.x = element_blank(),
+          axis.text.x = element_text(angle = 45),
+          axis.text.y = element_text(angle = 45))
+```
+
+5. Go to the tidyverse reference for ggplot to see other parameters that you can control within `element_text()` (that you used above). Use this to also change the color of the y-axis labels to red.
+
+```{r}
+ggplot(gapminder, aes(x = year, y = pop)) +
+    geom_point() +
+    theme(axis.title.x = element_blank(),
+          axis.text.x = element_text(angle = 45),
+          axis.text.y = element_text(angle = 45, color = 'red'))
+```
+
+
+6. In the code below I use an external variable to set the colour based on whether a country is India/China or not. If the country is China or India then red else black. Use the same logic to set the alpha parameter to either 1 if India/China or 0.3 otherwise.
+
+```{r}
+india_china_color <- if_else(gapminder$country %in% c("China", "India"), "red", "black")
+
+india_china_alpha <- if_else(gapminder$country %in% c("China", "India"), 1, .3)
+
+ggplot(gapminder, aes(x = year, y = pop)) +
+    geom_point(colour = india_china_color, alpha = india_china_alpha)
+```
+
+7. Instead of supplying colors from outside the data used by the ggplot (as in the task above), you could instead create a variable within your data see below. Pipe this to a ggplot command where you set the color attribute to the column `indo_china` that I create below. Notice how the color of the dots are not black and red as they should be. Note: if you are getting this error: "Error: Mapping should be created with aes() or aes_()", you might be piping and assigning a tibble within your `ggplot()`
+
+```{r}
+gapminder %>% 
+    mutate(indo_china = if_else(country %in% c("China", "India"), "red", "black")) %>%
+  ggplot() +
+  geom_point(aes(x = year, y = pop, color = indo_china))
+```
+
+8. Copy the code above and add `scale_color_identity()`. This function prevents ggplot from mapping the values in the domain for `indo_china` to a color scale and instead treats the values in the columns themselves as the colors.
+
+```{r}
+gapminder %>% 
+    mutate(indo_china = if_else(country %in% c("China", "India"), "red", "black")) %>%
+  ggplot() +
+  geom_point(aes(x = year, y = pop, color = indo_china)) +
+  scale_color_identity(aesthetics = 'colour')
+```
+
