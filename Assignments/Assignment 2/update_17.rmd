@@ -1,0 +1,51 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+Load packages
+```{r setup}
+knitr::opts_chunk$set(
+	message = FALSE,
+	warning = FALSE,
+	include = FALSE
+)
+library(tidyverse); library(lubridate); library(ggthemes)
+```
+
+
+
+```{r}
+flights_17 <- read_csv2(file = "flights_17.csv",
+          col_types = cols(air_time = col_integer(), arr_delay = col_integer(),
+                          arr_time = col_integer(), day = col_integer(),
+                          dep_delay = col_integer(), dep_time = col_integer(),
+                          distance = col_integer(), flight = col_integer(),
+                          hour = col_integer(), minute = col_integer(),
+                          month = col_integer(), sched_arr_time = col_integer(),
+                          sched_dep_time = col_integer(), year = col_integer()),
+          na = "NULL", trim_ws = TRUE)
+```
+
+
+
+```{r}
+flights_17 %>%
+  filter(!is.na(dep_delay)) %>%
+  mutate(dep_delay = (dep_delay + abs(dep_delay))/2) %>%
+  group_by(hour,minute) %>%
+  summarise(q25_delay = quantile(dep_delay, probs = .25),
+            mdn_delay = median(dep_delay),
+            q75_delay = quantile(dep_delay, probs = .75),
+            mean_delay = mean(dep_delay),
+            n_delay = n()) %>%
+  arrange(desc(mean_delay))
+```
+
+
+
+```{r}
+
+```
+
