@@ -11,15 +11,59 @@ output:
 ---
 
 
+
+
+```{r}
+
+    
+```
+
+
 ## Group and do things
 0. Load the gapminder and tidyverse packages
+```{r}
+library(gapminder); library(tidyverse)
+```
+
 1. Use summarise to calculate the mean population for entire gapminder dataset.
+```{r}
+gapminder %>% 
+    summarise(mean_pop = mean(pop))
+```
+
+
 2. Repeat the same step after grouping by continent.
+
+```{r}
+gapminder %>% 
+    group_by(continent) %>% 
+    summarise(mean_pop = mean(pop))
+```
+
 3. Repeat the same after grouping by continent and year.
+
+```{r}
+gapminder %>% 
+    group_by(continent, year) %>% 
+    summarise(mean_pop = mean(pop))
+```
+
 4. Use `n_distinct()` to find the number of distinct countries in the gapminder data. 
+```{r}
+n_distinct(gapminder$country)
+```
+
 5. Combine 3 and 4 to create a table that shows the distinct number of countries and the mean population in every continent for each year. You can create multiple summarised columns by separating them within the summarise command using commas 
 `summarise(var1 = some code, var2 = some code)`.
-6. Now group the data to show the distinct number of countries in every continent for every year. Use `n_distinct()` to find the number of distinct countries/continents.
+
+```{r}
+gapminder %>% 
+    group_by(continent, year) %>% 
+    summarise(n_countries = n_distinct(country),
+              mean_pop = mean(pop))
+```
+
+
 7. Group the gapminder dataset and filter the countries that have the highest or lowest lifeExp for each continent for each year. Arrange the output by year,  continent and lifeExp.
 8. Filter the most recent year of the data and remove the continent Oceania from it. Create a new variable that is marked "Above average income" if the gdpPercap is greater than the average gdpPercap for the continent it belongs to and "Below average income" if it is below. Use `group_by()` with `mutate()` for this.
 
@@ -28,7 +72,7 @@ output:
 
 1. The code below creates a scatter plot (geom_point()). Update the aesthetics so that the colour of the dots reflect the continents.
 ```{r}
-ggplot(gapminder, aes(x = year, y = pop)) +
+ggplot(gapminder, aes(x = year, y = pop, colour = continent)) +
     geom_point()
 ```
 2. Update the plot above by adding a title using `labs()`. Use the `title` argument to set the title.
@@ -50,6 +94,15 @@ ggplot(gapminder, aes(x = year, y = pop)) +
 
 5. Go to the tidyverse reference for ggplot to see other parameters that you can control within `element_text()` (that you used above). Use this to also change the color of the y-axis labels to red.
 6. In the code below I use an external variable to set the colour based on whether a country is India/China or not. If the country is China or India then red else black. Use the same logic to set the alpha parameter to either 1 if India/China or 0.3 otherwise.
+```{r}
+gapminder$country
+```
+
+
+```{r}
+india_china_color <- if_else(gapminder$country %in% c("China", "India"), "red", "black")
+```
+
 
 ```{r}
 india_china_color <- if_else(gapminder$country %in% c("China", "India"), "red", "black")
@@ -61,10 +114,21 @@ ggplot(gapminder, aes(x = year, y = pop)) +
 
 ```{r}
 gapminder %>% 
-    mutate(indo_china = if_else(country %in% c("China", "India"), "red", "black"))
+    mutate(indo_china_color = if_else(country %in% c("China", "India"), "red", "black")) %>% 
+    ggplot(aes(x = year, y = pop, color = indo_china_color)) +
+    geom_point()
+    
 ```
 
 8. Copy the code above and add `scale_color_identity()`. This function prevents ggplot from mapping the values in the domain for `indo_china` to a color scale and instead treats the values in the columns themselves as the colors.
+
+```{r}
+gapminder %>% 
+    mutate(indo_china_color = if_else(country %in% c("China", "India"), "red", "black")) %>% 
+    ggplot(aes(x = year, y = pop, color = indo_china_color)) +
+    geom_point() +
+    scale_color_identity(guide = "legend", label = c("Others", "India/China"))
+```
 
 
 
