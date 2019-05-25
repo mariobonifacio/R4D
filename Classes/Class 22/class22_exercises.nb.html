@@ -1839,7 +1839,11 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">Class 22 - In class exercises</h1>
 <h4 class="author">Hari Subhash</h4>
+<<<<<<< HEAD
 <h4 class="date">Date created: 2019-05-23</h4>
+=======
+<h4 class="date">Date created: 2019-05-21</h4>
+>>>>>>> parent of 9bed326... updated readme
 
 </div>
 
@@ -1847,107 +1851,23 @@ $(document).ready(function () {
 <!-- rnb-text-begin -->
 <div id="functions" class="section level2">
 <h2>Functions</h2>
-<p>The code below creates a function that takes two numeric vectors (atomic) as its input and returns the absolute difference between the minimum value of the first vector and the maximum value of second vector. Read it carefully (along with the comments).</p>
+<p>The code below creates a function that takes two numeric vectors as its input and returns the absolute difference between the minimum value of the first vector and the maximum value of second vector. Read it carefully (along with the comments).</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWlubWF4X2RpZmYoMSwgMiwgRiwgNilcblxuYGBgIn0= -->
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">minmax_diff</span>(<span class="dv">1</span>, <span class="dv">2</span>, F, <span class="dv">6</span>)</a></code></pre></div>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gbWlubWF4X2RpZmYoMSwgMiwgRiwgNikgOiB1bnVzZWQgYXJndW1lbnQgKDYpXG4ifQ== -->
-<pre><code>Error in minmax_diff(1, 2, F, 6) : unused argument (6)</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWlubWF4X2RpZmYoMToyMywgYyg0LCBOQSksIG5hLnJtID0gXCJ4eXpcIilcblxuYGBgIn0= -->
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">minmax_diff</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">23</span>, <span class="kw">c</span>(<span class="dv">4</span>, <span class="ot">NA</span>), <span class="dt">na.rm =</span> <span class="st">&quot;xyz&quot;</span>)</a></code></pre></div>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gbWlubWF4X2RpZmYoMToyMywgYyg0LCBOQSksIG5hLnJtID0gXCJ4eXpcIikgOiBcbiAgaXMubG9naWNhbChuYS5ybSkgaXMgbm90IFRSVUVcbiJ9 -->
-<pre><code>Error in minmax_diff(1:23, c(4, NA), na.rm = &quot;xyz&quot;) : 
-  is.logical(na.rm) is not TRUE</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWVhbihjKDQsIE5BKSwgbmEucm0gPSBcInh5elwiKVxuXG5gYGAifQ== -->
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw">mean</span>(<span class="kw">c</span>(<span class="dv">4</span>, <span class="ot">NA</span>), <span class="dt">na.rm =</span> <span class="st">&quot;xyz&quot;</span>)</a></code></pre></div>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gaWYgKG5hLnJtKSB4IDwtIHhbIWlzLm5hKHgpXSA6IFxuICBhcmd1bWVudCBpcyBub3QgaW50ZXJwcmV0YWJsZSBhcyBsb2dpY2FsXG4ifQ== -->
-<pre><code>Error in if (na.rm) x &lt;- x[!is.na(x)] : 
-  argument is not interpretable as logical</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYXMubG9naWNhbChcInh5elwiKVxuXG5gYGAifQ== -->
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">as.logical</span>(<span class="st">&quot;xyz&quot;</span>)</a></code></pre></div>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIE5BXG4ifQ== -->
-<pre><code>[1] NA</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaWYoXCJ4eXpcIikge1xuICBwcmludChcIlRydXRoeVwiKVxufVxuYGBgIn0= -->
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="cf">if</span>(<span class="st">&quot;xyz&quot;</span>) {</a>
-<a class="sourceLine" id="cb9-2" data-line-number="2">  <span class="kw">print</span>(<span class="st">&quot;Truthy&quot;</span>)</a>
-<a class="sourceLine" id="cb9-3" data-line-number="3">}</a></code></pre></div>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gaWYgKFwieHl6XCIpIHsgOiBhcmd1bWVudCBpcyBub3QgaW50ZXJwcmV0YWJsZSBhcyBsb2dpY2FsXG4ifQ== -->
-<pre><code>Error in if (&quot;xyz&quot;) { : argument is not interpretable as logical</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWluKG1pbl92ZWMsIG5hLnJtID0gbmEucm0pXG5gYGAifQ== -->
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw">min</span>(min_vec, <span class="dt">na.rm =</span> na.rm)</a></code></pre></div>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWlubWF4X2RpZmYobWluX3ZlYyA9IDE6MjMsIG1heF92ZWMgPSBjKDQsIE5BKSwgbmEucm0gPSBUKVxuYGBgIn0= -->
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw">minmax_diff</span>(<span class="dt">min_vec =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">23</span>, <span class="dt">max_vec =</span> <span class="kw">c</span>(<span class="dv">4</span>, <span class="ot">NA</span>), <span class="dt">na.rm =</span> T)</a></code></pre></div>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWlubWF4X2RpZmYobWluX3ZlYyA9IGMoMjQsIDQxLCBOQSksIG1heF92ZWMgPSBjKDQ0LCBOQSksIG5hLnJtID0gVClcblxuYGBgIn0= -->
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw">minmax_diff</span>(<span class="dt">min_vec =</span> <span class="kw">c</span>(<span class="dv">24</span>, <span class="dv">41</span>, <span class="ot">NA</span>), <span class="dt">max_vec =</span> <span class="kw">c</span>(<span class="dv">44</span>, <span class="ot">NA</span>), <span class="dt">na.rm =</span> T)</a></code></pre></div>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDIwXG4ifQ== -->
-<pre><code>[1] 20</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWlubWF4X2RpZmYobWluX3ZlYyA9IFwiYVwiLCBtYXhfdmVjID0gYyg0NCwgTkEpLCBuYS5ybSA9IFQpXG5cbmBgYCJ9 -->
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="kw">minmax_diff</span>(<span class="dt">min_vec =</span> <span class="st">&quot;a&quot;</span>, <span class="dt">max_vec =</span> <span class="kw">c</span>(<span class="dv">44</span>, <span class="ot">NA</span>), <span class="dt">na.rm =</span> T)</a></code></pre></div>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gbWlubWF4X2RpZmYobWluX3ZlYyA9IFwiYVwiLCBtYXhfdmVjID0gYyg0NCwgTkEpLCBuYS5ybSA9IFQpIDogXG4gIGlzLm51bWVyaWMobWluX3ZlYykgaXMgbm90IFRSVUVcbiJ9 -->
-<pre><code>Error in minmax_diff(min_vec = &quot;a&quot;, max_vec = c(44, NA), na.rm = T) : 
-  is.numeric(min_vec) is not TRUE</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWluKGMoMjQsIDQxLCBOQSkpXG5gYGAifQ== -->
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="kw">min</span>(<span class="kw">c</span>(<span class="dv">24</span>, <span class="dv">41</span>, <span class="ot">NA</span>))</a></code></pre></div>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWlubWF4X2RpZmYoMToxMCwgMjA6MzApXG5gYGAifQ== -->
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1"><span class="kw">minmax_diff</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>, <span class="dv">20</span><span class="op">:</span><span class="dv">30</span>)</a></code></pre></div>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyNEZWZpbmluZyB0aGUgZnVuY3Rpb24gKG5vdGljZSBob3cgSSBhbHNvIGRlZmluZSB0aGUgbmEucm0uKVxubWlubWF4X2RpZmYgPC0gZnVuY3Rpb24obWluX3ZlYywgbWF4X3ZlYywgbmEucm0gPSBGKSB7XG4gICMjY2hlY2sgaWYgdGhlIHR3byBhcmd1bWVudHMgYXJlIG9mIHRoZSB0eXBlIG51bWVyaWMsIGVsc2UgZXhpdC5cbiAgc3RvcGlmbm90KGlzLm51bWVyaWMobWluX3ZlYyksIGlzLm51bWVyaWMobWF4X3ZlYyksIGlzLmxvZ2ljYWwobmEucm0pKVxuICBcbiAgIyNnZXQgdGhlIG1pbiBhbmQgbWF4IHZhbHVlLlxuICBtaW5fdmFsdWUgPC0gbWluKG1pbl92ZWMsIG5hLnJtID0gbmEucm0pXG4gIG1heF92YWx1ZSA8LSBtYXgobWF4X3ZlYywgbmEucm0gPSBuYS5ybSlcbiAgXG4gICMjcmV0dXJuIHRoZSBhYnNvbHV0ZSBkaWZmZXJlbmNlXG4gIGFicyhtYXhfdmFsdWUgLSBtaW5fdmFsdWUpXG4gIFxufVxuYGBgIn0= -->
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co">##Defining the function (notice how I also define the na.rm.)</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">minmax_diff &lt;-<span class="st"> </span><span class="cf">function</span>(min_vec, max_vec, <span class="dt">na.rm =</span> F) {</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3">  <span class="co">##check if the two arguments are of the type numeric, else exit.</span></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4">  <span class="kw">stopifnot</span>(<span class="kw">is.numeric</span>(min_vec), <span class="kw">is.numeric</span>(max_vec), <span class="kw">is.logical</span>(na.rm))</a>
+<a class="sourceLine" id="cb1-5" data-line-number="5">  </a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">  <span class="co">##get the min and max value.</span></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7">  min_value &lt;-<span class="st"> </span><span class="kw">min</span>(min_vec, <span class="dt">na.rm =</span> na.rm)</a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">  max_value &lt;-<span class="st"> </span><span class="kw">max</span>(max_vec, <span class="dt">na.rm =</span> na.rm)</a>
+<a class="sourceLine" id="cb1-9" data-line-number="9">  </a>
+<a class="sourceLine" id="cb1-10" data-line-number="10">  <span class="co">##return the absolute difference</span></a>
+<a class="sourceLine" id="cb1-11" data-line-number="11">  <span class="kw">abs</span>(max_value <span class="op">-</span><span class="st"> </span>min_value)</a>
+<a class="sourceLine" id="cb1-12" data-line-number="12">  </a>
+<a class="sourceLine" id="cb1-13" data-line-number="13">}</a></code></pre></div>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -1955,7 +1875,7 @@ $(document).ready(function () {
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWlubWF4X2RpZmYobWluX3ZlYyA9IDE6MTAsIG1heF92ZWMgPSAxMDoyMClcbmBgYCJ9 -->
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="kw">minmax_diff</span>(<span class="dt">min_vec =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">10</span>, <span class="dt">max_vec =</span> <span class="dv">10</span><span class="op">:</span><span class="dv">20</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">minmax_diff</span>(<span class="dt">min_vec =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">10</span>, <span class="dt">max_vec =</span> <span class="dv">10</span><span class="op">:</span><span class="dv">20</span>)</a></code></pre></div>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -1963,7 +1883,7 @@ $(document).ready(function () {
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWlubWF4X2RpZmYobWluX3ZlYyA9IGMoMjQsIDQxLCBOQSksIG1heF92ZWMgPSA0NClcbmBgYCJ9 -->
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="kw">minmax_diff</span>(<span class="dt">min_vec =</span> <span class="kw">c</span>(<span class="dv">24</span>, <span class="dv">41</span>, <span class="ot">NA</span>), <span class="dt">max_vec =</span> <span class="dv">44</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">minmax_diff</span>(<span class="dt">min_vec =</span> <span class="kw">c</span>(<span class="dv">24</span>, <span class="dv">41</span>, <span class="ot">NA</span>), <span class="dt">max_vec =</span> <span class="dv">44</span>)</a></code></pre></div>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -1971,23 +1891,16 @@ $(document).ready(function () {
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWlubWF4X2RpZmYobWluX3ZlYyA9IGMoMjQsIDQxLCBOQSksIG1heF92ZWMgPSA0NCwgbmEucm0gPSBUKVxuYGBgIn0= -->
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1"><span class="kw">minmax_diff</span>(<span class="dt">min_vec =</span> <span class="kw">c</span>(<span class="dv">24</span>, <span class="dv">41</span>, <span class="ot">NA</span>), <span class="dt">max_vec =</span> <span class="dv">44</span>, <span class="dt">na.rm =</span> T)</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw">minmax_diff</span>(<span class="dt">min_vec =</span> <span class="kw">c</span>(<span class="dv">24</span>, <span class="dv">41</span>, <span class="ot">NA</span>), <span class="dt">max_vec =</span> <span class="dv">44</span>, <span class="dt">na.rm =</span> T)</a></code></pre></div>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDIwXG4ifQ== -->
-<pre><code>[1] 20</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Trying out a non-numeric input.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWlubWF4X2RpZmYobWluX3ZlYyA9IFwiYVwiLCBtYXhfdmVjID0gYygxLCAyLCA1NikpXG5gYGAifQ== -->
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="kw">minmax_diff</span>(<span class="dt">min_vec =</span> <span class="st">&quot;a&quot;</span>, <span class="dt">max_vec =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">56</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw">minmax_diff</span>(<span class="dt">min_vec =</span> <span class="st">&quot;a&quot;</span>, <span class="dt">max_vec =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">56</span>))</a></code></pre></div>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gbWlubWF4X2RpZmYobWluX3ZlYyA9IFwiYVwiLCBtYXhfdmVjID0gYygxLCAyLCA1NikpIDogXG4gIGlzLm51bWVyaWMobWluX3ZlYykgaXMgbm90IFRSVUVcbiJ9 -->
-<pre><code>Error in minmax_diff(min_vec = &quot;a&quot;, max_vec = c(1, 2, 56)) : 
-  is.numeric(min_vec) is not TRUE</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <ol style="list-style-type: decimal">
@@ -1995,8 +1908,8 @@ $(document).ready(function () {
 </ol>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWlubWF4X2RpZmYoMToyMywgNCwgVClcbmBgYCJ9 -->
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="kw">minmax_diff</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">23</span>, <span class="dv">4</span>, T)</a></code></pre></div>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWlubWF4X2RpZmYoMToyMywgNCwgVClcblxuYGBgIn0= -->
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw">minmax_diff</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">23</span>, <span class="dv">4</span>, T)</a></code></pre></div>
 <!-- rnb-source-end -->
 <!-- rnb-output-begin eyJkYXRhIjoiWzFdIDNcbiJ9 -->
 <pre><code>[1] 3</code></pre>
@@ -2009,7 +1922,7 @@ $(document).ready(function () {
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWlubWF4X2RpZmYoMSwgMiwgNSlcbmBgYCJ9 -->
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1"><span class="kw">minmax_diff</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">5</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw">minmax_diff</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">5</span>)</a></code></pre></div>
 <!-- rnb-source-end -->
 <!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gbWlubWF4X2RpZmYoMSwgMiwgNSkgOiBpcy5sb2dpY2FsKG5hLnJtKSBpcyBub3QgVFJVRVxuIn0= -->
 <pre><code>Error in minmax_diff(1, 2, 5) : is.logical(na.rm) is not TRUE</code></pre>
@@ -2021,8 +1934,8 @@ $(document).ready(function () {
 </ol>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWlubWF4X2RpZmYoMSwgMiwgRiwgNilcbmBgYCJ9 -->
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" data-line-number="1"><span class="kw">minmax_diff</span>(<span class="dv">1</span>, <span class="dv">2</span>, F, <span class="dv">6</span>)</a></code></pre></div>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWlubWF4X2RpZmYoMSwgMiwgRiwgNilcblxuYGBgIn0= -->
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw">minmax_diff</span>(<span class="dv">1</span>, <span class="dv">2</span>, F, <span class="dv">6</span>)</a></code></pre></div>
 <!-- rnb-source-end -->
 <!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gbWlubWF4X2RpZmYoMSwgMiwgRiwgNikgOiB1bnVzZWQgYXJndW1lbnQgKDYpXG4ifQ== -->
 <pre><code>Error in minmax_diff(1, 2, F, 6) : unused argument (6)</code></pre>
@@ -2031,174 +1944,29 @@ $(document).ready(function () {
 <!-- rnb-text-begin -->
 <ol start="4" style="list-style-type: decimal">
 <li>Define a function that takes two numeric vectors as its input and returns the difference between the mean of the first vector and the median of the second vector. Add any checks and additional arguments you like to this function.</li>
-</ol>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGlmZl92ZWMgPC0gZnVuY3Rpb24obWVhbl92ZWMsIG1lZGlhbl92ZWMsIG5hLnJtKXtcbiAgXG4gIHN0b3BpZm5vdChpcy5udW1lcmljKG1lYW5fdmVjKSwgaXMubnVtZXJpYyhtZWRpYW5fdmVjKSwgaXMubG9naWNhbChuYS5ybSkpXG4gICMjIGNhbGN1bGF0aW5nIHRoZSB2YWx1ZSB0byBiZSByZXR1cm5lZFxuICBtZWFuKG1lYW5fdmVjLCBuYS5ybSA9IG5hLnJtKSAtIG1lZGlhbihtZWRpYW5fdmVjLCBuYS5ybSA9IG5hLnJtKVxufVxuXG5kaWZmX3ZlYyhtZWFuX3ZlYyA9IDEwMDoyMDAsIG1lZGlhbl92ZWMgPSAyMDozMCwgbmEucm0gPSBUKVxuYGBgIn0= -->
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" data-line-number="1">diff_vec &lt;-<span class="st"> </span><span class="cf">function</span>(mean_vec, median_vec, na.rm){</a>
-<a class="sourceLine" id="cb31-2" data-line-number="2">  </a>
-<a class="sourceLine" id="cb31-3" data-line-number="3">  <span class="kw">stopifnot</span>(<span class="kw">is.numeric</span>(mean_vec), <span class="kw">is.numeric</span>(median_vec), <span class="kw">is.logical</span>(na.rm))</a>
-<a class="sourceLine" id="cb31-4" data-line-number="4">  <span class="co">## calculating the value to be returned</span></a>
-<a class="sourceLine" id="cb31-5" data-line-number="5">  <span class="kw">mean</span>(mean_vec, <span class="dt">na.rm =</span> na.rm) <span class="op">-</span><span class="st"> </span><span class="kw">median</span>(median_vec, <span class="dt">na.rm =</span> na.rm)</a>
-<a class="sourceLine" id="cb31-6" data-line-number="6">}</a>
-<a class="sourceLine" id="cb31-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb31-8" data-line-number="8"><span class="kw">diff_vec</span>(<span class="dt">mean_vec =</span> <span class="dv">100</span><span class="op">:</span><span class="dv">200</span>, <span class="dt">median_vec =</span> <span class="dv">20</span><span class="op">:</span><span class="dv">30</span>, <span class="dt">na.rm =</span> T)</a></code></pre></div>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDEyNVxuIn0= -->
-<pre><code>[1] 125</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<ol start="5" style="list-style-type: decimal">
 <li>Define a function that takes two arguments - name and greet_message. Set the default value of greet_message to be “Hello”. The function should return a single character string that combines greet_message with name (with a space in between). Use <code>paste()</code> to combine. Add any additional arguments or checks.</li>
-</ol>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ3JpdF9tZXNzYWdlIDwtIFwiSGlcIlxuZ3JlZXRfcGVyc29uIDwtIGZ1bmN0aW9uKG5hbWUsIGdyZWV0X21lc3NhZ2UgPSBncml0X21lc3NhZ2UpIHtcbiAgcGFzdGUoZ3JlZXRfbWVzc2FnZSwgbmFtZSlcbn1cbiMgVE9ETyBkZWJ1ZyBiZWxvd1xuZ3JlZXRfcGVyc29uKG5hbWUgPSBcIkJvYmJ5XCIpXG5gYGAifQ== -->
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" data-line-number="1">grit_message &lt;-<span class="st"> &quot;Hi&quot;</span></a>
-<a class="sourceLine" id="cb33-2" data-line-number="2">greet_person &lt;-<span class="st"> </span><span class="cf">function</span>(name, <span class="dt">greet_message =</span> grit_message) {</a>
-<a class="sourceLine" id="cb33-3" data-line-number="3">  <span class="kw">paste</span>(greet_message, name)</a>
-<a class="sourceLine" id="cb33-4" data-line-number="4">}</a>
-<a class="sourceLine" id="cb33-5" data-line-number="5"><span class="co"># </span><span class="al">TODO</span><span class="co"> debug below</span></a>
-<a class="sourceLine" id="cb33-6" data-line-number="6"><span class="kw">greet_person</span>(<span class="dt">name =</span> <span class="st">&quot;Bobby&quot;</span>)</a></code></pre></div>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiSGkgQm9iYnlcIlxuIn0= -->
-<pre><code>[1] &quot;Hi Bobby&quot;</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ3JlZXRfcGVyc29uKG5hbWUgPSBcIkJvYmJ5XCIsIGdyZWV0X21lc3NhZ2UgPSBcIkhvdyBhcmUgeW91XCIpXG5gYGAifQ== -->
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" data-line-number="1"><span class="kw">greet_person</span>(<span class="dt">name =</span> <span class="st">&quot;Bobby&quot;</span>, <span class="dt">greet_message =</span> <span class="st">&quot;How are you&quot;</span>)</a></code></pre></div>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiSG93IGFyZSB5b3UgQm9iYnlcIlxuIn0= -->
-<pre><code>[1] &quot;How are you Bobby&quot;</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ3JlZXRfcGVyc29uKG5hbWUgPSBcIkJvYmJ5XCIsIGdyZWV0X21lc3NhZ2UgPSBncmVldF9tZXNzYWdlKVxuYGBgIn0= -->
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb37-1" data-line-number="1"><span class="kw">greet_person</span>(<span class="dt">name =</span> <span class="st">&quot;Bobby&quot;</span>, <span class="dt">greet_message =</span> greet_message)</a></code></pre></div>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiaGkgQm9iYnlcIlxuIn0= -->
-<pre><code>[1] &quot;hi Bobby&quot;</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5ncmVldF9wZXJzb24obmFtZSA9IFwiQm9iYnlcIiwgZ3JlZXRfbWVzc2FnZSA9IGdyZWV0X21lc3NhZ2UpXG5gYGAifQ== -->
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" data-line-number="1"></a>
-<a class="sourceLine" id="cb39-2" data-line-number="2"><span class="kw">greet_person</span>(<span class="dt">name =</span> <span class="st">&quot;Bobby&quot;</span>, <span class="dt">greet_message =</span> greet_message)</a></code></pre></div>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiaGkgQm9iYnlcIlxuIn0= -->
-<pre><code>[1] &quot;hi Bobby&quot;</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>This will not work. Why?</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ3JlZXRfcGVyc29uKEhhcmkpXG5gYGAifQ== -->
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb41-1" data-line-number="1"><span class="kw">greet_person</span>(Hari)</a></code></pre></div>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gcGFzdGUoZ3JlZXRfbWVzc2FnZSwgbmFtZSkgOiBvYmplY3QgJ0hhcmknIG5vdCBmb3VuZFxuIn0= -->
-<pre><code>Error in paste(greet_message, name) : object 'Hari' not found</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>This will. Why?</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuQm9iYnkgPC0gXCJIYXJpXCJcbmdyZWV0X3BlcnNvbihuYW1lID0gQm9iYnkpXG5gYGAifQ== -->
-<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb43-1" data-line-number="1">Bobby &lt;-<span class="st"> &quot;Hari&quot;</span></a>
-<a class="sourceLine" id="cb43-2" data-line-number="2"><span class="kw">greet_person</span>(<span class="dt">name =</span> Bobby)</a></code></pre></div>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiSGVsbG8gSGFyaVwiXG4ifQ== -->
-<pre><code>[1] &quot;Hello Hari&quot;</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<ol start="6" style="list-style-type: decimal">
 <li>Load the tidyverse and gapminder packages</li>
-</ol>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeSh0aWR5dmVyc2UpOyBsaWJyYXJ5KGdhcG1pbmRlcilcbmBgYCJ9 -->
-<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb45-1" data-line-number="1"><span class="kw">library</span>(tidyverse); <span class="kw">library</span>(gapminder)</a></code></pre></div>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<ol start="7" style="list-style-type: decimal">
 <li>Fix the following so that they run. Think about why they are generating an error. Read the comments for further instructions.</li>
 </ol>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyNGaW5kIHRoZSB1bmlxdWUgc2V0IG9mIGNvbnRpbmVudHMgaW4gZ2FwbWluZGVyXG4jI1lvdXIgZmluYWwgc29sdXRpb24gc2hvdWxkIHVzZSBwaXBlc1xuZ2FwbWluZGVyICU+JSBcbiAgdW5pcXVlKGNvbnRpbmVudClcbmBgYCJ9 -->
-<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb46-1" data-line-number="1"><span class="co">##Find the unique set of continents in gapminder</span></a>
-<a class="sourceLine" id="cb46-2" data-line-number="2"><span class="co">##Your final solution should use pipes</span></a>
-<a class="sourceLine" id="cb46-3" data-line-number="3">gapminder <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb46-4" data-line-number="4"><span class="st">  </span><span class="kw">unique</span>(continent)</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="co">##Find the unique set of continents in gapminder</span></a>
+<a class="sourceLine" id="cb12-2" data-line-number="2"><span class="co">##Your final solution should use pipes</span></a>
+<a class="sourceLine" id="cb12-3" data-line-number="3">gapminder <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb12-4" data-line-number="4"><span class="st">  </span><span class="kw">unique</span>(continent)</a></code></pre></div>
 <!-- rnb-source-end -->
 <!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gaXNGQUxTRShpbmNvbXBhcmFibGVzKSA6IG9iamVjdCAnY29udGluZW50JyBub3QgZm91bmRcbiJ9 -->
 <pre><code>Error in isFALSE(incomparables) : object 'continent' not found</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>The same error in base R.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudW5pcXVlKGdhcG1pbmRlciwgY29udGluZW50KVxuYGBgIn0= -->
-<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb48-1" data-line-number="1"><span class="kw">unique</span>(gapminder, continent)</a></code></pre></div>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gaXNGQUxTRShpbmNvbXBhcmFibGVzKSA6IG9iamVjdCAnY29udGluZW50JyBub3QgZm91bmRcbiJ9 -->
-<pre><code>Error in isFALSE(incomparables) : object 'continent' not found</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbInRibF9kZiIsInRibCIsImRhdGEuZnJhbWUiXSwibmNvbCI6MSwibnJvdyI6NX0sInJkZiI6Ikg0c0lBQUFBQUFBQUExMVF3VTdETUF4MWszYWpsVUNUOWgzckFjRUhWSUl6RXFkZFE1YU9pQ3lwMGhRNDh0OUlLMDZhbEsySE9QYnpzNS90MTZmOWZiV3ZBSUFBTFFnUWltNU8wR1NRUStuL2J3QzZEUURRVy93TGZJRTFZVUFtN0twb3BjU25VRDE2bTVDTmFOTmF5Vm1NYnBxVDhHRWY0N3pwWmNxdG5nZHJPaEdqOVFzWFRHUHlXcVRnaXZWSlkxWnVHWGZHb25lZTZIUmNNS29EYzZ4dUxUdUpSY1BTbXE5YUkrNmIrbFhKRDVweEhIK1h5b2wwMmJma1JqdXBoWGIvNG5OeWJUb25qY1lhc28wM3ZLek43QUxZRE5wckhIYjhmZEFmdTRkSFAzZzhPTVRwc3RnbytkbWtXYVNGNTdNTGZjUzUwdXlLdlFrVmd6dmNPT3hTZDFiaTRQRkNpUGExTTQ0bFhzV05Ta2hZRHM1LzF4M1ZPRG9DQUFBPSJ9 -->
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":["continent"],"name":[1],"type":["fctr"],"align":["left"]}],"data":[{"1":"Asia"},{"1":"Europe"},{"1":"Africa"},{"1":"Americas"},{"1":"Oceania"}],"options":{"columns":{"min":{},"max":[10],"total":[1]},"rows":{"min":[10],"max":[10],"total":[5]},"pages":{}}}
-  </script>
-</div>
-<!-- rnb-frame-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>if you want an atomic vector as your output</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2FwbWluZGVyICU+JSBcbiAgcHVsbChjb250aW5lbnQpICU+JSBcbiAgdW5pcXVlKClcblxuYGBgIn0= -->
-<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb50-1" data-line-number="1">gapminder <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb50-2" data-line-number="2"><span class="st">  </span><span class="kw">pull</span>(continent) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb50-3" data-line-number="3"><span class="st">  </span><span class="kw">unique</span>()</a></code></pre></div>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIEFzaWEgICAgIEV1cm9wZSAgIEFmcmljYSAgIEFtZXJpY2FzIE9jZWFuaWEgXG5MZXZlbHM6IEFmcmljYSBBbWVyaWNhcyBBc2lhIEV1cm9wZSBPY2VhbmlhXG4ifQ== -->
-<pre><code>[1] Asia     Europe   Africa   Americas Oceania 
-Levels: Africa Americas Asia Europe Oceania</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>without pipes</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudW5pcXVlKGdhcG1pbmRlciRjb250aW5lbnQpXG5cbmBgYCJ9 -->
-<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb52-1" data-line-number="1"><span class="kw">unique</span>(gapminder<span class="op">$</span>continent)</a></code></pre></div>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIEFzaWEgICAgIEV1cm9wZSAgIEFmcmljYSAgIEFtZXJpY2FzIE9jZWFuaWEgXG5MZXZlbHM6IEFmcmljYSBBbWVyaWNhcyBBc2lhIEV1cm9wZSBPY2VhbmlhXG4ifQ== -->
-<pre><code>[1] Asia     Europe   Africa   Americas Oceania 
-Levels: Africa Americas Asia Europe Oceania</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyNmaW5kIHRoZSBtZWFuIG9mIHRoZSBnZHBQZXJjYXAgY29sdW1uIGluIGdhcG1pbmRlclxuIyNmaW5hbCBzb2x1dGlvbiBzaG91bGQgdXNlIHBpcGVzLlxuZ2FwbWluZGVyICU+JSBcbiAgc2VsZWN0KGdkcFBlcmNhcCkgJT4lIFxuICBtZWFuKC4sIG5hLnJtID0gVClcbmBgYCJ9 -->
-<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb54-1" data-line-number="1"><span class="co">##find the mean of the gdpPercap column in gapminder</span></a>
-<a class="sourceLine" id="cb54-2" data-line-number="2"><span class="co">##final solution should use pipes.</span></a>
-<a class="sourceLine" id="cb54-3" data-line-number="3">gapminder <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb54-4" data-line-number="4"><span class="st">  </span><span class="kw">select</span>(gdpPercap) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb54-5" data-line-number="5"><span class="st">  </span><span class="kw">mean</span>(., <span class="dt">na.rm =</span> T)</a></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="co">##find the mean of the gdpPercap column in gapminder</span></a>
+<a class="sourceLine" id="cb14-2" data-line-number="2"><span class="co">##final solution should use pipes.</span></a>
+<a class="sourceLine" id="cb14-3" data-line-number="3">gapminder <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb14-4" data-line-number="4"><span class="st">  </span><span class="kw">select</span>(gdpPercap) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb14-5" data-line-number="5"><span class="st">  </span><span class="kw">mean</span>(., <span class="dt">na.rm =</span> T)</a></code></pre></div>
 <!-- rnb-source-end -->
 <!-- rnb-output-begin eyJkYXRhIjoiYXJndW1lbnQgaXMgbm90IG51bWVyaWMgb3IgbG9naWNhbDogcmV0dXJuaW5nIE5BXG4ifQ== -->
 <pre><code>argument is not numeric or logical: returning NA</code></pre>
@@ -2210,23 +1978,10 @@ Levels: Africa Americas Asia Europe Oceania</code></pre>
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2FwbWluZGVyICU+JSBcbiAgcHVsbChnZHBQZXJjYXApICU+JSBcbiAgbWVhbiguLCBuYS5ybSA9IFQpXG5gYGAifQ== -->
-<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb57-1" data-line-number="1">gapminder <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb57-2" data-line-number="2"><span class="st">  </span><span class="kw">pull</span>(gdpPercap) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb57-3" data-line-number="3"><span class="st">  </span><span class="kw">mean</span>(., <span class="dt">na.rm =</span> T)</a></code></pre></div>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDcyMTUuMzI3XG4ifQ== -->
-<pre><code>[1] 7215.327</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyMgZmluZCB0aGUgbWVhbiBvZiB0aGUgZ2RwUGVyY2FwIGNvbHVtbiBpbiBnYXBtaW5kZXJcbiMjIGZpbmFsIHNvbHV0aW9uIHNob3VsZCB1c2UgYmFzZSBSIHN5bnRheCBcbiMjIHJlbWVtYmVyIFtdIC0gaXMgYSBwcmVzZXJ2aW5nIHN1YnNldCB8ICQgYW5kIFtbXV0gYXJlIHNpbXBsaWZ5aW5nXG5tZWFuKGdhcG1pbmRlcltcImdkcFBlcmNhcFwiXSlcbmBgYCJ9 -->
-<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb59-1" data-line-number="1"><span class="co">## find the mean of the gdpPercap column in gapminder</span></a>
-<a class="sourceLine" id="cb59-2" data-line-number="2"><span class="co">## final solution should use base R syntax </span></a>
-<a class="sourceLine" id="cb59-3" data-line-number="3"><span class="co">## remember [] - is a preserving subset | $ and [[]] are simplifying</span></a>
-<a class="sourceLine" id="cb59-4" data-line-number="4"><span class="kw">mean</span>(gapminder[<span class="st">&quot;gdpPercap&quot;</span>])</a></code></pre></div>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyNmaW5kIHRoZSBtZWFuIG9mIHRoZSBnZHBQZXJjYXAgY29sdW1uIGluIGdhcG1pbmRlclxuIyNmaW5hbCBzb2x1dGlvbiBzaG91bGQgdXNlIGJhc2UgUlxubWVhbihnYXBtaW5kZXJbXCJnZHBQZXJjYXBcIl0pXG5gYGAifQ== -->
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="co">##find the mean of the gdpPercap column in gapminder</span></a>
+<a class="sourceLine" id="cb17-2" data-line-number="2"><span class="co">##final solution should use base R</span></a>
+<a class="sourceLine" id="cb17-3" data-line-number="3"><span class="kw">mean</span>(gapminder[<span class="st">&quot;gdpPercap&quot;</span>])</a></code></pre></div>
 <!-- rnb-source-end -->
 <!-- rnb-output-begin eyJkYXRhIjoiYXJndW1lbnQgaXMgbm90IG51bWVyaWMgb3IgbG9naWNhbDogcmV0dXJuaW5nIE5BXG4ifQ== -->
 <pre><code>argument is not numeric or logical: returning NA</code></pre>
@@ -2238,40 +1993,108 @@ Levels: Africa Americas Asia Europe Oceania</code></pre>
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWVhbihnYXBtaW5kZXJbW1wiZ2RwUGVyY2FwXCJdXSlcbmBgYCJ9 -->
-<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb62-1" data-line-number="1"><span class="kw">mean</span>(gapminder[[<span class="st">&quot;gdpPercap&quot;</span>]])</a></code></pre></div>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyMgSSB3b3VsZCBsaWtlIHRoZSBkaXN0aW5jdCBjb21iaW5hdGlvbnMgb2YgY29udGluZW50IGFuZCBjb3VudHJ5XG4jIyB1c2UgdGlkeXZlcnNlXG5nYXBtaW5kZXIgJT4lIFxuICB1bmlxdWUoY29udGluZW50LCBjb3VudHJ5KVxuXG5gYGAifQ== -->
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="co">## I would like the distinct combinations of continent and country</span></a>
+<a class="sourceLine" id="cb20-2" data-line-number="2"><span class="co">## use tidyverse</span></a>
+<a class="sourceLine" id="cb20-3" data-line-number="3">gapminder <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb20-4" data-line-number="4"><span class="st">  </span><span class="kw">unique</span>(continent, country)</a></code></pre></div>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDcyMTUuMzI3XG4ifQ== -->
-<pre><code>[1] 7215.327</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gaXNGQUxTRShpbmNvbXBhcmFibGVzKSA6IG9iamVjdCAnY29udGluZW50JyBub3QgZm91bmRcbiJ9 -->
+<pre><code>Error in isFALSE(incomparables) : object 'continent' not found</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbInRibF9kZiIsInRibCIsImRhdGEuZnJhbWUiXSwibmNvbCI6MiwibnJvdyI6MTQyfSwicmRmIjoiSDRzSUFBQUFBQUFBQTNXWFoyUGJOaENHYVczSnNlTWtUWnB1ZHFZamR0dTBUZmVRWk1kMlBLSmF5bkluUk1JVVlwSlFRTktxMVpYdW5aK2M5SVVrZ0RDcmZuaGtIc2JoY0hjNHdEdkxOeTdVYnRRc3k4cForV0xPeXVYeFdjamhaOFlxV0ZYNTl5dkx5cDhhRGJEeWMvaDdGNHhHalFhTmtST0trN1o4cGovM1A5OHprM0dxM2RTVno3U1pZd3FHSGxOdmJvcXVtY3k0R2VPN01HVmR0YmFhazg5UU1QN21qUGFaS1dObnBwQnROOWZMamxIdHhZeWRwbDA1YTdyZHBxK3llZ3NaL1ZuZjVLMy8raTY3ejJ3OFRIK2E5bVI4Y1NTeFNqNDlvSDZFcjRYUkxpZXQ5VDNCSERLUkt2V0FTakdheUlWNnhGUmZhU1VSdkU4blV2bUtRMG1JenFPTEZCMmZSR29OdmZJZWNXSXU4SFhQeU9sc1BLVGZTMUt6dEFQSW1mS2d6SUpqUU02YkI4Y24yaytBazBDZWxRZkFhWEFHUEFqT2dvZkF3K0FSOENoNEREd09uZ0EyZUJJOEJaNEd6NEJud1hQZ0hIZ2V2QUJlQkMrQjgyQVJMSUdYd1N2Z1ZYQUJ2QVplQjIrQWkrQk44Qlo0Rzd3RDNnWHZnZmZCQitCRDhCR29nd1pvZ21Xd0FpNkJWYkFHMXNGbHNBRTJ3UmJZQmxkQUMzd01ka0FiZE1CVmNBMWNCemZBVGJBTFBnR2Zncy9BNStBTDhDVkE2S3d1Y0lBTEtOZ0RIdWdCQm02QmZlQ0RBSVNBZ3o2NERXUk1aYlJqa0lBRE1BQ29ZZFloR0lLdndUZmdXL0FkK0I3Y0FUK0FIOEZQNEdmd0MvZ1YvQVorQjMrQVA4RmY0Ry93anpYS0c1bHV1ZnZXT0FmdVRqSnN0cjduOVpDT1VVeENsYUIxdnp0S1VDMTZTRzJkelBYUTQ3NlNxblhoMFRCbVlkcVFSTEVndmpGZE5xUmlnL1FFWVdxdFdvT0VuazljR3ZYMEFPcDdMQW5Vc1dqUVVJOHVON2pQRHJTdU13MGV3VTZiaEs2OVJzV1FldndndGFUUzRIRTBJRm91TlFRWk1sLzNKcjVIVXJ1T05SS3hqOG4ySlJKeHZWd2lrdEJsYWtxVEJGM3U2aWxTcG9KelpWMnBpY1ZjMVh1MkNiL0FFZmE0VElUMkR1MG5YWjg1cWtBMGU4UlZtMnoybUU4TklkMUVrL3M4NktidWEvS0FDNjZxekVLVEl4cm43V1VhTE1rRmxsUlVKKzFHVTYzSkVXTjdKeTFaYzAwZVU5czl0MzdBbWREVnFTazRpZlY2aFdiU1ZkL3p6U0YxZXRsOWxKZHBHQkN4cnd4ZXZzVzZQSW1WMDA0dTg0Q0YweHhRWG5FUzRxSzRUYmE5NGgzMlkyWC9pbSszaVg5ZzlKOVl1WjBRMUVJR2w2NG1MS1RhSlN1Q3hVS0xsWlc0eDNnLzlkZ2xGdnJJRUJXa1M0S0VqdmIxS3VtbThWc2xwcWRYcVFoSWVLaEg5b3hVV2hXVWFpWFZWUmhHQStLbjNhWjljMk5wc2NHaWlDUkszUnBoMmtlVk5SNjZpZEIzeHdKa3o5N0F6M25iVElieVdoSWlaNVZKNVhXSEdqc3Jyb2RwYmxZaDhKQ21kMUJoWGVnRExyOXZheVhDVkZKYWp3U2h2bFlaRTE4dmQ1a0VKTTJlNG1YUzF4cExsN2x3dFZUY29PR2hHcmV3d1JHY0tTazZhVGVhU2h2SkFHNVI2MjFTbENFZEhZZ1JqM3Y2Ykc2eXJsR1ZpaEQxa3JVdEhFT1BSQTVSeVZQYVFuUUcydDlTT2pSOEE1bWxjeFBrazFIL3F1TVdsa1JhR2YyS09Wd3JrMGN0clhjMXlERU5xU2UwcVZzNHNZNmVnQUZEbVdpM0UzM210ZzZKUEVOSzNDWUJTeE94dUUzN1JFVmtkcHZHUFNwa3hLSzBhV0R2VW1KRXNicU5PQW5pSmFrT2hocXU5Yk1qQlgyYml3RlJVUzVjQ1hRY0t5MnliMTRNcFJhT1FFRFMzdEVTZW1hTENwWGVzeTBVTk5idkkvRzExMXJjc0xEUzRpSk92SFJmcllTS21NdnlwTjIyUTVPUXBmSGY0WUVSbGRJT1Nyc3V0cWZiaE5zZEh0RFJYZEFTTEhTWWZuQWRhNVBFWlhaZEVPTjB0MldJOVBLbE5oVnA1N0UybzBJUWU1UGlDQ21YdGhuT1hwL3JRbm04N2ZNRHNwK3RhaFhaVEkzYnN3MnpmVU0xYW1QUFB2SjBMTGI3NllWWWJRdG1iNUp3UCsxTjBwTlZiUS9rSFdhYzEvYUF1bFIxejdZSExCNk8wME5QUHpSQzNTRnNrSWEzUThLaDRkSktwMGRNM1lVTzkxUXdUblhnVStZU2QrVGdEdThTM1ZYdUlFekdZN2VEaTVTcXBDaGQ5WXd3elY4TldVeGRld08rZExtNjR1Y21yZTBZWlZTbFMvbXFTSXprcWw1RHZJWUoxVFcyZkkzUkdObW9ycG5yTklwdFBDYjJSd2F1a3FFYU9IdVRCalE4V21kMnpVSmYyV1ZCbDNRSGRQeEN5cXNYMHRRMytOUVJOWmZFWkdsUDREbVFlZFJYQlI4c3dVb3FuM3J5R1o2N2c1Lzc5KytMN090ZkRaSjZjMnEydytYVEN1OEl0V21ISjNoVUhLYTJhQVZsM285eFdLQWlKNS8xeFl5Sk15TFRzSkNFY2tsMzBla2w0ZjdpUmZrV3IxbmoveTJzaWJIeSs2N3huUnV2V1ZUNzEvOEowZEJqK3FRVWZkTFZOOGc4SEREYTJsSWZDYVQyVVVOcnRCVHpXQi9BbXNOOTFUTGFuSFh2WHdRRDhDN3hEd0FBIn0= -->
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":["continent"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["country"],"name":[2],"type":["fctr"],"align":["left"]}],"data":[{"1":"Asia","2":"Afghanistan"},{"1":"Europe","2":"Albania"},{"1":"Africa","2":"Algeria"},{"1":"Africa","2":"Angola"},{"1":"Americas","2":"Argentina"},{"1":"Oceania","2":"Australia"},{"1":"Europe","2":"Austria"},{"1":"Asia","2":"Bahrain"},{"1":"Asia","2":"Bangladesh"},{"1":"Europe","2":"Belgium"},{"1":"Africa","2":"Benin"},{"1":"Americas","2":"Bolivia"},{"1":"Europe","2":"Bosnia and Herzegovina"},{"1":"Africa","2":"Botswana"},{"1":"Americas","2":"Brazil"},{"1":"Europe","2":"Bulgaria"},{"1":"Africa","2":"Burkina Faso"},{"1":"Africa","2":"Burundi"},{"1":"Asia","2":"Cambodia"},{"1":"Africa","2":"Cameroon"},{"1":"Americas","2":"Canada"},{"1":"Africa","2":"Central African Republic"},{"1":"Africa","2":"Chad"},{"1":"Americas","2":"Chile"},{"1":"Asia","2":"China"},{"1":"Americas","2":"Colombia"},{"1":"Africa","2":"Comoros"},{"1":"Africa","2":"Congo, Dem. Rep."},{"1":"Africa","2":"Congo, Rep."},{"1":"Americas","2":"Costa Rica"},{"1":"Africa","2":"Cote d'Ivoire"},{"1":"Europe","2":"Croatia"},{"1":"Americas","2":"Cuba"},{"1":"Europe","2":"Czech Republic"},{"1":"Europe","2":"Denmark"},{"1":"Africa","2":"Djibouti"},{"1":"Americas","2":"Dominican Republic"},{"1":"Americas","2":"Ecuador"},{"1":"Africa","2":"Egypt"},{"1":"Americas","2":"El Salvador"},{"1":"Africa","2":"Equatorial Guinea"},{"1":"Africa","2":"Eritrea"},{"1":"Africa","2":"Ethiopia"},{"1":"Europe","2":"Finland"},{"1":"Europe","2":"France"},{"1":"Africa","2":"Gabon"},{"1":"Africa","2":"Gambia"},{"1":"Europe","2":"Germany"},{"1":"Africa","2":"Ghana"},{"1":"Europe","2":"Greece"},{"1":"Americas","2":"Guatemala"},{"1":"Africa","2":"Guinea"},{"1":"Africa","2":"Guinea-Bissau"},{"1":"Americas","2":"Haiti"},{"1":"Americas","2":"Honduras"},{"1":"Asia","2":"Hong Kong, China"},{"1":"Europe","2":"Hungary"},{"1":"Europe","2":"Iceland"},{"1":"Asia","2":"India"},{"1":"Asia","2":"Indonesia"},{"1":"Asia","2":"Iran"},{"1":"Asia","2":"Iraq"},{"1":"Europe","2":"Ireland"},{"1":"Asia","2":"Israel"},{"1":"Europe","2":"Italy"},{"1":"Americas","2":"Jamaica"},{"1":"Asia","2":"Japan"},{"1":"Asia","2":"Jordan"},{"1":"Africa","2":"Kenya"},{"1":"Asia","2":"Korea, Dem. Rep."},{"1":"Asia","2":"Korea, Rep."},{"1":"Asia","2":"Kuwait"},{"1":"Asia","2":"Lebanon"},{"1":"Africa","2":"Lesotho"},{"1":"Africa","2":"Liberia"},{"1":"Africa","2":"Libya"},{"1":"Africa","2":"Madagascar"},{"1":"Africa","2":"Malawi"},{"1":"Asia","2":"Malaysia"},{"1":"Africa","2":"Mali"},{"1":"Africa","2":"Mauritania"},{"1":"Africa","2":"Mauritius"},{"1":"Americas","2":"Mexico"},{"1":"Asia","2":"Mongolia"},{"1":"Europe","2":"Montenegro"},{"1":"Africa","2":"Morocco"},{"1":"Africa","2":"Mozambique"},{"1":"Asia","2":"Myanmar"},{"1":"Africa","2":"Namibia"},{"1":"Asia","2":"Nepal"},{"1":"Europe","2":"Netherlands"},{"1":"Oceania","2":"New Zealand"},{"1":"Americas","2":"Nicaragua"},{"1":"Africa","2":"Niger"},{"1":"Africa","2":"Nigeria"},{"1":"Europe","2":"Norway"},{"1":"Asia","2":"Oman"},{"1":"Asia","2":"Pakistan"},{"1":"Americas","2":"Panama"},{"1":"Americas","2":"Paraguay"},{"1":"Americas","2":"Peru"},{"1":"Asia","2":"Philippines"},{"1":"Europe","2":"Poland"},{"1":"Europe","2":"Portugal"},{"1":"Americas","2":"Puerto Rico"},{"1":"Africa","2":"Reunion"},{"1":"Europe","2":"Romania"},{"1":"Africa","2":"Rwanda"},{"1":"Africa","2":"Sao Tome and Principe"},{"1":"Asia","2":"Saudi Arabia"},{"1":"Africa","2":"Senegal"},{"1":"Europe","2":"Serbia"},{"1":"Africa","2":"Sierra Leone"},{"1":"Asia","2":"Singapore"},{"1":"Europe","2":"Slovak Republic"},{"1":"Europe","2":"Slovenia"},{"1":"Africa","2":"Somalia"},{"1":"Africa","2":"South Africa"},{"1":"Europe","2":"Spain"},{"1":"Asia","2":"Sri Lanka"},{"1":"Africa","2":"Sudan"},{"1":"Africa","2":"Swaziland"},{"1":"Europe","2":"Sweden"},{"1":"Europe","2":"Switzerland"},{"1":"Asia","2":"Syria"},{"1":"Asia","2":"Taiwan"},{"1":"Africa","2":"Tanzania"},{"1":"Asia","2":"Thailand"},{"1":"Africa","2":"Togo"},{"1":"Americas","2":"Trinidad and Tobago"},{"1":"Africa","2":"Tunisia"},{"1":"Europe","2":"Turkey"},{"1":"Africa","2":"Uganda"},{"1":"Europe","2":"United Kingdom"},{"1":"Americas","2":"United States"},{"1":"Americas","2":"Uruguay"},{"1":"Americas","2":"Venezuela"},{"1":"Asia","2":"Vietnam"},{"1":"Asia","2":"West Bank and Gaza"},{"1":"Asia","2":"Yemen, Rep."},{"1":"Africa","2":"Zambia"},{"1":"Africa","2":"Zimbabwe"}],"options":{"columns":{"min":{},"max":[10],"total":[2]},"rows":{"min":[10],"max":[10],"total":[142]},"pages":{}}}
-  </script>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2FwbWluZGVyICU+JSBcbiAgcHVsbChjb250aW5lbnQpICU+JSBcbiAgZGlzdGluY3QoKVxuXG5gYGAifQ== -->
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1">gapminder <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb22-2" data-line-number="2"><span class="st">  </span><span class="kw">pull</span>(continent) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb22-3" data-line-number="3"><span class="st">  </span><span class="kw">distinct</span>()</a></code></pre></div>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gVXNlTWV0aG9kKFwiZGlzdGluY3RfXCIpIDogXG4gIG5vIGFwcGxpY2FibGUgbWV0aG9kIGZvciAnZGlzdGluY3RfJyBhcHBsaWVkIHRvIGFuIG9iamVjdCBvZiBjbGFzcyBcImZhY3RvclwiXG4ifQ== -->
+<pre><code>Error in UseMethod(&quot;distinct_&quot;) : 
+  no applicable method for 'distinct_' applied to an object of class &quot;factor&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<<<<<<< HEAD
+<!-- rnb-text-end -->
 </div>
-<!-- rnb-frame-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
+
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiQ2xhc3MgMjIgLSBJbiBjbGFzcyBleGVyY2lzZXMiCmF1dGhvcjogSGFyaSBTdWJoYXNoCmRhdGU6ICJEYXRlIGNyZWF0ZWQ6IGByIFN5cy5EYXRlKClgIgpvdXRwdXQ6CiAgaHRtbF9ub3RlYm9vazoKICAgIGhpZ2hsaWdodDogaGFkZG9jawogICAgc21hcnQ6IHllcwogICAgdGhlbWU6IHJlYWRhYmxlCiAgICBkZl9wcmludDogcGFnZWQKLS0tCiMjIEZ1bmN0aW9ucwpUaGUgY29kZSBiZWxvdyBjcmVhdGVzIGEgZnVuY3Rpb24gdGhhdCB0YWtlcyB0d28gbnVtZXJpYyB2ZWN0b3JzIChhdG9taWMpIGFzIGl0cyBpbnB1dCBhbmQgcmV0dXJucyB0aGUgYWJzb2x1dGUgZGlmZmVyZW5jZSBiZXR3ZWVuIHRoZSBtaW5pbXVtIHZhbHVlIG9mIHRoZSBmaXJzdCB2ZWN0b3IgYW5kIHRoZSBtYXhpbXVtIHZhbHVlIG9mIHNlY29uZCB2ZWN0b3IuIFJlYWQgaXQgY2FyZWZ1bGx5IChhbG9uZyB3aXRoIHRoZSBjb21tZW50cykuCgpgYGB7cn0KbWlubWF4X2RpZmYgPC0gZnVuY3Rpb24obWluX3ZlYywgbWF4X3ZlYywgbmEucm0gPSBGKSB7CiAgIyNhZGQgYSBzdG9wIGNvbmRpdGlvbgogICMgaWYgKCFpcy5udW1lcmljKG1pbl92ZWMpKSB7CiAgIyAgIHN0b3AoIkhhcmkncyBlcnJvciBtZXNzYWdlOiBtaW5fdmVjIHNob3VsZCBiZSBudW1lcmljIikKICAjIH0KICAKICBzdG9waWZub3QoaXMubnVtZXJpYyhtaW5fdmVjKSwgaXMubnVtZXJpYyhtYXhfdmVjKSwgaXMubG9naWNhbChuYS5ybSkpCiAgCiAgIyBpZiAoIWlzLmxvZ2ljYWwobmEucm0pKSB7CiAgIyAgIG5hLnJtIDwtIFQKICAjIH0KICAKICAjI0xldHMgY2FsY3VsYXRlIHRoZSBtaW4gYW5kIG1heCB2YWx1ZXMKICBtaW5fdmFsIDwtIG1pbihtaW5fdmVjLCBuYS5ybSA9IG5hLnJtKQogIG1heF92YWwgPC0gbWF4KG1heF92ZWMsIG5hLnJtID0gbmEucm0pCiAgCiAgIyMgTGV0IGNhbGN1bGF0ZSB0aGUgdmFsdWUgdGhhdCBuZWVkcyB0byBiZSByZXR1cm5lZAogIGFicyhtaW5fdmFsIC0gbWF4X3ZhbCkKICAKfQptaW5tYXhfZGlmZigxLCAyLCBGLCA2KQpgYGAKCmBgYHtyfQptaW5tYXhfZGlmZigxOjIzLCBjKDQsIE5BKSwgbmEucm0gPSAieHl6IikKYGBgCgoKYGBge3J9Cm1lYW4oYyg0LCBOQSksIG5hLnJtID0gInh5eiIpCmBgYAoKYGBge3J9CmFzLmxvZ2ljYWwoInh5eiIpCmBgYAoKYGBge3J9CmlmKCJ4eXoiKSB7CiAgcHJpbnQoIlRydXRoeSIpCn0KYGBgCgoKYGBge3J9Cm1pbihtaW5fdmVjLCBuYS5ybSA9IG5hLnJtKQpgYGAKCgpgYGB7cn0KbWlubWF4X2RpZmYobWluX3ZlYyA9IDE6MjMsIG1heF92ZWMgPSBjKDQsIE5BKSwgbmEucm0gPSBUKQpgYGAKCgpgYGB7cn0KbWlubWF4X2RpZmYobWluX3ZlYyA9IGMoMjQsIDQxLCBOQSksIG1heF92ZWMgPSBjKDQ0LCBOQSksIG5hLnJtID0gVCkKYGBgCgoKYGBge3J9Cm1pbm1heF9kaWZmKG1pbl92ZWMgPSAiYSIsIG1heF92ZWMgPSBjKDQ0LCBOQSksIG5hLnJtID0gVCkKYGBgCgoKYGBge3J9Cm1pbihjKDI0LCA0MSwgTkEpKQpgYGAKCmBgYHtyfQptaW5tYXhfZGlmZigxOjEwLCAyMDozMCkKYGBgCgoKTGV0J3MgdGVzdCB0byBzZWUgaWYgaXQgd29ya3MuCmBgYHtyfQptaW5tYXhfZGlmZihtaW5fdmVjID0gMToxMCwgbWF4X3ZlYyA9IDEwOjIwKQpgYGAKCkludHJvZHVjaW5nIE5BIHZhbHVlcy4KYGBge3J9Cm1pbm1heF9kaWZmKG1pbl92ZWMgPSBjKDI0LCA0MSwgTkEpLCBtYXhfdmVjID0gNDQpCmBgYAoKU3BlY2lmaXlpbmcgdGhlIE5BIGNvbmRpdGlvbi4KYGBge3J9Cm1pbm1heF9kaWZmKG1pbl92ZWMgPSBjKDI0LCA0MSwgTkEpLCBtYXhfdmVjID0gNDQsIG5hLnJtID0gVCkKYGBgCgpUcnlpbmcgb3V0IGEgbm9uLW51bWVyaWMgaW5wdXQuCgpgYGB7cn0KbWlubWF4X2RpZmYobWluX3ZlYyA9ICJhIiwgbWF4X3ZlYyA9IGMoMSwgMiwgNTYpKQpgYGAKCjEuIEhvdyBkb2VzIHRoaXMgY29kZSB3b3JrPwpgYGB7cn0KbWlubWF4X2RpZmYoMToyMywgNCwgVCkKYGBgCgoyLiBXaHkgZG9lcyB0aGlzIGdpdmUgYW4gZXJyb3I/IAoKYGBge3J9Cm1pbm1heF9kaWZmKDEsIDIsIDUpCmBgYAoKMy4gV2h5IGRvZXMgdGhpcyBub3Qgd29yaz8KCmBgYHtyfQptaW5tYXhfZGlmZigxLCAyLCBGLCA2KQpgYGAKCjQuIERlZmluZSBhIGZ1bmN0aW9uIHRoYXQgdGFrZXMgdHdvIG51bWVyaWMgdmVjdG9ycyBhcyBpdHMgaW5wdXQgYW5kIHJldHVybnMgdGhlIGRpZmZlcmVuY2UgYmV0d2VlbiB0aGUgbWVhbiBvZiB0aGUgZmlyc3QgdmVjdG9yIGFuZCB0aGUgbWVkaWFuIG9mIHRoZSBzZWNvbmQgdmVjdG9yLiBBZGQgYW55IGNoZWNrcyBhbmQgYWRkaXRpb25hbCBhcmd1bWVudHMgeW91IGxpa2UgdG8gdGhpcyBmdW5jdGlvbi4KYGBge3J9CmRpZmZfdmVjIDwtIGZ1bmN0aW9uKG1lYW5fdmVjLCBtZWRpYW5fdmVjLCBuYS5ybSl7CiAgIyMgc3RvcCBjb25kaXRpb24KICBzdG9waWZub3QoaXMubnVtZXJpYyhtZWFuX3ZlYyksIGlzLm51bWVyaWMobWVkaWFuX3ZlYyksIGlzLmxvZ2ljYWwobmEucm0pKQogIAogICMjIGNhbGN1bGF0aW5nIHRoZSB2YWx1ZSB0byBiZSByZXR1cm5lZAogIG1lYW4obWVhbl92ZWMsIG5hLnJtID0gbmEucm0pIC0gbWVkaWFuKG1lZGlhbl92ZWMsIG5hLnJtID0gbmEucm0pCn0KCmRpZmZfdmVjKG1lYW5fdmVjID0gMTAwOjIwMCwgbWVkaWFuX3ZlYyA9IDIwOjMwLCBuYS5ybSA9IFQpCmBgYAoKNS4gRGVmaW5lIGEgZnVuY3Rpb24gdGhhdCB0YWtlcyB0d28gYXJndW1lbnRzIC0gbmFtZSBhbmQgZ3JlZXRfbWVzc2FnZS4gU2V0IHRoZSBkZWZhdWx0IHZhbHVlIG9mIGdyZWV0X21lc3NhZ2UgdG8gYmUgIkhlbGxvIi4gVGhlIGZ1bmN0aW9uIHNob3VsZCByZXR1cm4gYSBzaW5nbGUgY2hhcmFjdGVyIHN0cmluZyB0aGF0IGNvbWJpbmVzIGdyZWV0X21lc3NhZ2Ugd2l0aCBuYW1lICh3aXRoIGEgc3BhY2UgaW4gYmV0d2VlbikuIFVzZSBgcGFzdGUoKWAgdG8gY29tYmluZS4gQWRkIGFueSBhZGRpdGlvbmFsIGFyZ3VtZW50cyBvciBjaGVja3MuCgpgYGB7cn0KIyBncmVldF9tZXNzYWdlIDwtICJIaSIKZ3JlZXRfcGVyc29uIDwtIGZ1bmN0aW9uKG5hbWUsIGdyZWV0X21lc3NhZ2UgPSBncmVldF9tZXNzYWdlKSB7CiAgcGFzdGUoZ3JlZXRfbWVzc2FnZSwgbmFtZSkKfQojIFRPRE8gZGVidWcgYmVsb3cKIyBncmVldF9wZXJzb24obmFtZSA9ICJCb2JieSIpCgpncmVldF9wZXJzb24obmFtZSA9ICJCb2JieSIsIGdyZWV0X21lc3NhZ2UgPSAiSG93IGFyZSB5b3UiKQpgYGAKCmBgYHtyfQpncmVldF9wZXJzb24obmFtZSA9ICJCb2JieSIsIGdyZWV0X21lc3NhZ2UgPSBncmVldF9tZXNzYWdlKQpgYGAKCmBgYHtyfQoKZ3JlZXRfcGVyc29uKG5hbWUgPSAiQm9iYnkiLCBncmVldF9tZXNzYWdlID0gZ3JlZXRfbWVzc2FnZSkKYGBgCgoKVGhpcyB3aWxsIG5vdCB3b3JrLiBXaHk/CmBgYHtyfQpncmVldF9wZXJzb24oSGFyaSkKYGBgCgpUaGlzIHdpbGwuIFdoeT8KYGBge3J9CkJvYmJ5IDwtICJIYXJpIgpncmVldF9wZXJzb24obmFtZSA9IEJvYmJ5KQpgYGAKCjYuIExvYWQgdGhlIHRpZHl2ZXJzZSBhbmQgZ2FwbWluZGVyIHBhY2thZ2VzCmBgYHtyfQpsaWJyYXJ5KHRpZHl2ZXJzZSk7IGxpYnJhcnkoZ2FwbWluZGVyKQpgYGAKCjcuIEZpeCB0aGUgZm9sbG93aW5nIHNvIHRoYXQgdGhleSBydW4uIFRoaW5rIGFib3V0IHdoeSB0aGV5IGFyZSBnZW5lcmF0aW5nIGFuIGVycm9yLiBSZWFkIHRoZSBjb21tZW50cyBmb3IgZnVydGhlciBpbnN0cnVjdGlvbnMuCgoKCmBgYHtyfQojI0ZpbmQgdGhlIHVuaXF1ZSBzZXQgb2YgY29udGluZW50cyBpbiBnYXBtaW5kZXIKIyNZb3VyIGZpbmFsIHNvbHV0aW9uIHNob3VsZCB1c2UgcGlwZXMKZ2FwbWluZGVyICU+JSAKICB1bmlxdWUoY29udGluZW50KQpgYGAKVGhlIHNhbWUgZXJyb3IgaW4gYmFzZSBSLiAKYGBge3J9CnVuaXF1ZShnYXBtaW5kZXIsIGNvbnRpbmVudCkKYGBgCgpgYGB7cn0KZ2FwbWluZGVyICU+JSAKICBzZWxlY3QoY29udGluZW50KSAlPiUgCiAgdW5pcXVlKCkKYGBgCgppZiB5b3Ugd2FudCBhbiBhdG9taWMgdmVjdG9yIGFzIHlvdXIgb3V0cHV0CmBgYHtyfQpnYXBtaW5kZXIgJT4lIAogIHB1bGwoY29udGluZW50KSAlPiUgCiAgdW5pcXVlKCkKYGBgCgoKd2l0aG91dCBwaXBlcwpgYGB7cn0KdW5pcXVlKGdhcG1pbmRlciRjb250aW5lbnQpCmBgYAoKCmBgYHtyfQojI2ZpbmQgdGhlIG1lYW4gb2YgdGhlIGdkcFBlcmNhcCBjb2x1bW4gaW4gZ2FwbWluZGVyCiMjZmluYWwgc29sdXRpb24gc2hvdWxkIHVzZSBwaXBlcy4KZ2FwbWluZGVyICU+JSAKICBzZWxlY3QoZ2RwUGVyY2FwKSAlPiUgCiAgbWVhbiguLCBuYS5ybSA9IFQpCmBgYAoKYGBge3J9CmdhcG1pbmRlciAlPiUgCiAgcHVsbChnZHBQZXJjYXApICU+JSAKICBtZWFuKC4sIG5hLnJtID0gVCkKYGBgCgpgYGB7cn0KIyMgZmluZCB0aGUgbWVhbiBvZiB0aGUgZ2RwUGVyY2FwIGNvbHVtbiBpbiBnYXBtaW5kZXIKIyMgZmluYWwgc29sdXRpb24gc2hvdWxkIHVzZSBiYXNlIFIgc3ludGF4IAojIyByZW1lbWJlciBbXSAtIGlzIGEgcHJlc2VydmluZyBzdWJzZXQgfCAkIGFuZCBbW11dIGFyZSBzaW1wbGlmeWluZwptZWFuKGdhcG1pbmRlclsiZ2RwUGVyY2FwIl0pCmBgYAoKYGBge3J9Cm1lYW4oZ2FwbWluZGVyW1siZ2RwUGVyY2FwIl1dKQpgYGAKCmBgYHtyfQojIyBJIHdvdWxkIGxpa2UgdGhlIGRpc3RpbmN0IGNvbWJpbmF0aW9ucyBvZiBjb250aW5lbnQgYW5kIGNvdW50cnkKIyMgdXNlIHRpZHl2ZXJzZQpnYXBtaW5kZXIgJT4lIAogIGRpc3RpbmN0KGNvbnRpbmVudCwgY291bnRyeSkKYGBgCgpgYGB7cn0KIyMgSSB3b3VsZCBsaWtlIHRvIGhhdmUgYSBzaW5nbGUgY29sdW1uIHRpYmJsZSB0aGF0IGNvbnRhaW5zIGFsbCB0aGUgZGlzdGluY3QgY29udGluZW50cwojIyBVc2UgdGlkeXZlcnNlCmdhcG1pbmRlciAlPiUgCiAgcHVsbChjb250aW5lbnQpICU+JSAKICBkaXN0aW5jdCgpCmBgYAoK</div>
+=======
+</div>
+<div id="group-and-do-things" class="section level2">
+<h2>Group and do things</h2>
+<ol style="list-style-type: decimal">
+<li>Use summarise to calculate the mean population for entire gapminder dataset. Compare this value with <code>mean(gapminder$pop)</code> (you will have to run this to see the output).</li>
+<li>Repeat the same step after grouping by continent.</li>
+<li>Repeat the same after grouping by continent and year.</li>
+<li>Use <code>n_distinct()</code> to find the number of distinct countries in the gapminder data.</li>
+<li>Use any of the simplifying subset operators (<code>$</code>, <code>[[]]</code> or <code>pull()</code>) to pull the countries variable from gapminder. See the differences with 4.</li>
+<li>Combine 3 and 4 to create a table that shows the distinct number of countries and the mean population in every continent for each year. You can create multiple summarised columns by separating them within the summarise command using commas <code>summarise(var1 = some code, var2 = some code)</code>.</li>
+<li>Now group the data to show the distinct number of countries in every continent for every year. Use <code>n_distinct()</code> to find the number of distinct countries/continents.</li>
+<li>Group the gapminder dataset and filter the countries that have the highest or lowest lifeExp for each continent for each year. Arrange the output by year, continent and lifeExp.</li>
+<li>Filter the most recent year of the data and remove the continent Oceania from it. Create a new variable that is marked “Above average income” if the gdpPercap is greater than the average gdpPercap for the continent it belongs to and “Below average income” if it is below. Use <code>group_by()</code> with <code>mutate()</code> for this.</li>
+</ol>
+</div>
+<div id="ggplot" class="section level2">
+<h2>ggplot</h2>
+<ol style="list-style-type: decimal">
+<li>The code below creates a scatter plot (geom_point()). Update the aesthetics so that the colour of the dots reflect the continents.</li>
+</ol>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyMgSSB3b3VsZCBsaWtlIHRvIGhhdmUgYSBzaW5nbGUgY29sdW1uIHRpYmJsZSB0aGF0IGNvbnRhaW5zIGFsbCB0aGUgZGlzdGluY3QgY29udGluZW50c1xuIyMgVXNlIHRpZHl2ZXJzZVxuZ2FwbWluZGVyICU+JSBcbiAgcHVsbChjb250aW5lbnQpICU+JSBcbiAgZGlzdGluY3QoKVxuYGBgIn0= -->
-<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb64-1" data-line-number="1"><span class="co">## I would like to have a single column tibble that contains all the distinct continents</span></a>
-<a class="sourceLine" id="cb64-2" data-line-number="2"><span class="co">## Use tidyverse</span></a>
-<a class="sourceLine" id="cb64-3" data-line-number="3">gapminder <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb64-4" data-line-number="4"><span class="st">  </span><span class="kw">pull</span>(continent) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb64-5" data-line-number="5"><span class="st">  </span><span class="kw">distinct</span>()</a></code></pre></div>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2dwbG90KGdhcG1pbmRlciwgYWVzKHggPSB5ZWFyLCB5ID0gcG9wKSkgK1xuICAgIGdlb21fcG9pbnQoKVxuYGBgIn0= -->
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1"><span class="kw">ggplot</span>(gapminder, <span class="kw">aes</span>(<span class="dt">x =</span> year, <span class="dt">y =</span> pop)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb24-2" data-line-number="2"><span class="st">    </span><span class="kw">geom_point</span>()</a></code></pre></div>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<ol start="2" style="list-style-type: decimal">
+<li>Update this plot by adding a title using <code>labs()</code>. Use the <code>title</code> argument to set the title.</li>
+<li>The code below removes the x-axis title “year” by setting the element to blank (see the difference from above). Update this by also removing the y-axis label using <code>axis.title.y</code>.</li>
+</ol>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2dwbG90KGdhcG1pbmRlciwgYWVzKHggPSB5ZWFyLCB5ID0gcG9wKSkgK1xuICAgIGdlb21fcG9pbnQoKSArXG4gICAgdGhlbWUoYXhpcy50aXRsZS54ID0gZWxlbWVudF9ibGFuaygpKVxuYGBgIn0= -->
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="kw">ggplot</span>(gapminder, <span class="kw">aes</span>(<span class="dt">x =</span> year, <span class="dt">y =</span> pop)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb25-2" data-line-number="2"><span class="st">    </span><span class="kw">geom_point</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb25-3" data-line-number="3"><span class="st">    </span><span class="kw">theme</span>(<span class="dt">axis.title.x =</span> <span class="kw">element_blank</span>())</a></code></pre></div>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<ol start="4" style="list-style-type: decimal">
+<li>The code below changes the angle of the x axis labels. Replicate this for the y-axis. Set whatever you would like.</li>
+</ol>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2dwbG90KGdhcG1pbmRlciwgYWVzKHggPSB5ZWFyLCB5ID0gcG9wKSkgK1xuICAgIGdlb21fcG9pbnQoKSArXG4gICAgdGhlbWUoYXhpcy50aXRsZS54ID0gZWxlbWVudF9ibGFuaygpLFxuICAgICAgICAgIGF4aXMudGV4dC54ID0gZWxlbWVudF90ZXh0KGFuZ2xlID0gNDUpKVxuYGBgIn0= -->
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="kw">ggplot</span>(gapminder, <span class="kw">aes</span>(<span class="dt">x =</span> year, <span class="dt">y =</span> pop)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb26-2" data-line-number="2"><span class="st">    </span><span class="kw">geom_point</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb26-3" data-line-number="3"><span class="st">    </span><span class="kw">theme</span>(<span class="dt">axis.title.x =</span> <span class="kw">element_blank</span>(),</a>
+<a class="sourceLine" id="cb26-4" data-line-number="4">          <span class="dt">axis.text.x =</span> <span class="kw">element_text</span>(<span class="dt">angle =</span> <span class="dv">45</span>))</a></code></pre></div>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<ol start="5" style="list-style-type: decimal">
+<li>Go to the tidyverse reference for ggplot to see other parameters that you can control within element_text. Use this to also set the color of the y-axis labels.</li>
+<li>In the code below I use an external variable to set the colour based on whether a country is India/China or not. Use the same logic to set the alpha parameter to either 1 if India/China or 0.3 otherwise.</li>
+</ol>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaW5kaWFfY2hpbmFfY29sb3IgPC0gaWZfZWxzZShnYXBtaW5kZXIkY291bnRyeSAlaW4lIGMoXCJDaGluYVwiLCBcIkluZGlhXCIpLCBcInBpbmtcIiwgXCJibGFja1wiKVxuZ2dwbG90KGdhcG1pbmRlciwgYWVzKHggPSB5ZWFyLCB5ID0gcG9wKSkgK1xuICAgIGdlb21fcG9pbnQoY29sb3VyID0gaW5kaWFfY2hpbmFfY29sb3IpIFxuYGBgIn0= -->
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1">india_china_color &lt;-<span class="st"> </span><span class="kw">if_else</span>(gapminder<span class="op">$</span>country <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;China&quot;</span>, <span class="st">&quot;India&quot;</span>), <span class="st">&quot;pink&quot;</span>, <span class="st">&quot;black&quot;</span>)</a>
+<a class="sourceLine" id="cb27-2" data-line-number="2"><span class="kw">ggplot</span>(gapminder, <span class="kw">aes</span>(<span class="dt">x =</span> year, <span class="dt">y =</span> pop)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb27-3" data-line-number="3"><span class="st">    </span><span class="kw">geom_point</span>(<span class="dt">colour =</span> india_china_color) </a></code></pre></div>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiQ2xhc3MgMjIgLSBJbiBjbGFzcyBleGVyY2lzZXMiCmF1dGhvcjogSGFyaSBTdWJoYXNoCmRhdGU6ICJEYXRlIGNyZWF0ZWQ6IGByIFN5cy5EYXRlKClgIgpvdXRwdXQ6CiAgaHRtbF9ub3RlYm9vazoKICAgIGhpZ2hsaWdodDogaGFkZG9jawogICAgc21hcnQ6IHllcwogICAgdGhlbWU6IHJlYWRhYmxlCiAgICBkZl9wcmludDogcGFnZWQKLS0tCiMjIEZ1bmN0aW9ucwpUaGUgY29kZSBiZWxvdyBjcmVhdGVzIGEgZnVuY3Rpb24gdGhhdCB0YWtlcyB0d28gbnVtZXJpYyB2ZWN0b3JzIChhdG9taWMpIGFzIGl0cyBpbnB1dCBhbmQgcmV0dXJucyB0aGUgYWJzb2x1dGUgZGlmZmVyZW5jZSBiZXR3ZWVuIHRoZSBtaW5pbXVtIHZhbHVlIG9mIHRoZSBmaXJzdCB2ZWN0b3IgYW5kIHRoZSBtYXhpbXVtIHZhbHVlIG9mIHNlY29uZCB2ZWN0b3IuIFJlYWQgaXQgY2FyZWZ1bGx5IChhbG9uZyB3aXRoIHRoZSBjb21tZW50cykuCgpgYGB7cn0KbWlubWF4X2RpZmYgPC0gZnVuY3Rpb24obWluX3ZlYywgbWF4X3ZlYywgbmEucm0gPSBGKSB7CiAgIyNhZGQgYSBzdG9wIGNvbmRpdGlvbgogICMgaWYgKCFpcy5udW1lcmljKG1pbl92ZWMpKSB7CiAgIyAgIHN0b3AoIkhhcmkncyBlcnJvciBtZXNzYWdlOiBtaW5fdmVjIHNob3VsZCBiZSBudW1lcmljIikKICAjIH0KICAKICBzdG9waWZub3QoaXMubnVtZXJpYyhtaW5fdmVjKSwgaXMubnVtZXJpYyhtYXhfdmVjKSwgaXMubG9naWNhbChuYS5ybSkpCiAgCiAgIyBpZiAoIWlzLmxvZ2ljYWwobmEucm0pKSB7CiAgIyAgIG5hLnJtIDwtIFQKICAjIH0KICAKICAjI0xldHMgY2FsY3VsYXRlIHRoZSBtaW4gYW5kIG1heCB2YWx1ZXMKICBtaW5fdmFsIDwtIG1pbihtaW5fdmVjLCBuYS5ybSA9IG5hLnJtKQogIG1heF92YWwgPC0gbWF4KG1heF92ZWMsIG5hLnJtID0gbmEucm0pCiAgCiAgIyMgTGV0IGNhbGN1bGF0ZSB0aGUgdmFsdWUgdGhhdCBuZWVkcyB0byBiZSByZXR1cm5lZAogIGFicyhtaW5fdmFsIC0gbWF4X3ZhbCkKICAKfQptaW5tYXhfZGlmZigxLCAyLCBGLCA2KQpgYGAKCmBgYHtyfQptaW5tYXhfZGlmZigxOjIzLCBjKDQsIE5BKSwgbmEucm0gPSAieHl6IikKYGBgCgoKYGBge3J9Cm1lYW4oYyg0LCBOQSksIG5hLnJtID0gInh5eiIpCmBgYAoKYGBge3J9CmFzLmxvZ2ljYWwoInh5eiIpCmBgYAoKYGBge3J9CmlmKCJ4eXoiKSB7CiAgcHJpbnQoIlRydXRoeSIpCn0KYGBgCgoKYGBge3J9Cm1pbihtaW5fdmVjLCBuYS5ybSA9IG5hLnJtKQpgYGAKCgpgYGB7cn0KbWlubWF4X2RpZmYobWluX3ZlYyA9IDE6MjMsIG1heF92ZWMgPSBjKDQsIE5BKSwgbmEucm0gPSBUKQpgYGAKCgpgYGB7cn0KbWlubWF4X2RpZmYobWluX3ZlYyA9IGMoMjQsIDQxLCBOQSksIG1heF92ZWMgPSBjKDQ0LCBOQSksIG5hLnJtID0gVCkKYGBgCgoKYGBge3J9Cm1pbm1heF9kaWZmKG1pbl92ZWMgPSAiYSIsIG1heF92ZWMgPSBjKDQ0LCBOQSksIG5hLnJtID0gVCkKYGBgCgoKYGBge3J9Cm1pbihjKDI0LCA0MSwgTkEpKQpgYGAKCmBgYHtyfQptaW5tYXhfZGlmZigxOjEwLCAyMDozMCkKYGBgCgoKTGV0J3MgdGVzdCB0byBzZWUgaWYgaXQgd29ya3MuCmBgYHtyfQptaW5tYXhfZGlmZihtaW5fdmVjID0gMToxMCwgbWF4X3ZlYyA9IDEwOjIwKQpgYGAKCkludHJvZHVjaW5nIE5BIHZhbHVlcy4KYGBge3J9Cm1pbm1heF9kaWZmKG1pbl92ZWMgPSBjKDI0LCA0MSwgTkEpLCBtYXhfdmVjID0gNDQpCmBgYAoKU3BlY2lmaXlpbmcgdGhlIE5BIGNvbmRpdGlvbi4KYGBge3J9Cm1pbm1heF9kaWZmKG1pbl92ZWMgPSBjKDI0LCA0MSwgTkEpLCBtYXhfdmVjID0gNDQsIG5hLnJtID0gVCkKYGBgCgpUcnlpbmcgb3V0IGEgbm9uLW51bWVyaWMgaW5wdXQuCgpgYGB7cn0KbWlubWF4X2RpZmYobWluX3ZlYyA9ICJhIiwgbWF4X3ZlYyA9IGMoMSwgMiwgNTYpKQpgYGAKCjEuIEhvdyBkb2VzIHRoaXMgY29kZSB3b3JrPwpgYGB7cn0KbWlubWF4X2RpZmYoMToyMywgNCwgVCkKYGBgCgoyLiBXaHkgZG9lcyB0aGlzIGdpdmUgYW4gZXJyb3I/IAoKYGBge3J9Cm1pbm1heF9kaWZmKDEsIDIsIDUpCmBgYAoKMy4gV2h5IGRvZXMgdGhpcyBub3Qgd29yaz8KCmBgYHtyfQptaW5tYXhfZGlmZigxLCAyLCBGLCA2KQpgYGAKCjQuIERlZmluZSBhIGZ1bmN0aW9uIHRoYXQgdGFrZXMgdHdvIG51bWVyaWMgdmVjdG9ycyBhcyBpdHMgaW5wdXQgYW5kIHJldHVybnMgdGhlIGRpZmZlcmVuY2UgYmV0d2VlbiB0aGUgbWVhbiBvZiB0aGUgZmlyc3QgdmVjdG9yIGFuZCB0aGUgbWVkaWFuIG9mIHRoZSBzZWNvbmQgdmVjdG9yLiBBZGQgYW55IGNoZWNrcyBhbmQgYWRkaXRpb25hbCBhcmd1bWVudHMgeW91IGxpa2UgdG8gdGhpcyBmdW5jdGlvbi4KYGBge3J9CmRpZmZfdmVjIDwtIGZ1bmN0aW9uKG1lYW5fdmVjLCBtZWRpYW5fdmVjLCBuYS5ybSl7CiAgIyMgc3RvcCBjb25kaXRpb24KICBzdG9waWZub3QoaXMubnVtZXJpYyhtZWFuX3ZlYyksIGlzLm51bWVyaWMobWVkaWFuX3ZlYyksIGlzLmxvZ2ljYWwobmEucm0pKQogIAogICMjIGNhbGN1bGF0aW5nIHRoZSB2YWx1ZSB0byBiZSByZXR1cm5lZAogIG1lYW4obWVhbl92ZWMsIG5hLnJtID0gbmEucm0pIC0gbWVkaWFuKG1lZGlhbl92ZWMsIG5hLnJtID0gbmEucm0pCn0KCmRpZmZfdmVjKG1lYW5fdmVjID0gMTAwOjIwMCwgbWVkaWFuX3ZlYyA9IDIwOjMwLCBuYS5ybSA9IFQpCmBgYAoKNS4gRGVmaW5lIGEgZnVuY3Rpb24gdGhhdCB0YWtlcyB0d28gYXJndW1lbnRzIC0gbmFtZSBhbmQgZ3JlZXRfbWVzc2FnZS4gU2V0IHRoZSBkZWZhdWx0IHZhbHVlIG9mIGdyZWV0X21lc3NhZ2UgdG8gYmUgIkhlbGxvIi4gVGhlIGZ1bmN0aW9uIHNob3VsZCByZXR1cm4gYSBzaW5nbGUgY2hhcmFjdGVyIHN0cmluZyB0aGF0IGNvbWJpbmVzIGdyZWV0X21lc3NhZ2Ugd2l0aCBuYW1lICh3aXRoIGEgc3BhY2UgaW4gYmV0d2VlbikuIFVzZSBgcGFzdGUoKWAgdG8gY29tYmluZS4gQWRkIGFueSBhZGRpdGlvbmFsIGFyZ3VtZW50cyBvciBjaGVja3MuCgpgYGB7cn0KIyBncmVldF9tZXNzYWdlIDwtICJIaSIKZ3JlZXRfcGVyc29uIDwtIGZ1bmN0aW9uKG5hbWUsIGdyZWV0X21lc3NhZ2UgPSBncmVldF9tZXNzYWdlKSB7CiAgcGFzdGUoZ3JlZXRfbWVzc2FnZSwgbmFtZSkKfQojIFRPRE8gZGVidWcgYmVsb3cKIyBncmVldF9wZXJzb24obmFtZSA9ICJCb2JieSIpCgpncmVldF9wZXJzb24obmFtZSA9ICJCb2JieSIsIGdyZWV0X21lc3NhZ2UgPSAiSG93IGFyZSB5b3UiKQpgYGAKCmBgYHtyfQpncmVldF9wZXJzb24obmFtZSA9ICJCb2JieSIsIGdyZWV0X21lc3NhZ2UgPSBncmVldF9tZXNzYWdlKQpgYGAKCmBgYHtyfQoKZ3JlZXRfcGVyc29uKG5hbWUgPSAiQm9iYnkiLCBncmVldF9tZXNzYWdlID0gZ3JlZXRfbWVzc2FnZSkKYGBgCgoKVGhpcyB3aWxsIG5vdCB3b3JrLiBXaHk/CmBgYHtyfQpncmVldF9wZXJzb24oSGFyaSkKYGBgCgpUaGlzIHdpbGwuIFdoeT8KYGBge3J9CkJvYmJ5IDwtICJIYXJpIgpncmVldF9wZXJzb24obmFtZSA9IEJvYmJ5KQpgYGAKCjYuIExvYWQgdGhlIHRpZHl2ZXJzZSBhbmQgZ2FwbWluZGVyIHBhY2thZ2VzCmBgYHtyfQpsaWJyYXJ5KHRpZHl2ZXJzZSk7IGxpYnJhcnkoZ2FwbWluZGVyKQpgYGAKCjcuIEZpeCB0aGUgZm9sbG93aW5nIHNvIHRoYXQgdGhleSBydW4uIFRoaW5rIGFib3V0IHdoeSB0aGV5IGFyZSBnZW5lcmF0aW5nIGFuIGVycm9yLiBSZWFkIHRoZSBjb21tZW50cyBmb3IgZnVydGhlciBpbnN0cnVjdGlvbnMuCgoKCmBgYHtyfQojI0ZpbmQgdGhlIHVuaXF1ZSBzZXQgb2YgY29udGluZW50cyBpbiBnYXBtaW5kZXIKIyNZb3VyIGZpbmFsIHNvbHV0aW9uIHNob3VsZCB1c2UgcGlwZXMKZ2FwbWluZGVyICU+JSAKICB1bmlxdWUoY29udGluZW50KQpgYGAKVGhlIHNhbWUgZXJyb3IgaW4gYmFzZSBSLiAKYGBge3J9CnVuaXF1ZShnYXBtaW5kZXIsIGNvbnRpbmVudCkKYGBgCgpgYGB7cn0KZ2FwbWluZGVyICU+JSAKICBzZWxlY3QoY29udGluZW50KSAlPiUgCiAgdW5pcXVlKCkKYGBgCgppZiB5b3Ugd2FudCBhbiBhdG9taWMgdmVjdG9yIGFzIHlvdXIgb3V0cHV0CmBgYHtyfQpnYXBtaW5kZXIgJT4lIAogIHB1bGwoY29udGluZW50KSAlPiUgCiAgdW5pcXVlKCkKYGBgCgoKd2l0aG91dCBwaXBlcwpgYGB7cn0KdW5pcXVlKGdhcG1pbmRlciRjb250aW5lbnQpCmBgYAoKCmBgYHtyfQojI2ZpbmQgdGhlIG1lYW4gb2YgdGhlIGdkcFBlcmNhcCBjb2x1bW4gaW4gZ2FwbWluZGVyCiMjZmluYWwgc29sdXRpb24gc2hvdWxkIHVzZSBwaXBlcy4KZ2FwbWluZGVyICU+JSAKICBzZWxlY3QoZ2RwUGVyY2FwKSAlPiUgCiAgbWVhbiguLCBuYS5ybSA9IFQpCmBgYAoKYGBge3J9CmdhcG1pbmRlciAlPiUgCiAgcHVsbChnZHBQZXJjYXApICU+JSAKICBtZWFuKC4sIG5hLnJtID0gVCkKYGBgCgpgYGB7cn0KIyMgZmluZCB0aGUgbWVhbiBvZiB0aGUgZ2RwUGVyY2FwIGNvbHVtbiBpbiBnYXBtaW5kZXIKIyMgZmluYWwgc29sdXRpb24gc2hvdWxkIHVzZSBiYXNlIFIgc3ludGF4IAojIyByZW1lbWJlciBbXSAtIGlzIGEgcHJlc2VydmluZyBzdWJzZXQgfCAkIGFuZCBbW11dIGFyZSBzaW1wbGlmeWluZwptZWFuKGdhcG1pbmRlclsiZ2RwUGVyY2FwIl0pCmBgYAoKYGBge3J9Cm1lYW4oZ2FwbWluZGVyW1siZ2RwUGVyY2FwIl1dKQpgYGAKCmBgYHtyfQojIyBJIHdvdWxkIGxpa2UgdGhlIGRpc3RpbmN0IGNvbWJpbmF0aW9ucyBvZiBjb250aW5lbnQgYW5kIGNvdW50cnkKIyMgdXNlIHRpZHl2ZXJzZQpnYXBtaW5kZXIgJT4lIAogIGRpc3RpbmN0KGNvbnRpbmVudCwgY291bnRyeSkKYGBgCgpgYGB7cn0KIyMgSSB3b3VsZCBsaWtlIHRvIGhhdmUgYSBzaW5nbGUgY29sdW1uIHRpYmJsZSB0aGF0IGNvbnRhaW5zIGFsbCB0aGUgZGlzdGluY3QgY29udGluZW50cwojIyBVc2UgdGlkeXZlcnNlCmdhcG1pbmRlciAlPiUgCiAgcHVsbChjb250aW5lbnQpICU+JSAKICBkaXN0aW5jdCgpCmBgYAoK</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiQ2xhc3MgMjIgLSBJbiBjbGFzcyBleGVyY2lzZXMiCmF1dGhvcjogSGFyaSBTdWJoYXNoCmRhdGU6ICJEYXRlIGNyZWF0ZWQ6IGByIFN5cy5EYXRlKClgIgpvdXRwdXQ6CiAgaHRtbF9ub3RlYm9vazoKICAgIGhpZ2hsaWdodDogaGFkZG9jawogICAgc21hcnQ6IHllcwogICAgdGhlbWU6IHJlYWRhYmxlCiAgICBkZl9wcmludDogcGFnZWQKLS0tCiMjIEZ1bmN0aW9ucwpUaGUgY29kZSBiZWxvdyBjcmVhdGVzIGEgZnVuY3Rpb24gdGhhdCB0YWtlcyB0d28gbnVtZXJpYyB2ZWN0b3JzIGFzIGl0cyBpbnB1dCBhbmQgcmV0dXJucyB0aGUgYWJzb2x1dGUgZGlmZmVyZW5jZSBiZXR3ZWVuIHRoZSBtaW5pbXVtIHZhbHVlIG9mIHRoZSBmaXJzdCB2ZWN0b3IgYW5kIHRoZSBtYXhpbXVtIHZhbHVlIG9mIHNlY29uZCB2ZWN0b3IuIFJlYWQgaXQgY2FyZWZ1bGx5IChhbG9uZyB3aXRoIHRoZSBjb21tZW50cykuCgpgYGB7cn0KIyNEZWZpbmluZyB0aGUgZnVuY3Rpb24gKG5vdGljZSBob3cgSSBhbHNvIGRlZmluZSB0aGUgbmEucm0uKQptaW5tYXhfZGlmZiA8LSBmdW5jdGlvbihtaW5fdmVjLCBtYXhfdmVjLCBuYS5ybSA9IEYpIHsKICAjI2NoZWNrIGlmIHRoZSB0d28gYXJndW1lbnRzIGFyZSBvZiB0aGUgdHlwZSBudW1lcmljLCBlbHNlIGV4aXQuCiAgc3RvcGlmbm90KGlzLm51bWVyaWMobWluX3ZlYyksIGlzLm51bWVyaWMobWF4X3ZlYyksIGlzLmxvZ2ljYWwobmEucm0pKQogIAogICMjZ2V0IHRoZSBtaW4gYW5kIG1heCB2YWx1ZS4KICBtaW5fdmFsdWUgPC0gbWluKG1pbl92ZWMsIG5hLnJtID0gbmEucm0pCiAgbWF4X3ZhbHVlIDwtIG1heChtYXhfdmVjLCBuYS5ybSA9IG5hLnJtKQogIAogICMjcmV0dXJuIHRoZSBhYnNvbHV0ZSBkaWZmZXJlbmNlCiAgYWJzKG1heF92YWx1ZSAtIG1pbl92YWx1ZSkKICAKfQpgYGAKCkxldCdzIHRlc3QgdG8gc2VlIGlmIGl0IHdvcmtzLgpgYGB7cn0KbWlubWF4X2RpZmYobWluX3ZlYyA9IDE6MTAsIG1heF92ZWMgPSAxMDoyMCkKYGBgCgpJbnRyb2R1Y2luZyBOQSB2YWx1ZXMuCmBgYHtyfQptaW5tYXhfZGlmZihtaW5fdmVjID0gYygyNCwgNDEsIE5BKSwgbWF4X3ZlYyA9IDQ0KQpgYGAKClNwZWNpZml5aW5nIHRoZSBOQSBjb25kaXRpb24uCmBgYHtyfQptaW5tYXhfZGlmZihtaW5fdmVjID0gYygyNCwgNDEsIE5BKSwgbWF4X3ZlYyA9IDQ0LCBuYS5ybSA9IFQpCmBgYAoKVHJ5aW5nIG91dCBhIG5vbi1udW1lcmljIGlucHV0LgoKYGBge3J9Cm1pbm1heF9kaWZmKG1pbl92ZWMgPSAiYSIsIG1heF92ZWMgPSBjKDEsIDIsIDU2KSkKYGBgCgoxLiBIb3cgZG9lcyB0aGlzIGNvZGUgd29yaz8KYGBge3J9Cm1pbm1heF9kaWZmKDE6MjMsIDQsIFQpCmBgYAoKMi4gV2h5IGRvZXMgdGhpcyBnaXZlIGFuIGVycm9yPyAKCmBgYHtyfQptaW5tYXhfZGlmZigxLCAyLCA1KQpgYGAKCjMuIFdoeSBkb2VzIHRoaXMgbm90IHdvcms/CgpgYGB7cn0KbWlubWF4X2RpZmYoMSwgMiwgRiwgNikKYGBgCgo0LiBEZWZpbmUgYSBmdW5jdGlvbiB0aGF0IHRha2VzIHR3byBudW1lcmljIHZlY3RvcnMgYXMgaXRzIGlucHV0IGFuZCByZXR1cm5zIHRoZSBkaWZmZXJlbmNlIGJldHdlZW4gdGhlIG1lYW4gb2YgdGhlIGZpcnN0IHZlY3RvciBhbmQgdGhlIG1lZGlhbiBvZiB0aGUgc2Vjb25kIHZlY3Rvci4gQWRkIGFueSBjaGVja3MgYW5kIGFkZGl0aW9uYWwgYXJndW1lbnRzIHlvdSBsaWtlIHRvIHRoaXMgZnVuY3Rpb24uCjUuIERlZmluZSBhIGZ1bmN0aW9uIHRoYXQgdGFrZXMgdHdvIGFyZ3VtZW50cyAtIG5hbWUgYW5kIGdyZWV0X21lc3NhZ2UuIFNldCB0aGUgZGVmYXVsdCB2YWx1ZSBvZiBncmVldF9tZXNzYWdlIHRvIGJlICJIZWxsbyIuIFRoZSBmdW5jdGlvbiBzaG91bGQgcmV0dXJuIGEgc2luZ2xlIGNoYXJhY3RlciBzdHJpbmcgdGhhdCBjb21iaW5lcyBncmVldF9tZXNzYWdlIHdpdGggbmFtZSAod2l0aCBhIHNwYWNlIGluIGJldHdlZW4pLiBVc2UgYHBhc3RlKClgIHRvIGNvbWJpbmUuIEFkZCBhbnkgYWRkaXRpb25hbCBhcmd1bWVudHMgb3IgY2hlY2tzLgo2LiBMb2FkIHRoZSB0aWR5dmVyc2UgYW5kIGdhcG1pbmRlciBwYWNrYWdlcwo3LiBGaXggdGhlIGZvbGxvd2luZyBzbyB0aGF0IHRoZXkgcnVuLiBUaGluayBhYm91dCB3aHkgdGhleSBhcmUgZ2VuZXJhdGluZyBhbiBlcnJvci4gUmVhZCB0aGUgY29tbWVudHMgZm9yIGZ1cnRoZXIgaW5zdHJ1Y3Rpb25zLgpgYGB7cn0KIyNGaW5kIHRoZSB1bmlxdWUgc2V0IG9mIGNvbnRpbmVudHMgaW4gZ2FwbWluZGVyCiMjWW91ciBmaW5hbCBzb2x1dGlvbiBzaG91bGQgdXNlIHBpcGVzCmdhcG1pbmRlciAlPiUgCiAgdW5pcXVlKGNvbnRpbmVudCkKYGBgCmBgYHtyfQojI2ZpbmQgdGhlIG1lYW4gb2YgdGhlIGdkcFBlcmNhcCBjb2x1bW4gaW4gZ2FwbWluZGVyCiMjZmluYWwgc29sdXRpb24gc2hvdWxkIHVzZSBwaXBlcy4KZ2FwbWluZGVyICU+JSAKICBzZWxlY3QoZ2RwUGVyY2FwKSAlPiUgCiAgbWVhbiguLCBuYS5ybSA9IFQpCmBgYAoKCmBgYHtyfQojIyBmaW5kIHRoZSBtZWFuIG9mIHRoZSBnZHBQZXJjYXAgY29sdW1uIGluIGdhcG1pbmRlcgojIyBmaW5hbCBzb2x1dGlvbiBzaG91bGQgdXNlIGJhc2UgUiBzeW50YXggCiMjIHJlbWVtYmVyIFtdIC0gaXMgYSBwcmVzZXJ2aW5nIHN1YnNldCB8ICQgYW5kIFtbXV0gYXJlIHNpbXBsaWZ5aW5nCm1lYW4oZ2FwbWluZGVyWyJnZHBQZXJjYXAiXSkKYGBgCgpgYGB7cn0KIyMgSSB3b3VsZCBsaWtlIHRoZSBkaXN0aW5jdCBjb21iaW5hdGlvbnMgb2YgY29udGluZW50IGFuZCBjb3VudHJ5CiMjIHVzZSB0aWR5dmVyc2UKZ2FwbWluZGVyICU+JSAKICB1bmlxdWUoY29udGluZW50LCBjb3VudHJ5KQpgYGAKCmBgYHtyfQojIyBJIHdvdWxkIGxpa2UgdG8gaGF2ZSBhIHNpbmdsZSBjb2x1bW4gdGliYmxlIHRoYXQgY29udGFpbnMgYWxsIHRoZSBkaXN0aW5jdCBjb250aW5lbnRzCiMjIFVzZSB0aWR5dmVyc2UKZ2FwbWluZGVyICU+JSAKICBwdWxsKGNvbnRpbmVudCkgJT4lIAogIGRpc3RpbmN0KCkKYGBgCgoKIyMgR3JvdXAgYW5kIGRvIHRoaW5ncwoxLiBVc2Ugc3VtbWFyaXNlIHRvIGNhbGN1bGF0ZSB0aGUgbWVhbiBwb3B1bGF0aW9uIGZvciBlbnRpcmUgZ2FwbWluZGVyIGRhdGFzZXQuIENvbXBhcmUgdGhpcyB2YWx1ZSB3aXRoIGBtZWFuKGdhcG1pbmRlciRwb3ApYCAoeW91IHdpbGwgaGF2ZSB0byBydW4gdGhpcyB0byBzZWUgdGhlIG91dHB1dCkuCjIuIFJlcGVhdCB0aGUgc2FtZSBzdGVwIGFmdGVyIGdyb3VwaW5nIGJ5IGNvbnRpbmVudC4KMy4gUmVwZWF0IHRoZSBzYW1lIGFmdGVyIGdyb3VwaW5nIGJ5IGNvbnRpbmVudCBhbmQgeWVhci4KNC4gVXNlIGBuX2Rpc3RpbmN0KClgIHRvIGZpbmQgdGhlIG51bWJlciBvZiBkaXN0aW5jdCBjb3VudHJpZXMgaW4gdGhlIGdhcG1pbmRlciBkYXRhLiAKNS4gVXNlIGFueSBvZiB0aGUgc2ltcGxpZnlpbmcgc3Vic2V0IG9wZXJhdG9ycyAoYCRgLCBgW1tdXWAgb3IgYHB1bGwoKWApIHRvIHB1bGwgdGhlIGNvdW50cmllcyB2YXJpYWJsZSBmcm9tIGdhcG1pbmRlci4gU2VlIHRoZSBkaWZmZXJlbmNlcyB3aXRoIDQuCjYuIENvbWJpbmUgMyBhbmQgNCB0byBjcmVhdGUgYSB0YWJsZSB0aGF0IHNob3dzIHRoZSBkaXN0aW5jdCBudW1iZXIgb2YgY291bnRyaWVzIGFuZCB0aGUgbWVhbiBwb3B1bGF0aW9uIGluIGV2ZXJ5IGNvbnRpbmVudCBmb3IgZWFjaCB5ZWFyLiBZb3UgY2FuIGNyZWF0ZSBtdWx0aXBsZSBzdW1tYXJpc2VkIGNvbHVtbnMgYnkgc2VwYXJhdGluZyB0aGVtIHdpdGhpbiB0aGUgc3VtbWFyaXNlIGNvbW1hbmQgdXNpbmcgY29tbWFzIApgc3VtbWFyaXNlKHZhcjEgPSBzb21lIGNvZGUsIHZhcjIgPSBzb21lIGNvZGUpYC4KNi4gTm93IGdyb3VwIHRoZSBkYXRhIHRvIHNob3cgdGhlIGRpc3RpbmN0IG51bWJlciBvZiBjb3VudHJpZXMgaW4gZXZlcnkgY29udGluZW50IGZvciBldmVyeSB5ZWFyLiBVc2UgYG5fZGlzdGluY3QoKWAgdG8gZmluZCB0aGUgbnVtYmVyIG9mIGRpc3RpbmN0IGNvdW50cmllcy9jb250aW5lbnRzLgo3LiBHcm91cCB0aGUgZ2FwbWluZGVyIGRhdGFzZXQgYW5kIGZpbHRlciB0aGUgY291bnRyaWVzIHRoYXQgaGF2ZSB0aGUgaGlnaGVzdCBvciBsb3dlc3QgbGlmZUV4cCBmb3IgZWFjaCBjb250aW5lbnQgZm9yIGVhY2ggeWVhci4gQXJyYW5nZSB0aGUgb3V0cHV0IGJ5IHllYXIsICBjb250aW5lbnQgYW5kIGxpZmVFeHAuCjguIEZpbHRlciB0aGUgbW9zdCByZWNlbnQgeWVhciBvZiB0aGUgZGF0YSBhbmQgcmVtb3ZlIHRoZSBjb250aW5lbnQgT2NlYW5pYSBmcm9tIGl0LiBDcmVhdGUgYSBuZXcgdmFyaWFibGUgdGhhdCBpcyBtYXJrZWQgIkFib3ZlIGF2ZXJhZ2UgaW5jb21lIiBpZiB0aGUgZ2RwUGVyY2FwIGlzIGdyZWF0ZXIgdGhhbiB0aGUgYXZlcmFnZSBnZHBQZXJjYXAgZm9yIHRoZSBjb250aW5lbnQgaXQgYmVsb25ncyB0byBhbmQgIkJlbG93IGF2ZXJhZ2UgaW5jb21lIiBpZiBpdCBpcyBiZWxvdy4gVXNlIGBncm91cF9ieSgpYCB3aXRoIGBtdXRhdGUoKWAgZm9yIHRoaXMuCgoKIyMgZ2dwbG90CgoxLiBUaGUgY29kZSBiZWxvdyBjcmVhdGVzIGEgc2NhdHRlciBwbG90IChnZW9tX3BvaW50KCkpLiBVcGRhdGUgdGhlIGFlc3RoZXRpY3Mgc28gdGhhdCB0aGUgY29sb3VyIG9mIHRoZSBkb3RzIHJlZmxlY3QgdGhlIGNvbnRpbmVudHMuCgpgYGB7cn0KZ2dwbG90KGdhcG1pbmRlciwgYWVzKHggPSB5ZWFyLCB5ID0gcG9wKSkgKwogICAgZ2VvbV9wb2ludCgpCmBgYAoKMi4gVXBkYXRlIHRoaXMgcGxvdCBieSBhZGRpbmcgYSB0aXRsZSB1c2luZyBgbGFicygpYC4gVXNlIHRoZSBgdGl0bGVgIGFyZ3VtZW50IHRvIHNldCB0aGUgdGl0bGUuCjMuIFRoZSBjb2RlIGJlbG93IHJlbW92ZXMgdGhlIHgtYXhpcyB0aXRsZSAieWVhciIgYnkgc2V0dGluZyB0aGUgZWxlbWVudCB0byBibGFuayAoc2VlIHRoZSBkaWZmZXJlbmNlIGZyb20gYWJvdmUpLiBVcGRhdGUgdGhpcyBieSBhbHNvIHJlbW92aW5nIHRoZSB5LWF4aXMgbGFiZWwgdXNpbmcgYGF4aXMudGl0bGUueWAuCgpgYGB7cn0KZ2dwbG90KGdhcG1pbmRlciwgYWVzKHggPSB5ZWFyLCB5ID0gcG9wKSkgKwogICAgZ2VvbV9wb2ludCgpICsKICAgIHRoZW1lKGF4aXMudGl0bGUueCA9IGVsZW1lbnRfYmxhbmsoKSkKYGBgCgo0LiBUaGUgY29kZSBiZWxvdyBjaGFuZ2VzIHRoZSBhbmdsZSBvZiB0aGUgeCBheGlzIGxhYmVscy4gUmVwbGljYXRlIHRoaXMgZm9yIHRoZSB5LWF4aXMuIFNldCB3aGF0ZXZlciB5b3Ugd291bGQgbGlrZS4gCgpgYGB7cn0KZ2dwbG90KGdhcG1pbmRlciwgYWVzKHggPSB5ZWFyLCB5ID0gcG9wKSkgKwogICAgZ2VvbV9wb2ludCgpICsKICAgIHRoZW1lKGF4aXMudGl0bGUueCA9IGVsZW1lbnRfYmxhbmsoKSwKICAgICAgICAgIGF4aXMudGV4dC54ID0gZWxlbWVudF90ZXh0KGFuZ2xlID0gNDUpKQpgYGAKCjUuIEdvIHRvIHRoZSB0aWR5dmVyc2UgcmVmZXJlbmNlIGZvciBnZ3Bsb3QgdG8gc2VlIG90aGVyIHBhcmFtZXRlcnMgdGhhdCB5b3UgY2FuIGNvbnRyb2wgd2l0aGluIGVsZW1lbnRfdGV4dC4gVXNlIHRoaXMgdG8gYWxzbyBzZXQgdGhlIGNvbG9yIG9mIHRoZSB5LWF4aXMgbGFiZWxzLgo2LiBJbiB0aGUgY29kZSBiZWxvdyBJIHVzZSBhbiBleHRlcm5hbCB2YXJpYWJsZSB0byBzZXQgdGhlIGNvbG91ciBiYXNlZCBvbiB3aGV0aGVyIGEgY291bnRyeSBpcyBJbmRpYS9DaGluYSBvciBub3QuIFVzZSB0aGUgc2FtZSBsb2dpYyB0byBzZXQgdGhlIGFscGhhIHBhcmFtZXRlciB0byBlaXRoZXIgMSBpZiBJbmRpYS9DaGluYSBvciAwLjMgb3RoZXJ3aXNlLgoKYGBge3J9CmluZGlhX2NoaW5hX2NvbG9yIDwtIGlmX2Vsc2UoZ2FwbWluZGVyJGNvdW50cnkgJWluJSBjKCJDaGluYSIsICJJbmRpYSIpLCAicGluayIsICJibGFjayIpCmdncGxvdChnYXBtaW5kZXIsIGFlcyh4ID0geWVhciwgeSA9IHBvcCkpICsKICAgIGdlb21fcG9pbnQoY29sb3VyID0gaW5kaWFfY2hpbmFfY29sb3IpIApgYGAKCgoKCgo=</div>
+>>>>>>> parent of 9bed326... updated readme
 
 
 

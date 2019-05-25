@@ -10,80 +10,23 @@ output:
     df_print: paged
 ---
 ## Functions
-The code below creates a function that takes two numeric vectors (atomic) as its input and returns the absolute difference between the minimum value of the first vector and the maximum value of second vector. Read it carefully (along with the comments).
+The code below creates a function that takes two numeric vectors as its input and returns the absolute difference between the minimum value of the first vector and the maximum value of second vector. Read it carefully (along with the comments).
 
 ```{r}
+##Defining the function (notice how I also define the na.rm.)
 minmax_diff <- function(min_vec, max_vec, na.rm = F) {
-  ##add a stop condition
-  # if (!is.numeric(min_vec)) {
-  #   stop("Hari's error message: min_vec should be numeric")
-  # }
-  
+  ##check if the two arguments are of the type numeric, else exit.
   stopifnot(is.numeric(min_vec), is.numeric(max_vec), is.logical(na.rm))
   
-  # if (!is.logical(na.rm)) {
-  #   na.rm <- T
-  # }
+  ##get the min and max value.
+  min_value <- min(min_vec, na.rm = na.rm)
+  max_value <- max(max_vec, na.rm = na.rm)
   
-  ##Lets calculate the min and max values
-  min_val <- min(min_vec, na.rm = na.rm)
-  max_val <- max(max_vec, na.rm = na.rm)
-  
-  ## Let calculate the value that needs to be returned
-  abs(min_val - max_val)
+  ##return the absolute difference
+  abs(max_value - min_value)
   
 }
-minmax_diff(1, 2, F, 6)
 ```
-
-```{r}
-minmax_diff(1:23, c(4, NA), na.rm = "xyz")
-```
-
-
-```{r}
-mean(c(4, NA), na.rm = "xyz")
-```
-
-```{r}
-as.logical("xyz")
-```
-
-```{r}
-if("xyz") {
-  print("Truthy")
-}
-```
-
-
-```{r}
-min(min_vec, na.rm = na.rm)
-```
-
-
-```{r}
-minmax_diff(min_vec = 1:23, max_vec = c(4, NA), na.rm = T)
-```
-
-
-```{r}
-minmax_diff(min_vec = c(24, 41, NA), max_vec = c(44, NA), na.rm = T)
-```
-
-
-```{r}
-minmax_diff(min_vec = "a", max_vec = c(44, NA), na.rm = T)
-```
-
-
-```{r}
-min(c(24, 41, NA))
-```
-
-```{r}
-minmax_diff(1:10, 20:30)
-```
-
 
 Let's test to see if it works.
 ```{r}
@@ -124,92 +67,15 @@ minmax_diff(1, 2, F, 6)
 ```
 
 4. Define a function that takes two numeric vectors as its input and returns the difference between the mean of the first vector and the median of the second vector. Add any checks and additional arguments you like to this function.
-```{r}
-diff_vec <- function(mean_vec, median_vec, na.rm){
-  ## stop condition
-  stopifnot(is.numeric(mean_vec), is.numeric(median_vec), is.logical(na.rm))
-  
-  ## calculating the value to be returned
-  mean(mean_vec, na.rm = na.rm) - median(median_vec, na.rm = na.rm)
-}
-
-diff_vec(mean_vec = 100:200, median_vec = 20:30, na.rm = T)
-```
-
 5. Define a function that takes two arguments - name and greet_message. Set the default value of greet_message to be "Hello". The function should return a single character string that combines greet_message with name (with a space in between). Use `paste()` to combine. Add any additional arguments or checks.
-
-```{r}
-# greet_message <- "Hi"
-greet_person <- function(name, greet_message = greet_message) {
-  paste(greet_message, name)
-}
-# TODO debug below
-# greet_person(name = "Bobby")
-
-greet_person(name = "Bobby", greet_message = "How are you")
-```
-
-```{r}
-greet_person(name = "Bobby", greet_message = greet_message)
-```
-
-```{r}
-
-greet_person(name = "Bobby", greet_message = greet_message)
-```
-
-
-This will not work. Why?
-```{r}
-greet_person(Hari)
-```
-
-This will. Why?
-```{r}
-Bobby <- "Hari"
-greet_person(name = Bobby)
-```
-
 6. Load the tidyverse and gapminder packages
-```{r}
-library(tidyverse); library(gapminder)
-```
-
 7. Fix the following so that they run. Think about why they are generating an error. Read the comments for further instructions.
-
-
-
 ```{r}
 ##Find the unique set of continents in gapminder
 ##Your final solution should use pipes
 gapminder %>% 
   unique(continent)
 ```
-The same error in base R. 
-```{r}
-unique(gapminder, continent)
-```
-
-```{r}
-gapminder %>% 
-  select(continent) %>% 
-  unique()
-```
-
-if you want an atomic vector as your output
-```{r}
-gapminder %>% 
-  pull(continent) %>% 
-  unique()
-```
-
-
-without pipes
-```{r}
-unique(gapminder$continent)
-```
-
-
 ```{r}
 ##find the mean of the gdpPercap column in gapminder
 ##final solution should use pipes.
@@ -218,11 +84,6 @@ gapminder %>%
   mean(., na.rm = T)
 ```
 
-```{r}
-gapminder %>% 
-  pull(gdpPercap) %>% 
-  mean(., na.rm = T)
-```
 
 ```{r}
 ## find the mean of the gdpPercap column in gapminder
@@ -232,14 +93,10 @@ mean(gapminder["gdpPercap"])
 ```
 
 ```{r}
-mean(gapminder[["gdpPercap"]])
-```
-
-```{r}
 ## I would like the distinct combinations of continent and country
 ## use tidyverse
 gapminder %>% 
-  distinct(continent, country)
+  unique(continent, country)
 ```
 
 ```{r}
