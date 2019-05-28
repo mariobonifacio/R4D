@@ -91,19 +91,6 @@ This repository contains all the material for the R4D course - March 2019
 
 1. Class 22 - May 16th - [Class Exercises](https://puzhu.github.io/R4D/Classes/Class%2022/class22_exercises.nb.html) | [Class Video]()
 
-### A sample project folder structure
+## Week 13
 
-```{}
-name_of_project/
-|- data
-| |- raw
-| |- processed
-|- figures
-|- reports
-|- results
-|- scripts
-| |- deprecated
-|- .gitignore
-|- name_of_project.Rproj
-|- README.md
-```
+1. Class 24 - May 28th - [Class Exercises](https://puzhu.github.io/R4D/Classes/Class%2024/class24_exercises.nb.html) | [Class Video]()

@@ -1,0 +1,11 @@
+country,year,lifeExp,rate_change_lifeExp,growth_changes
+Botswana,1997,52.556,-10.189,Sharp Decline
+Cambodia,1977,31.22,-9.097000000000001,Sharp Decline
+China,1962,44.50136,-6.047600000000003,Stable
+Lesotho,2002,44.593,-10.964999999999996,Sharp Decline
+Namibia,2002,51.479,-7.43,Stable
+Rwanda,1992,23.599,-20.421000000000003,Sharp Decline
+Swaziland,2002,43.869,-10.420000000000002,Sharp Decline
+Zambia,1997,40.238,-5.862000000000002,Stable
+Zimbabwe,1997,46.809,-13.568000000000005,Sharp Decline
+Zimbabwe,2002,39.989,-6.82,Sharp Decline
