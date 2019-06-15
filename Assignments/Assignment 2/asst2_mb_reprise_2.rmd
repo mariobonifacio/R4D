@@ -17,15 +17,16 @@ output:
 
 ## Abstract 
 
-Unpredictable flight delays are a costly problem, forcing travelers to choose between spending unproductive time at the airport and missing a flight. In 2013, flights from the three New York area airports alone saw aggregate delays of half a million minutes.[^1] I explore the predictive capacity with respect to the probability of departure delay of five independent variables -- **scheduled departure time**, **atmomspheric pressure**, **visibility**, **the probability associated with each air carrier**, and **the probability associated with each origin airport**. Notably all five of these variables are forecasted ahead of time and made publicly available.
+Unpredictable flight delays are a costly problem, forcing travelers to choose between spending unproductive time at the airport and missing a flight. In 2013, flights from the three New York area airports alone saw aggregate delays of half a million minutes.^1^ I explore the predictive capacity with respect to the probability of departure delay of five independent variables -- **scheduled departure time**, **atmomspheric pressure**, **visibility**, **the probability associated with each air carrier**, and **the probability associated with each origin airport**. Notably all five of these variables are forecasted ahead of time and made publicly available.
 
 I then use a logistic regression model, and find that all five independent variables display a correlative relationship with departure delay at a 0.1 percent significance level. The data also suggest that scheduled departure time may be used to estimate the probability of departure delay as follows:^2^
 
-> Probability of departure delay = 1 / (1 + e^-(0.28 - 0.002 * difference between 7:35 pm and scheduled departure time in minutes))
+$$P(del.) = \frac{1}{1 + e^{-(0.28 - 0.002 timediff)}}$$
+
+Where $P(del.)$ is the probability of departure delay and $timeidff = |sched. dep. time - 19:35|$ or the number of minutes in either direction between the scheduled departure time of a flight and 7:35 p.m.
 
 ```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
 ## Load needed packages
-install.packages('moments'); install.packages('ggalluvial')
 library(tidyverse); library(nycflights13); library(stringr); library(lubridate); library(ggthemes); library(moments); library(ggalluvial)
 ```
 
@@ -55,37 +56,30 @@ test_b <- test_a %>%
 ```
 
 
-```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
-## Next, mutate delay time to a binary i.e. Is it delayed (YN)
-## Find time difference between scheduled departure time and 8 pm
+```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=TRUE}
+## Next, mutate delay time to a binary i.e. Is it delayed (Y/N)
 ## Find the observed probability by time i.e. delayed flights / all flights
-
+## Use the bivariate model created later to predict probability for each scheduled departure time
 test_c <- test_b %>%
-  mutate(is_delay = if_else(dep_delay > 0, 1, 0)
-         ,diff_1935h = abs(as.numeric(dep_time_object - hm('19:35')) / 60)) %>%
-  group_by(diff_1935h) %>%
-  mutate(op_diff1935 = mean(is_delay, na.rm = T)) %>%
-  ungroup()
+  mutate(is_delay = if_else(dep_delay > 0, 1, 0)) %>%
+  group_by(sched_dep_time_metric) %>%
+  summarise(op_sched_dep_time = mean(is_delay, na.rm = T),
+            pred_bivar = max(1/(1+exp(-(0.279603750 - 0.001999519 * abs(as.numeric(dep_time_object)/60 - 19 * 60 - 35))))))
 
 # test_c
 ```
 
 
-```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
-## Use the bivariate model created later to predict probability for each scheduled departure time
-test_d <- test_c %>%
-  mutate(pred_bivar = 1/(1+exp(-(0.279603750 - 0.001999519 * diff_1935h))))
-```
+```{r echo=FALSE, echo=FALSE, message=FALSE, warning=F, paged.print=TRUE}
 
-
-```{r echo=FALSE, message=FALSE, warning=F, paged.print=FALSE}
-
-ggplot(data = test_d, mapping = aes(x = sched_dep_time_metric, y = op_diff1935, color = 'observed probability')) +
-  geom_point(size = 1) +
-  geom_line(data = test_d, mapping = aes(x = sched_dep_time_metric, y = pred_bivar, color = 'predicted probability'), size = 1.5) +
-  geom_line(size = 1, aes(x = sched_dep_time_metric, y = 0.39094, color = 'gray')) +
+test_c %>%
+ggplot() +
+  geom_line(size = 1, aes(x = sched_dep_time_metric, y = 0.39094), color = 'gray') +
+  geom_point(size = 1, mapping = aes(x = sched_dep_time_metric, y = op_sched_dep_time, color = 'observed probability')) +
+  geom_line(data = test_c, mapping = aes(x = sched_dep_time_metric, y = pred_bivar, color = 'predicted probability'), size = 1.5) +
+  
   ggtitle('Fly in the morning to lower your chance for delay') +
-  scale_color_fivethirtyeight(labels = c('baseline p', 'observed p', 'pred. p')
+  scale_color_fivethirtyeight(labels = c('observed p', 'predicted p')
                               ,name = 'Prob. of delay given sched. dep. time') +
   theme_fivethirtyeight()
   
@@ -97,9 +91,6 @@ ggplot(data = test_d, mapping = aes(x = sched_dep_time_metric, y = op_diff1935, 
 
 *^1^ Bureau of Transportation Statistics, "Reporting Carrier On-Time Performance", via Rstudio*  
 *^2^ e refers to Euler's number, a mathematical constant roughly equal to 2.72*
-
-
-
 
 
 ## Background
@@ -117,12 +108,12 @@ My null hypothesis is that *no* available weather, plane, or flight data shares 
 
 To set up, I'll do the following:
 
-1. Set a baseline probability
+1. Set a baseline probability to build upon
 2. Link flight data with data to the planes flown and the weather contemporaneous to each flight
 3. Find a baseline probability for departure delay
 4. Clean and adapt the data both so that it makes sense logically and is testable; This will include:
     a. Setting negative departure delay values equal to zero^3^
-    b. Replacing categorical data -- such as the name of an airline -- with an "object effect" that estimates the added chance for delay associated with any object
+    b. Replacing categorical data -- such as the name of an airline -- with an observed probability that estimates the added chance for delay associated with any object
 5. Start an appendix of metadata, including:
     a. A data dictionary
     b. A data lineage diagram
@@ -148,15 +139,14 @@ library(tidyverse); library(nycflights13); library(lubridate); library(ggthemes)
 
 ### BASELINE
 
-I'll set a baseline probability by finding how many flights were delayed in 2013 and dividing by the total number of flights, while accounting for flights that didn't have delay information available.
+I'll set a baseline probability by finding $\frac{delayed flights}{total flights}$ : 
 ```{r echo=FALSE, include=FALSE, warning=FALSE}
 
 op_base <- sum(flights$dep_delay > 0, na.rm = T) / sum(!is.na(flights$dep_delay))
 ## op_base = 0.39094
 ```
 
-
-The baseline probability of delay is 39.094 percent
+The baseline probability of delay is roughly `r round(100 * mean(nycflights13::flights$dep_delay > 0, na.rm = T), 0)` %
 
 
 ### JOIN DATA TABLES
@@ -177,14 +167,6 @@ Some flight, plane, and weather data are irrelevant or redundant and may be remo
 ```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
 ### Remove irrelevant columns
 
-flt_test_00 <- flt_raw %>%
-  filter(!is.na(dep_delay) == T) %>%
-  select(-year.x, -month.x, -day.x, -hour.x ## Ex ante flight info 1
-         ,-minute, -sched_arr_time, -flight ## Ex ante flight info 2
-         ,-tailnum, -dest, -time_hour ## Ex ante flight info 3
-         ,-dep_time, -arr_time ## Post hoc flight info 1
-         ,-arr_delay ,-air_time ## Post hoc flight info 2
-         ,-year.y, month.y, -day.y, -hour.y) ## Weather reading time
 
 ## Here's what's kept:
 ##(dep_delay, sched_dep_time, distance, manuf_year, engines ## 1-5
@@ -230,7 +212,7 @@ flt_test_01 %>%
 
 This graph appears to show that the probability of departure delay increases as the day moves along, peaks around 7:35 p.m., then drops again until midnight.
 
-To verify the time numerically, find the correlation with observed probability for each time, then find the max among the outputs.
+To verify the time numerically, find the correlation with observed probability for each time, then find the max among the outputs. Intuitively, I'm finding the vertical line where what's left looks symmetric to the right.
 ```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE}
 
 temp_df <- flights %>%
@@ -241,7 +223,7 @@ temp_df <- flights %>%
 
 results_df <- tibble(i= 1L, cor_i = 0.1234)
 
-for(i in 1:2399){ ## It's a for loop for every metric time to diff from
+for(i in seq_along(temp_df$sched_dep_time_metric %>% unique())){ ## It's a for loop for every metric time to diff from
   results_df[i, 1] <- paste(trunc(i / 100), trunc((i %% 100) * 3 / 5), sep = ':') ## This puts the clock time we're diffing from in each row
   results_df[i, 2] <- cor(abs(i - temp_df$sched_dep_time_metric), temp_df$is_delay)} ## This puts the time-diff's correlation with is_delay
 
@@ -249,14 +231,38 @@ filter(results_df, abs(cor_i) == max(abs(cor_i))) ## This gives us the max value
 ```
 
 
-The max correlation is at 7:35 p.m.
+The max correlation is at 7:35 p.m. To confirm this graphically, I'll redraw the graph of observed probabilities
+```{r message=FALSE, echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE}
+flt_test_01 %>%
+  group_by(as.numeric(sched_dep_time_object)) %>%
+  filter(n() > 100) %>% ## Limit to sched dep times with over 100 instances
+  mutate(is_delay = if_else(dep_delay > 0, 1, 0), ## Turning delay from minutes delayed into a binary
+         sched_dep_time_metric = round((sched_dep_time / 100 - trunc(sched_dep_time / 100)) * 500/3 + 100 * (trunc(sched_dep_time / 100))),
+         op_sched_dep_metric_left = if_else(sched_dep_time_metric < 1958 + 1/3, mean(is_delay, na.rm = T), NULL),
+         op_sched_dep_metric_right = if_else(sched_dep_time_metric >= 1958 + 1/3, mean(is_delay, na.rm = T), NULL)) %>% 
+  ungroup() %>%
+  select(sched_dep_time_metric, op_sched_dep_metric_left, op_sched_dep_metric_right) %>%
+  unique() %>%
+  ggplot() + 
+  geom_point(mapping = aes(x = sched_dep_time_metric, y = op_sched_dep_metric_left, color = 'op_left')) +
+  geom_point(mapping = aes(x = 1958 * 2 - sched_dep_time_metric, y = op_sched_dep_metric_right, color = 'op_right')) +
+  ggtitle('Likelihood of departure delay peaks around 7:35 p.m.') +
+  scale_color_fivethirtyeight(labels = c('observed p', 'smoothed observed p')
+                              ,name = 'Prob. of delay given sched. dep. time') +
+  theme_fivethirtyeight() +
+  xlim(500, 2000)
+   
+```
+
+
+
 
 The numbers confirm what the graph suggests. Based on the assumption that the delays are approximately symmetric about 7:35 p.m., mutate scheduled departure time by finding the time difference between each scheduled flight time and 7:35 p.m.
-```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=TRUE}
 
 flt_test_02 <- flt_test_01 %>%
-  mutate(is_delay = if_else(dep_delay > 0, 1, 0)
-         ,diff_1935h = abs(as.numeric(sched_dep_time_object - hm('19:35')) / 60)) %>%
+  mutate(is_delay = if_else(dep_delay > 0, 1, 0),
+         diff_1935h = abs(as.numeric(sched_dep_time_object - hm('19:35')) / 60)) %>%
   group_by(diff_1935h) %>%
   mutate(op_diff1935 = mean(is_delay, na.rm = T)) %>%
   ungroup()
@@ -298,13 +304,13 @@ cat_facts <- flt_test_03 %>%
   select(3:4, 7:9, 12:13, 28:34) %>% ## These are each category plus their associated factors
   unique() %>%
   gather(key = 'cat', value = 'obj', carrier, origin, type, manufacturer, model, speed, engine) %>% ## To make it more readable, this puts all facts into just two columns
-  rename(carrier = op_carr
-         ,origin = op_ogn
-           ,type = op_type
-   ,manufacturer = op_mnf
-          ,model = op_mdl
-          ,speed = op_spd
-         ,engine = op_eng) %>%
+  rename(carrier = op_carr,
+         origin = op_ogn,
+         type = op_type,
+         manufacturer = op_mnf,
+         model = op_mdl,
+         speed = op_spd,
+         engine = op_eng) %>%
   gather(key = 'trans', value = 'facts', 1:7) %>%
   filter(cat == trans) %>%
   select(-trans) %>%
@@ -387,11 +393,11 @@ Given this decision, the previous histogram doesn't make much sense.
 To start on building a logistic regression, find a baseline value for the probability that a flight will be delayed, using only the dep_delay column and produce a fairly boring graph
 ```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
 
-op_base <- (flights %>% filter(dep_delay > 0) %>% nrow()) / (flights %>% filter(!is.na(dep_delay) == T) %>% nrow())
+op_base <- mean(flights$dep_delay > 0, na.rm = T)
 ```
 
 
-That baseline is 39 percent. This needs to be graphed
+That baseline is `r round(100 * mean(flights$dep_delay > 0, na.rm = T), 0)` percent. This needs to be graphed
 ```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE}
 
 as_tibble(op_base) %>%
@@ -423,24 +429,16 @@ There are steps here too
 
 Based on the data dictionary, the following fields are either unlikely to be related to departure delay or duplicative of another, superior field in the data set
 
-* Destination
-* Tail number
-* Arrival time
-* Day of the month
-* Flight number
-* Scheduled arrival time
-* Year
-* Air time
-* Arrival delay
-* Departure time
-* Distance
+`r colnames(flt_raw %>% select(dest, tailnum, arr_time, day.x, month.x, flight, sched_arr_time, year.x, air_time, arr_delay, dep_time))`
 
-Only one field among those remaining, **wind gust**, is concerning due to the number of n/a entries -- 256,391 of 336,776 total. My fear is that these incomplete entries are biased -- that is, we may be telling a story that is based on a sample of the data that does not represent the poopulation.
+Only one field among those remaining, **wind gust**, is concerning due to the number of n/a entries -- `r    256,391 of 336,776 total. My fear is that these incomplete entries are biased -- that is, we may be telling a story that is based on a sample of the data that does not represent the poopulation.
 
 To test, I'll produce summary statistics for wind gusts that are present and missing:
 ```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE}
 ### Here, I split up all entries based on whether or not wind_gust is NULL
 ### Then, look at descriptive statistics of delay by those groups
+
+
 
 flt_test_03 %>%
   select(wind_gust, is_delay) %>%
@@ -493,16 +491,14 @@ Iterate through the GLM test, limiting to fewer variables
 glm_test <- glm(data = flt_test_03, is_delay ~ diff_1935h + humid + pressure + visib + op_carr + op_ogn + op_mnf + op_mdl + op_eng, family = binomial)
 
 summary(glm_test)
-
-
 ```
 
 
-The variables that appear to have significant relationships with dep_delay are: diff_1935h, humidity, pressure, visibility, op_carr, op_ogn, op_mnf, op_mdl, op_eng
+The variables that appear to have significant relationships with dep_delay are: `r colnames(flt_test_03 %>% select(diff_1935h, humid, pressure, visib, op_carr, op_ogn, op_mnf, op_mdl, op_eng))`
 
 ### Find correlation with our dependent variable
 
-The analysis could stop with nine variables. However, we should all be concerned with comingled variables. If, for example, we had found instead that both the length of an airplane and the weight of an airplane were associated with departure delays, we might inadvertantly telling the same story twice. That is, because length and weight are, presumably, associated with each other, including the second variable provides no additional information and may instead be crowding out another useful variable.
+The analysis could stop with nine variables. However, we should all be concerned with comingled variables. If, for example, we had found instead that both the length of an airplane and the weight of an airplane were associated with departure delays, we might inadvertantly be telling the same story twice. That is, because length and weight are, presumably, associated with each other, including the second variable provides no additional information and may instead be crowding out another useful variable.
 ```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE}
 flt_test_03 %>%
   select(diff_1935h, humid, pressure, visib, op_carr, op_ogn, op_mnf, op_mdl, op_eng) %>%
@@ -516,12 +512,10 @@ flt_test_03 %>%
 In seeing this correlation table, it's clear that some of our predictor variables may be comingling with each other. Get rid of variables in the relationships with the highest absolute values. Also, those relationships should make logical sense.
 
 Humidity is highly correlated with visibility. This makes sense since more water vapor in the air could make it more difficult to see.
-   -humid
 
 Carrier is highly correlated with four variables which are also correlated with each other -- airport of origin, manufacturer, model, and engine. This makes sense because having more of its planes concentrated at one airport provides economies of scale and manufacturers -- who sell plane models with engines in them -- are likely to cut a deal with those who buy in bulk.
-   -op_mnf, -op_mdl, -op_eng
-   
-This brings us to our final five variables: diff_1935h, pressure, visib, op_carr, and op_ogn
+
+This brings us to our final five variables: `r colnames(flt_test_03 %>% select(diff_1935h, pressure, visib, op_carr, op_ogn))`
 
 ```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
 flt_final <- flt_test_03 %>%
@@ -535,22 +529,13 @@ To figure out which single variable is most closely associated with probability 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE}
 glm_test <- glm(data = flt_final, is_delay ~ diff_1935h + pressure + visib + op_carr + op_ogn, family = binomial)
 
-summary(glm_test)
-
-coefficients(glm_test)
+signif(coefficients(glm_test), 3)
 ```
 
 
-Herethe equation that estimates the probability of a flight being delayed using these five inputs:
+Here is the equation that estimates the probability of a flight being delayed using these five inputs:
 
-1/(1+e^-(
-24.377394643 
-- 0.001998325 x diff_1935h 
-- 0.023033774 x pressure 
-- 0.077389351 x visib 
-+ 4.185103561 x op_carr 
-+ 4.185103561 x op_ogn
-))
+$$\frac{1}{1 + e^{-(24.4 - 0.00200 diff_1935h - 0.0230 pressure - 0.0774 visib + 4.19 op_carr + 1.73 op_ogn)}} $$
 
 Among these, diff_1935h appears to be the best. To get a result with only one input, I repeat the same:
 
@@ -565,10 +550,10 @@ coefficients(glm_test)
 
 Here is the equation that estimates the probability of a flight being delayed using one input:
 
-1/(1+e^-(0.279603750 - 0.001999519 x diff_1935h))
+$$\frac{1}{1 + e^{-(0.280 - 0.00200 diff_1935h)}} $$
 
 Now that I've got this equation, I'll plot the observed probability for each group of scheduled departure times on the same graph as my predicted probability. First, I'll find and plot the actual probabilities from 2013.
-```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=TRUE}
 ### Finding observed probabilities by scheduled departure time
 
 test_00 <- flights %>%
@@ -587,15 +572,19 @@ test_00 <- flights %>%
          ,diff_1935h = abs(as.numeric(dep_time_object - hm('19:35')) / 60)) %>% ## Convert scheduled departue time to a number of minutes to or from 7:35 p.m.
   group_by(diff_1935h) %>%
   mutate(op_diff1935 = mean(is_delay, na.rm = T)) %>% ## Find the observed probability grouped by the number of minutes from 7:35 p.m.
-  ungroup()
+  ungroup() %>%
+  select(sched_dep_time_metric, op_diff1935, diff_1935h, carrier, is_delay, origin, pressure, visib) %>%
+  unique()
 ```
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
 ### Now plot
 
-ggplot() +
-  geom_point(data = test_00, mapping = aes(x = sched_dep_time_metric, y = op_diff1935, color = 'Obs. prob. 2013'), size = 1) +
+test_00 %>%
+  select(sched_dep_time_metric, op_diff1935) %>%
+  ggplot() +
+  geom_point(mapping = aes(x = sched_dep_time_metric, y = op_diff1935, color = 'Obs. prob. 2013'), size = 1) +
   ggtitle('Delays became more likely until 7:35 then less likely') +
   scale_color_fivethirtyeight(labels = ''
                               ,name = 'Prob. of delay given sched. dep. time') +
@@ -625,7 +614,7 @@ if('pred_bivar' %in% colnames(test_00)) {print('already done')} else {
 
 
 I can also add a prediction using the multivariate model, but will not be able to graph it (in fewer than six dimensions)
-```{r message=FALSE, warning=FALSE, include=FALSE}
+```{r message=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 
 test_01 <- test_00 %>%
   group_by(carrier) %>%
@@ -641,14 +630,10 @@ test_01 <- test_00 %>%
                                     - 0.077389351 * visib
                                     + 4.185103561 * op_carr
                                     + 4.185103561 * op_ogn))))
-
-
-
-
 ```
 
 
-Before plotting the predicted values, I'll create a function that returns mean squared error and use it on the three prediction models
+Before plotting the predicted values, I'll create a function that returns mean squared error^5^ and use it on the three prediction models
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
 resi_err <- function(pred_col = 1) {
@@ -665,11 +650,11 @@ resi_err <- function(pred_col = 1) {
     }
 }
 
-op_base_mse <- resi_err(46); pred_bivar_mse <- resi_err(47); pred_multivar_mse <- resi_err(50)
+## op_base_mse <- resi_err(46); pred_bivar_mse <- resi_err(47); pred_multivar_mse <- resi_err(50)
 ```
 
 
-Looks like the bivariate model is the best. But let's plot all 3
+Looks like the bivariate model is the best. But let's plot all THREE
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot() +
   geom_point(data = test_01, mapping = aes(x = sched_dep_time_metric, y = op_diff1935, color = 'observed probability'), size = 1) +
@@ -681,6 +666,9 @@ ggplot() +
   theme_fivethirtyeight()
 
 ```
+
+
+^5^ Mean squared error is equal to the average squared difference between the estimated values and what is estimated. That is, for each entry in the data set, it subtracts the value predicted by our model from the actual value, squares it, then sums the squared differences for all entries. In math notation, it's: $$MSE = \frac{1}{n} \sum_{i = 1}^{n} (actual_i - predicted_i)^{2}$$
 
 
 ## Test formula using a succeeding year's data
@@ -696,24 +684,31 @@ flights_17 <- read_csv2(trim_ws = T, na = 'NULL', file = 'flights_17.csv', col_n
 
 test_17 <- flights_17 %>%
   filter(!is.na(dep_delay) == T) %>%
-  mutate(diff_20h = if_else(sched_dep_time < 2000
-                                ,1960 - sched_dep_time
-                                ,sched_dep_time - 2000)
-         ,sched_dep_time_metric = 100 * (trunc(sched_dep_time/100)) 
-         + 5/3 * as.numeric(str_sub(sched_dep_time, -2, -1))
-         ,pred_prob = 1/(1+exp(-(0.279603750 - 0.001999519 * diff_20h)))) %>%
+  mutate(diff_20h = if_else(sched_dep_time < 2000,
+                            1960 - sched_dep_time,
+                            sched_dep_time - 2000),
+         sched_dep_time_metric = 100 * (trunc(sched_dep_time/100)) + 5/3 * as.numeric(str_sub(sched_dep_time, -2, -1)),
+         pred_prob = 1/(1+exp(-(0.279603750 - 0.001999519 * diff_20h)))) %>%
   group_by(diff_20h) %>%
   filter(n() > 100) %>%
-  mutate(is_delay = if_else(dep_delay > 0, 1, 0)
-         ,op_delay = mean(is_delay)) %>%
-  ungroup()
+  mutate(is_delay = if_else(dep_delay > 0, 1, 0),
+         op_delay = mean(is_delay))
 
 sse <- sum(na.rm = T, (test_17$op_delay - test_17$pred_prob)^2)
 mse <- sse / (nrow(filter(test_17, !is.na(is_delay), !is.na(pred_prob))) - 2)
 
-paste('sse ', sse, 'mse ', mse)
+paste('sse ', signif(sse, 4), 'mse ', signif(mse, 4))
+
+```
+
+
+Mean squared error looks good
+
+```{r}
   
-test_17 %>%  
+test_17 %>%
+  select(sched_dep_time_metric, op_delay, pred_prob) %>%
+  unique() %>%
   ggplot() +
   geom_point(mapping = aes(x = sched_dep_time_metric, y = op_delay, color = 'Observed p'), size = 1) +
   geom_line(mapping = aes(x = sched_dep_time_metric, y = pred_prob, color = 'Predicted p'), size = 1.5) +
@@ -726,7 +721,7 @@ test_17 %>%
 ```
 
 
-Yes, I'm satisfied with this. Alternately I could update the model by replacing the 2013 data with 2017 data or combining them.
+Graph looks good too. Yes, I'm satisfied with this. Alternately I could update the model by replacing the 2013 data with 2017 data or combining them. More work for another day
 
 
 ## Ax.1 Metadata
@@ -900,11 +895,16 @@ All bad choices. I generally wouldn't want a skew outside the range of -2 to 2. 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 dep_delay_skew %>%
   ggplot() +
-  geom_line(aes(i, skew_rightward, color = 'skew by cutoff')) +
+  geom_line(aes(i, skew_rightward, color = 'skew by cutoff'), size = 1.5) +
   theme_fivethirtyeight() +
   scale_color_fivethirtyeight(labels = 'skew by dep_delay cutoff'
                      ,name = '') +
-  ggtitle('Skew never comes close to a useful value')
+  ggtitle('Skew never comes close to a useful value') +
+  geom_hline(yintercept = 2, color = 'red', size = 1.5) +
+  ylim(0, 5) +
+  xlim(0, 120)
+
+
 ```
 
 
@@ -923,7 +923,7 @@ In a report centered around delay, the limited analysis of the delay variable ma
 3. Did missing values affect the results?
 
 See above for what I believe sufficiently addresses #1. For #2, the data shows that the two variables, scheduled departure time and departure frequency, are not as correlated as one would think.
-```{r}
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
 flights %>%
   filter(!is.na(dep_delay)) %>%
   mutate(half = round(2 * (hour + minute / 60)) / 2) %>%
@@ -936,19 +936,21 @@ flights %>%
   ungroup() %>%
   mutate(dep_time_object = hm(paste
                               (trunc(sched_dep_time/100) ## This line provides the hour
-                                ,str_sub(sched_dep_time,-2,-1))) ## This line provides the minute
-         ,sched_dep_time_metric = 100 * (trunc(sched_dep_time/100)) 
-         + as.numeric(str_sub(as.character(sched_dep_time), -2, -1)) / 3 * 5
-         ,diff_1935h = abs(as.numeric(dep_time_object - hm('19:35')) / 60)) %>%
+                                ,str_sub(sched_dep_time,-2,-1))), ## This line provides the minute
+         sched_dep_time_metric = 100 * (trunc(sched_dep_time/100)) + as.numeric(str_sub(as.character(sched_dep_time), -2, -1)) / 3 * 5,
+         diff_1935h = abs(as.numeric(dep_time_object - hm('19:35')) / 60)) %>%
   group_by(diff_1935h) %>%
   mutate(op_diff1935 = mean(is_delay, na.rm = T)) %>%
   ungroup() %>%
+  select(sched_dep_time_metric, dep_half) %>%
+  unique() %>%
   ggplot(aes(sched_dep_time_metric, dep_half, color = 'Departures per half hour')) +
   geom_point() +
   geom_smooth(aes(color = 'Smoothed departures per half hour')) +
-  scale_color_fivethirtyeight(labels = c('Departures per half hour', 'Smoothed departures per half hour')
-                              ,name = '') +
-  ggtitle('Departure frequency is bimodal but departure delay is not')
+  scale_color_fivethirtyeight(labels = c('Departures per half hour',
+                                         'Smoothed departures per half hour'),
+                              name = '') +
+  ggtitle('Departure frequency is bimodal but departure delay was not')
 ```
 
 
@@ -1049,10 +1051,4 @@ test_01 %>%
          ,cor_na_0 = cor(diff_1935h, na_0_is_delay, use = 'pairwise.complete.obs'))
 
 ```
-
-
-Everything looks fine
-
-### A UI
-
-A nice next step would be creating a user interface for all this
+This looks fine

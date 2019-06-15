@@ -1,6 +1,6 @@
 ---
-title: "Assignment 2"
-author: "~~Hari Subhash~~ Mario"
+title: "Overdue: An empirical model to predict flight delays at three New York airports"
+author: "Mario Bonifacio"
 date: 'Date created: `r Sys.Date()`'
 output:
   html_notebook:
@@ -454,9 +454,41 @@ test_b %>%
   geom_point(data = test_b, aes(x = diff_20h, y = op_diff20), color = 'gray') + ### These are all the observed probabilities by scheduled departure time
   geom_hline(yintercept = 0.39094, color='blue', size = 1) ### This is the baseline probability
 
-  
+```
+
+## Testing the model
+
+There are updates to the flight data for as recently as 2017. Let's see how the formula did at predicting
+
+```{r}
+### I can't get this download to work because of some github security probably, so just get it from here: http://mariobonifacio.github.io/flights17.rds
+#library(RCurl)
+#
+#f <- CFILE("flights17.rds", mode="wb")
+#curlPerform(url = "http://mariobonifacio.github.io/flights17.rds", writedata = f@ref, noprogress=FALSE)
+#close(f)
+# flights_17 <- read_rds("flights17.rds")
+
+flights_17 %>%
+  filter(!is.na(dep_delay) == T) %>%
+  mutate(diff_20h = if_else(sched_dep_time < 2000
+                                ,1960 - sched_dep_time
+                                ,sched_dep_time - 2000)) %>%
+  group_by(diff_20h) %>%
+  summarise(op_delay = sum(dep_delay > 0) / length(dep_delay)) %>%
+  mutate(pred_prob = 1/(1+exp(-(0.2746527 - 0.001169423 * diff_20h)))) %>%
+  ggplot(mapping = aes(x = diff_20h, y = pred_prob)) +
+  geom_line(color = 'orange', size = 2) +
+    geom_point(mapping = aes(x = diff_20h, y = op_delay), color = 'gray') +
+  theme_fivethirtyeight() +
+  scale_color_fivethirtyeight() +
+  ggtitle('My logistic regression model works well on 2017 data')
+
 
 ```
+Yes, I'm satisfied with this. Alternately I could update the model by replacing the 2013 data with 2017 data or combining them.
+
+
 ## Ax.1 Metadata
 
 **DATA LINEAGE**
@@ -599,35 +631,3 @@ For each of these, we always run into the same problem which is that the data re
 ### Adding a second-level test for expected minutes delayed given that a flight is delayed
 
 See the previous section. The heavy skew of the data means that number is likely to be off by a good amount.
-
-### Test formula using a succeeding year's data
-
-There are updates to the flight data for as recently as 2017. Let's see how the formula did at predicting
-
-```{r}
-### I can't get this download to work because of some github security probably, so just get it from here: http://mariobonifacio.github.io/flights17.rds
-#library(RCurl)
-#
-#f <- CFILE("flights17.rds", mode="wb")
-#curlPerform(url = "http://mariobonifacio.github.io/flights17.rds", writedata = f@ref, noprogress=FALSE)
-#close(f)
-# flights_17 <- read_rds("flights17.rds")
-
-flights_17 %>%
-  filter(!is.na(dep_delay) == T) %>%
-  mutate(diff_20h = if_else(sched_dep_time < 2000
-                                ,1960 - sched_dep_time
-                                ,sched_dep_time - 2000)) %>%
-  group_by(diff_20h) %>%
-  summarise(op_delay = sum(dep_delay > 0) / length(dep_delay)) %>%
-  mutate(pred_prob = 1/(1+exp(-(0.2746527 - 0.001169423 * diff_20h)))) %>%
-  ggplot(mapping = aes(x = diff_20h, y = pred_prob)) +
-  geom_line(color = 'orange', size = 2) +
-    geom_point(mapping = aes(x = diff_20h, y = op_delay), color = 'gray') +
-  theme_fivethirtyeight() +
-  scale_color_fivethirtyeight() +
-  ggtitle('My logistic regression model works well on 2017 data')
-
-
-```
-Yes, I'm satisfied with this. Alternately I could update the model by replacing the 2013 data with 2017 data or combining them.
