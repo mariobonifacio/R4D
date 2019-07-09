@@ -1,0 +1,258 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r setup}
+knitr::opts_chunk$set(message = FALSE)
+library(tidyverse); library(lubridate); library(ggalluvial); library(ggthemes); library(nycflights13); library(moments)
+
+
+```
+
+
+```{r, echo=FALSE, message=FALSE}
+## Load csv files from mariobonifacio.github.io
+fly <- (read_csv(file = 'flights_17.csv', na = 'NULL', trim_ws = T) %>%
+  select(dep_delay, carrier, flight, tailnum, origin, dest, air_time, time_hour))
+
+write_rds(x = )
+            
+left_join(x = fly,
+          y = (weather %>%
+                 select(-(2:5)))) %>%
+  left_join(y = (planes %>%
+                   select(tailnum, plane_yr = year, type, manufacturer, model, engines, seats, speed, engine))),
+path = 'fly_wide_17.rds'
+)
+  
+
+
+
+# airlines_17 <- read_csv(file = 'airlines_17.csv', trim_ws = T)
+
+
+
+# airports_17 <- read_csv(file = 'airports_17.csv', trim_ws = T, col_names = c('airport_name', 'airport_iata', 'airport_st'))
+```
+
+
+```{r}
+## This converts hmm or c(h, mm) to a metric value h.hh
+metric_time <- function(horhm, mm = rep(-1, length(horhm))){
+  if(mm < 0){ return(trunc(horhm/100) + (horhm/100 - trunc(horhm/100)) * 5 / 3) }
+  else{ return(horhm + mm/60) }
+}
+
+```
+
+
+```{r}
+## Make metric month function
+metric_month <- function(mo, mo_day){ return(mo + (mo_day - 0.5) / max(mo_day)) }
+```
+
+
+```{r}
+## This function accepts a single-column tibble,
+## and an equal-length tibble then finds correlation
+## between the dependent variable and each independent
+## variables
+
+hi_cor <- function(y, test_tibble){  
+  cbind(y, test_tibble) %>%
+  cor(use = 'pairwise.complete.obs') %>%
+  as.data.frame(row.names = colnames(.)) %>%
+    mutate(row_nm = row.names(.)) %>%
+  select(1, row_nm) %>%
+  filter(.[1] < 1) %>%
+  arrange(desc(abs(ln_delay)))
+}
+
+```
+
+
+```{r, message=FALSE, warning=FALSE}
+## build a test set 
+test_17 <- flights_17 %>%
+  filter(!is.na(dep_delay)) %>% ## Remove flights that are missing dep_delay
+  group_by(month) %>%
+  mutate(on_time = dep_delay <= 1, ## This and the next line split the data set into on-time flights...
+         ln_delay = if_else(dep_delay > 1, log(dep_delay), NA_real_), ## ...and log-length of delay, if delay
+         diff_5mo = abs(5.31 - month), 
+         wkday = weekdays(time_hour),
+         month_metric = metric_month(month, day),  ## Using my function
+         time_metric = metric_time(sched_dep_time), ## Using my function
+         diff_21h = abs(21.45 - time_metric)) %>%
+  ungroup()
+```
+
+
+```{r}
+## Build a correlation table
+hi_cor(test_17 %>% select(ln_delay),
+       test_17 %>%
+         select(diff_21h, diff_5mo, hour, distance, air_time, sched_arr_time, sched_dep_time, month))
+```
+
+
+```{r}
+## Build Linear model using month, time, and weekday data
+mdl <- lm(data = test_17, formula = ln_delay ~ diff_21h + diff_5mo + wkday) %>%
+  summary()
+
+```
+
+
+
+```{r}
+## Pull out the coefficients and standard error
+coefs <- mdl$coefficients %>%
+  as_tibble() %>%
+  mutate(x_var = row.names(mdl$coefficients)) %>%
+  select(5, coef = 1, se = 2)
+```
+
+
+```{r}
+## This builds the pred_delay equation
+paste(coefs[1, 2], "+",
+      coefs[2, 2], "* diff_21h +",
+      coefs[3, 2], "* diff_5mo +",
+      coefs[4, 2], "* (wkday == 'Monday') +",
+      coefs[5, 2], "* (wkday == 'Saturday') +",
+      coefs[6, 2], "* (wkday == 'Sunday') +",
+      coefs[7, 2], "* (wkday == 'Thursday') +",
+      coefs[8, 2], "* (wkday == 'Tuesday') +",
+      coefs[9, 2], "* (wkday == 'Wednesday')")
+
+```
+
+```{r}
+## Build logit model using month, time, and weekday data
+mdl_2 <- glm(data = test_17, formula = on_time ~ diff_21h + diff_5mo + wkday, family = 'binomial') %>%
+  summary()
+
+mdl_2
+```
+
+
+```{r}
+coefs_2 <- mdl_2$coefficients %>%
+  as_tibble() %>%
+  mutate(x_var = row.names(mdl$coefficients)) %>%
+  select(5, coef = 1, se = 2)
+```
+
+
+
+```{r}
+## This builds the logit for p_on_time
+paste(coefs_2[1, 2], "+",
+      coefs_2[2, 2], "* diff_21h +",
+      coefs_2[3, 2], "* diff_5mo +",
+      coefs_2[4, 2], "* (wkday == 'Monday') +",
+      coefs_2[5, 2], "* (wkday == 'Saturday') +",
+      coefs_2[6, 2], "* (wkday == 'Sunday') +",
+      coefs_2[7, 2], "* (wkday == 'Thursday') +",
+      coefs_2[8, 2], "* (wkday == 'Tuesday') +",
+      coefs_2[9, 2], "* (wkday == 'Wednesday')")
+```
+
+
+
+```{r}
+## Add predicted delay and probability of no delay to test tibble
+pred_17 <- test_17 %>%
+  mutate(pred_delay = exp(3.85236933552203 +
+           -0.0636324279034302 * diff_21h +
+           -0.0541743901271069 * diff_5mo +
+           -0.0618142578716507 * (wkday == 'Monday') +
+           -0.125034427355075 * (wkday == 'Saturday') +
+           -0.172379656023462 * (wkday == 'Sunday') +
+           -0.108048760292188 * (wkday == 'Thursday') +
+           -0.0454143145559025 * (wkday == 'Tuesday') +
+           -0.17399920842538 * (wkday == 'Wednesday')),
+         p_on_time = 1 / (1 + exp(-(-0.868973986936626 +
+                                      0.132485588024036 * diff_21h +
+                                      0.0938310236036926 * diff_5mo +
+                                      0.152317762763714 * (wkday == 'Monday') +
+                                      0.312356993431681 * (wkday == 'Saturday') +
+                                      0.323550415257237 * (wkday == 'Sunday') +
+                                      0.0979982073199806 * (wkday == 'Thursday') +
+                                      0.265313809910303 * (wkday == 'Tuesday') +
+                                      0.316247648362565 * (wkday == 'Wednesday')))))
+
+```
+
+
+
+```{r}
+## Test month ##
+
+cor_df <- tibble(i = 1L, cor_i = 0.001)
+
+for(i in 101:1231) {
+  cor_df[i, 1] <- i/100
+  cor_df[i, 2] <- cor(abs(i/100 - test_17$month), test_17$ln_delay)
+}
+
+cor_df %>%
+  arrange(desc(abs(cor_i)))
+
+```
+
+
+```{r}
+## Test time ##
+
+cor_df <- tibble(i = 1L, cor_i = 0.001)
+
+for(i in 900:2300) {
+  cor_df[i, 1] <- i/100
+  cor_df[i, 2] <- cor(abs(i/100 - test_17$time_metric), test_17$ln_delay, use = 'pairwise.complete.obs')
+}
+
+cor_df %>%
+  arrange(desc(abs(cor_i)))
+```
+
+
+```{r, message=FALSE}
+## With this plot, I wanted to show why I chose to use a difference factor
+## rather than just using the time of day variable. Intuitively, the
+## reason is that the change from 23:59 to 00:00 is the biggest numerically
+## but doesn't mean much in practice
+
+test_17 %>%
+  select(diff_21h,time_metric, q90_time) %>%
+  unique() %>%
+  ggplot() +
+  geom_point(mapping = aes(time_metric, q90_time, color = 'time'), size = 1) +
+  geom_smooth(aes(time_metric, q90_time, color = 'time'), method = 'loess') +
+  geom_point(mapping = aes(diff_21h, q90_time, color = 'adj_time'), size = 1) +
+  geom_smooth(aes(diff_21h, q90_time, color = 'adj_time'), method = 'loess') +
+  theme_fivethirtyeight() +
+  scale_color_fivethirtyeight()
+```
+
+
+```{r}
+kurtosis(test_17$ln_delay, na.rm = T)
+skewness(test_17$ln_delay, na.rm = T)
+mean(test_17$ln_delay, na.rm = T)
+median(test_17$ln_delay, na.rm = T)
+
+
+ggplot(data = test_17, mapping = aes(ln_delay), fill = 'gray') +
+  geom_histogram(bins = 12) +
+  geom_vline(xintercept = mean(test_17$ln_delay, na.rm = T), color = 'orange', size = 1.5) +
+  geom_vline(xintercept = median(test_17$ln_delay, na.rm = T), color = 'purple', size = 1.5) +
+  theme_fivethirtyeight() +
+  scale_color_fivethirtyeight(labels = c('orange', 'purple')) 
+  ggtitle('Distribution looks pretty normal')
+
+kurtosis(test_17$dep_delay); skewness(test_17$dep_delay)
+```
+
