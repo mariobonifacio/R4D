@@ -6,13 +6,17 @@ output: html_notebook
 
 ```{r setup}
 knitr::opts_chunk$set(message = FALSE)
-library(tidyverse); library(lubridate); library(ggalluvial); library(ggthemes); library(nycflights13); library(moments)
+library(tidyverse); library(lubridate); library(ggalluvial); library(ggthemes); library(moments); library(ggcorrplot)
 
 
 ```
 
 
 ```{r, echo=FALSE, message=FALSE}
+
+flights
+
+
 ## Load csv files from mariobonifacio.github.io
 fly <- (read_csv(file = 'flights_17.csv', na = 'NULL', trim_ws = T) %>%
   select(dep_delay, carrier, flight, tailnum, origin, dest, air_time, time_hour))
@@ -75,7 +79,8 @@ hi_cor <- function(y, test_tibble){
 
 ```{r, message=FALSE, warning=FALSE}
 ## build a test set 
-test_17 <- flights_17 %>%
+test_17 <- flights %>%
+  left_join(select(weather,-2:-4, -hour), by = c("time_hour", "origin")) %>%
   filter(!is.na(dep_delay)) %>% ## Remove flights that are missing dep_delay
   group_by(month) %>%
   mutate(on_time = dep_delay <= 1, ## This and the next line split the data set into on-time flights...
@@ -91,9 +96,24 @@ test_17 <- flights_17 %>%
 
 ```{r}
 ## Build a correlation table
-hi_cor(test_17 %>% select(ln_delay),
-       test_17 %>%
-         select(diff_21h, diff_5mo, hour, distance, air_time, sched_arr_time, sched_dep_time, month))
+test_17 %>%
+  filter(carrier == 'B6') %>%
+  select(on_time, ln_delay, air_time, distance, 20:28, 33:34) %>%
+  cor(use = "pairwise.complete.obs") %>%
+  round(1) %>%
+  ggcorrplot(lab = TRUE,
+             #method="circle",
+             type = "lower",
+             lab_size = 3,
+             colors = c("orange", "white", "dodgerblue"), 
+             title="Correlogram of flight and weather data", 
+             ggtheme = theme_bw())
+  
+    
+    
+
+
+
 ```
 
 
