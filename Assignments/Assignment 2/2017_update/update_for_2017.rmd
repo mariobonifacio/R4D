@@ -256,3 +256,29 @@ ggplot(data = test_17, mapping = aes(ln_delay), fill = 'gray') +
 kurtosis(test_17$dep_delay); skewness(test_17$dep_delay)
 ```
 
+
+```{r}
+library(tidyverse); library(ggalluvial); library(ggdark)
+
+flights_17 %>%
+  group_by(carrier) %>%
+  summarize(num_flights = n()) %>%
+  arrange(desc(num_flights))
+  
+```
+
+
+```{r}
+air_fin <- read_csv('air_fin.csv',na = '', col_names = c('carrier', 'year', 'opn_exp', 'opn_inc', 'exp_growth', 'inc_growth'), skip = 1)
+
+air_fin %>%
+  filter(!is.na(exp_growth)) %>%
+  ggplot() +
+  geom_col(mapping = aes(x = year, y = exp_growth, fill = year)) +
+  facet_wrap(facets = ~carrier, nrow = 1) +
+  theme_excel_new() +
+  theme(legend.position = "none") +
+  ggtitle('Expense growth by year')
+  
+```
+
