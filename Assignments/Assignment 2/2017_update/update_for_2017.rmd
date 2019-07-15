@@ -14,22 +14,8 @@ library(tidyverse); library(lubridate); library(ggalluvial); library(ggthemes); 
 
 ```{r, echo=FALSE, message=FALSE}
 
-flights
 
-
-## Load csv files from mariobonifacio.github.io
-fly <- (read_csv(file = 'flights_17.csv', na = 'NULL', trim_ws = T) %>%
-  select(dep_delay, carrier, flight, tailnum, origin, dest, air_time, time_hour))
-
-write_rds(x = )
-            
-left_join(x = fly,
-          y = (weather %>%
-                 select(-(2:5)))) %>%
-  left_join(y = (planes %>%
-                   select(tailnum, plane_yr = year, type, manufacturer, model, engines, seats, speed, engine))),
-path = 'fly_wide_17.rds'
-)
+  
   
 
 
@@ -79,8 +65,8 @@ hi_cor <- function(y, test_tibble){
 
 ```{r, message=FALSE, warning=FALSE}
 ## build a test set 
+
 test_17 <- flights %>%
-  left_join(select(weather,-2:-4, -hour), by = c("time_hour", "origin")) %>%
   filter(!is.na(dep_delay)) %>% ## Remove flights that are missing dep_delay
   group_by(month) %>%
   mutate(on_time = dep_delay <= 1, ## This and the next line split the data set into on-time flights...
@@ -90,17 +76,23 @@ test_17 <- flights %>%
          month_metric = metric_month(month, day),  ## Using my function
          time_metric = metric_time(sched_dep_time), ## Using my function
          diff_21h = abs(21.45 - time_metric)) %>%
-  ungroup()
+  ungroup() %>%
+  select(-(1:5), -(7:9), -(11:12), -(hour:minute)) %>%
+  left_join(weather, by = c('time_hour', 'origin'))
+
 ```
 
 
 ```{r}
-## Build a correlation table
+## Build a correlogram
 test_17 %>%
   filter(carrier == 'B6') %>%
-  select(on_time, ln_delay, air_time, distance, 20:28, 33:34) %>%
+  select(on_time:ln_delay,
+         air_time:distance,
+         month_metric:time_metric,
+         temp:visib) %>%
   cor(use = "pairwise.complete.obs") %>%
-  round(1) %>%
+  round(2) %>%
   ggcorrplot(lab = TRUE,
              #method="circle",
              type = "lower",
@@ -115,6 +107,78 @@ test_17 %>%
 
 
 ```
+
+
+```{r}
+
+test_17 %>%
+  filter(carrier == 'B6', !is.na(dewp)) %>%
+  ggplot(mapping = aes(x = temp, y = dewp)) +
+  geom_smooth(method = 'lm', color = 'orange', fill = 'orange', alpha = 0.2) +
+  geom_count(color = 'dodgerblue', show.legend = F, na.rm = T) +
+  theme_bw() +
+  labs(title = "The correlation between temperature and dewpoint makes using both redundant",
+       x = "temperature in degrees",
+       y = "dewpoint in degrees")
+
+
+  
+```
+
+
+```{r}
+# bubble chart
+test_17 %>%
+  filter(carrier %in% c('B6', 'AA', 'DL', 'UA')) %>%
+  mutate(round_ln_delay = round(ln_delay, 1)) %>%
+  group_by(round_ln_delay, hour) %>%
+  mutate(mean_on_time = mean(on_time)) %>%
+  ungroup() %>%
+  ggplot(mapping = aes(x = round_ln_delay, y = hour)) +
+  geom_jitter(mapping = aes(color = carrier, size = mean_on_time)) + 
+  geom_smooth(mapping = aes(color = carrier), method = "lm", se = F)
+```
+
+```{r}
+test_17 %>%
+  mutate(is_b6 = (carrier == 'B6')) %>%
+  mutate(month_metric = round(month_metric, 1)) %>%
+  group_by(month_metric, is_b6) %>%
+  summarize(mean_on_time = mean(on_time)) %>%
+  group_by(month_metric) %>%
+  mutate(b6_v_others = if_else(2 * is_b6 == 2,
+                                 mean_on_time - mean(mean_on_time),
+                                 mean(mean_on_time) - mean_on_time)) %>%
+  summarize(b6_factor = sum(b6_v_others)) %>%
+  ggplot(mapping = aes(x = month_metric - 0.5, ymax = b6_factor, ymin = 0)) +
+  geom_ribbon(fill = 'dodgerblue') +
+  scale_x_continuous(labels = month.abb[1:12], breaks = 1:12) +
+  theme_bw() +
+  labs(title = 'JetBlue lags in on-time departures all year but especially when summer comes',
+       x = 'date',
+       y = 'on-time departures vs competitors')
+
+  
+  
+```
+
+```{r}
+test_17 %>%
+  filter(month_metric > 6 &
+           month_metric < 9) %>%
+  mutate(is_b6 = (carrier == "B6")) %>%
+  ggplot(mapping = aes(x = ln_delay)) +
+  geom_density(aes(fill = is_b6), alpha=0.7, na.rm = T) +
+  labs(title="When departing late, JetBlue flights also have longer delays",
+       x="natural log of delay ()",
+       fill="Carrier") +
+  scale_fill_manual(values = c('black', 'dodgerblue'),
+                    aesthetics = 'fill',
+                    labels = c('Competitors', 'JetBlue'))
+
+
+```
+
 
 
 ```{r}

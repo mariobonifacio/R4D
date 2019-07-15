@@ -1,0 +1,47 @@
+---
+title: "Gender gap in "
+output: html_notebook
+---
+
+
+
+```{r}
+library(tidyverse); library(lubridate); library(ggthemes)
+```
+
+```{r}
+test <- read_csv('exit_gender.csv', col_types = 'iiiiiiiic')
+
+test %>%
+  filter(year > 1976) %>%
+  mutate(y_f = diff / 2,
+         y_m = diff / -2,
+         post_m = if_else(year >= 2006, diff / -2, NULL),
+         pre_m = if_else(year <= 2006, diff / -2, NULL),
+         post_f = if_else(year >= 2006, diff / 2, NULL),
+         pre_f = if_else(year <= 2006, diff / 2, NULL)) %>%
+  ggplot(mapping = aes(x = year)) +
+  geom_point(mapping = aes(y = y_f, color = 'womens relative support for Dems over GOP'), size = 3) + 
+  geom_smooth(mapping = aes(y = pre_f), color = 'orange', method = 'lm', fill = 'orange', alpha = 0.3, na.rm = T) +
+  geom_smooth(mapping = aes(y = post_f), color = 'orange', method = 'lm', fill = 'orange', alpha = 0.3, na.rm = T) +
+  geom_point(mapping = aes(y = y_m, color = 'mens relative support for Dems over GOP'), size = 3) +
+  geom_smooth(mapping = aes(y = pre_m), color = 'dodgerblue', method = 'lm', fill = 'dodgerblue', alpha = 0.3, na.rm = T) +
+  geom_smooth(mapping = aes(y = post_m), color = 'dodgerblue', method = 'lm', fill = 'dodgerblue', alpha = 0.3, na.rm = T) +
+  theme_fivethirtyeight() +
+  labs(title = 'The gender gap for Dem. support used to fluctuate',
+       subtitle = 'But it has only moved in one direction since 2006',
+       x = NULL,
+       y =  "Diff. in women-men Dem-GOP differential, %",
+       color = NULL) +
+  theme(panel.background = element_rect(
+    fill = "white",
+    colour = "white",
+    size = 0),
+        plot.background = element_rect(
+    fill = "white",
+    colour = "white",
+    size = 0)
+  )
+```
+
+

@@ -1,0 +1,17 @@
+year,m_gop,m_dem,m_oth,f_gop,f_dem,f_oth,diff,source
+1976,48,52,0,48,52,0,0,https://ropercenter.cornell.edu/data-highlights/elections-and-presidents/how-groups-voted
+1980,55,38,7,47,46,7,16,https://ropercenter.cornell.edu/data-highlights/elections-and-presidents/how-groups-voted
+1984,62,38,0,58,42,0,8,https://ropercenter.cornell.edu/data-highlights/elections-and-presidents/how-groups-voted
+1988,58,42,0,51,49,0,14,https://ropercenter.cornell.edu/data-highlights/elections-and-presidents/how-groups-voted
+1992,38,41,21,38,45,17,4,https://ropercenter.cornell.edu/data-highlights/elections-and-presidents/how-groups-voted
+1996,45,44,10,38,55,7,18,https://ropercenter.cornell.edu/data-highlights/elections-and-presidents/how-groups-voted
+1998,51,47,0,45,53,0,12,https://www.people-press.org/1998/11/04/good-times-trump-clinton-troubles/
+2000,54,43,3,44,54,3,21,https://ropercenter.cornell.edu/data-highlights/elections-and-presidents/how-groups-voted
+2004,55,44,2,48,51,0,14,https://ropercenter.cornell.edu/data-highlights/elections-and-presidents/how-groups-voted
+2006,47,50,0,43,55,0,9,http://www.cnn.com/ELECTION/2006/pages/results/states/US/H/00/epolls.0.html
+2008,48,49,0,43,56,0,12,https://ropercenter.cornell.edu/data-highlights/elections-and-presidents/how-groups-voted
+2010,55,41,4,49,48,3,13,http://www.cnn.com/ELECTION/2010/results/polls.main/#
+2012,52,45,0,44,55,0,18,https://ropercenter.cornell.edu/data-highlights/elections-and-presidents/how-groups-voted
+2014,57,41,0,47,51,0,20,https://www.nbcnews.com/politics/elections/2014/US/house/exitpoll
+2016,52,41,0,41,54,0,24,https://ropercenter.cornell.edu/data-highlights/elections-and-presidents/how-groups-voted
+2018,51,47,0,40,59,0,23,https://www.cnn.com/election/2018/exit-polls

@@ -1,0 +1,127 @@
+---
+title: "Making a better chart"
+output: html_notebook
+---
+
+A  
+
+```{r}
+library(tidyverse); library(ggthemes); library(ggalluvial); library(scales)
+```
+
+
+
+```{r}
+raw_cpl <- read_csv(file = 'coupling.csv', col_types = 'iiiiiiiiii') %>%
+  filter(!is.na(Year))
+```
+
+
+```{r}
+raw_cpl %>%
+  ggplot(mapping = aes(x = Year)) +
+  geom_line(mapping = aes(y = Online, color = 'online')) +
+  geom_line(mapping = aes(y = Bar_rest, color = 'bar or rest')) +
+  geom_line(mapping = aes(y = Friends)) +
+  geom_line(mapping = aes(y = Work)) +
+  geom_line(mapping = aes(y = Family)) +
+  geom_line(mapping = aes(y = School)) +
+  geom_line(mapping = aes(y = College)) +
+  geom_line(mapping = aes(y = Church)) +
+  geom_line(mapping = aes(y = Neighbors))
+
+fixed_cpl <- raw_cpl
+
+for(i in 2:10) {
+  for(j in 1:17) {
+  fixed_cpl[j,i] <- raw_cpl[j,i] / (sum(raw_cpl[j,] %>% select(2:10)))
+  }
+}
+
+sum(raw_cpl[1,] %>% select(i:10))
+
+fixed_cpl %>%
+  gather(-Year, key = 'meeting_place', value = 'share') %>%
+  arrange(Year, meeting_place) %>%
+  ggplot(mapping = aes(x = Year, y = share, fill = meeting_place, na.rm = T)) +
+  geom_area(color = 'black', size = 1) +
+  scale_y_continuous(labels = percent_format(accuracy = 1)) +
+  scale_fill_manual(values=c('red', 'orange', 'yellow', 'green4', 'turquoise', 'blue', 'slateblue', 'purple4', 'darkmagenta'),
+                    labels = c('Bar or\nrestaurant',
+                    'Church',
+                    'University',
+                    'Family',
+                    'Friends',
+                    'Neighbors',
+                    'Online',
+                    'High school\nor below',
+                    'Work')) +
+  theme(panel.background = element_rect(fill = NA),
+        panel.grid.major = element_line(colour = "lightgray")) +
+  scale_color_manual(values = 'black') +
+  labs(y = NULL,
+       x = 'Year couple met',
+       title = 'Increasingly, we find partners among strangers rather than via introductions',
+       fill = 'How couple met')
+
+```
+
+
+```{r}
+fixed_cpl %>%
+  mutate(pre_college = Church + Family + Neighbors + School,
+         college_plus = Friends + College + Work) %>%
+  select(Year, pre_college, college_plus, Bar_rest, Online) %>%
+  gather(-Year, key = 'meeting_place', value = 'share') %>%
+  mutate(meeting_place = as_factor(meeting_place)) %>%
+  arrange(Year, meeting_place) %>%
+  ggplot(mapping = aes(x = Year, y = share, fill = meeting_place)) +
+  geom_col(color = 'black', size = 1) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  scale_fill_manual(values=c('dodgerblue', 'darkgray', 'forestgreen', 'orange'),
+                    labels = c('Church, family,\nneighbors, or school',
+                               'Friends, work,\nor university',
+                               'Bar or restaurant',
+                               'Online')) +
+  # scale_fill_discrete(labels = c('Church, family,\nneighbors, or school',
+  #                              'University,\nwork or friends',
+  #                              'Bar or restaurant',
+  #                              'Online')) +
+  # 
+  scale_color_manual(values = 'black') +
+  labs(y = NULL,
+       x = 'Year couple met',
+       title = 'Couples shift from traditional to modern ways to meet',
+       fill = 'How couple met')
+```
+
+
+```{r}
+fixed_cpl %>%
+  gather(-Year, key = 'meeting_place', value = 'share') %>%
+  arrange(Year, meeting_place) %>%
+  ggplot(mapping = aes(x = Year, y = share, na.rm = T, fill = meeting_place)) +
+  geom_area(color = 'black', size = 1) +
+  scale_y_continuous(labels = percent_format(accuracy = 1)) +
+  scale_fill_manual(values=c('red', 'orange', 'yellow', 'green4', 'turquoise', 'blue', 'slateblue', 'purple4', 'darkmagenta'),
+                    labels = c('Bar or\nrestaurant',
+                    'Church',
+                    'University',
+                    'Family',
+                    'Friends',
+                    'Neighbors',
+                    'Online',
+                    'High school\nor below',
+                    'Work')) +
+  theme(panel.background = element_rect(fill = NA),
+        panel.grid.major = element_line(colour = "lightgray"),
+        strip.text = element_blank(),
+        panel.spacing = unit(1, "lines")) +
+  scale_color_manual(values = 'black') +
+  labs(y = NULL,
+       x = 'Year couple met',
+       title = 'Increasingly, we find partners among strangers rather than via introductions',
+       fill = 'How couple met') +
+  facet_wrap(facets = ~meeting_place, ncol = 3)
+```
+

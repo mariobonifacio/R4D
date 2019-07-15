@@ -114,6 +114,6 @@ server <- function(input, output) { ## Define the server code
 
   })
 }
-shinyApp(ui = ui, server = server) ## Return a Shiny app object
+shinyApp(ui = ui, server = server) ## Return a Shiny app object 
 ```
 
