@@ -1,0 +1,51 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+library(tidyverse); library(ggthemes); library(lubridate); library(scales)
+```
+
+
+```{r}
+homicides <- read_csv('homicide-data.csv')
+```
+
+
+```{r}
+demo_pop <- tribble(~'victim_race', ~'population',
+        'Asian', 16614625L,
+        'Black', 40241818L,
+        'Hispanic', 54323205L,
+#        'Other', 15133856,
+        'White', 233657078L - 35684777L)
+
+homicides %>%
+ filter(victim_sex == 'Male' & victim_race %in% c('White', 'Black')) %>%
+  mutate(arrest = (disposition == 'Closed by arrest')) %>%
+  group_by(victim_race) %>%
+  summarize(arrest_rate = mean(arrest),
+            count = n()) %>%
+  inner_join(demo_pop, by = 'victim_race') %>%
+  mutate(murder_rate = 10000 * count/population) %>%
+  arrange(arrest_rate) %>%
+  ggplot(mapping = aes(x = victim_race, y = arrest_rate)) +
+  geom_col(fill = 'orange', color = 'gray') +
+  labs(x = 'Race of victim',
+       y = 'Arrest ratio',
+       title = 'Murders of black victims are less likely to lead to an arrest') +
+  scale_y_continuous(labels = percent_format(accuracy = 2)) +
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'),
+        panel.grid = element_line(color = 'darkgray'),
+        text = element_text(color = 'white'),
+        axis.text = element_text(color = 'white'),
+        axis.title = element_text(color = 'orange', face = 'bold.italic'),
+        rect = element_blank())
+```
+

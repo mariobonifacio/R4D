@@ -1,0 +1,80 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+library(tidyverse); library(lubridate); library(scales); library(ggthemes)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+```{r}
+balti_2010 <- read_csv('DEC_10_SF1.csv')
+balti_2017 <- read_csv('ACS_17_5YR.csv')
+
+raw_2010 <- vector(mode = 'integer')
+raw_2017 <- vector(mode = 'integer')
+
+for(i in 1:nrow(balti_2010)) {
+  raw_2010 <- append(raw_2010, sample(x = balti_2010[[i, "min"]]:balti_2010[[i, "max"]], size = round(balti_2010[[i, "count_2010"]]), replace = T))
+}
+
+raw_2017 <- append(raw_2017, abs(round(rnorm(4000, 46, 5))))
+
+for(i in 1:nrow(balti_2017)) {
+  raw_2017 <- append(raw_2017, sample(x = balti_2017[[i, "min"]]:balti_2017[[i, "max"]], size = round(balti_2017[[i, "count_2017"]]), replace = T))
+}
+
+raw_2010 <- append(raw_2010, abs(round(rnorm(10000, 75, 10))))
+
+raw_2017 <- append(raw_2017, abs(round(rnorm(10000, 20, 6))))
+raw_2017 <- append(raw_2017, abs(round(rnorm(2000, 20, 1))))
+
+
+
+ggplot() +
+  geom_bar(data = tibble(year = 2010, age = raw_2010), mapping = aes(x = age), fill = 'dodgerblue', alpha = 0.6) +
+  geom_bar(data = tibble(year = 2017, age = raw_2017), mapping = aes(x = age), fill = 'orange', alpha = 0.6) +
+  labs(title = 'Population shifts, Baltimore City, 2010 to 2017',
+       subtitle = 'Blue: 2010 age distribution, Orange: 2017 age distribution') +
+  theme_fivethirtyeight() +
+  scale_fill_fivethirtyeight()
+  
+
+```
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
+```{r}
+tribble(~"country", ~"us_poverty", ~"japan_poverty", ~"oecd_poverty", ~"gdp_share_welfare",
+"US",0.178,NA,NA,0.1932,
+"Japan",NA,0.157,NA,0.2306,
+"Canada",NA,NA,0.124,0.1721,
+"Australia",NA,NA,0.121,0.1915,
+"UK",NA,NA,0.111,0.2149,
+"Germany",NA,NA,0.104,0.2529,
+"Sweden",NA,NA,0.093,0.2706,
+"France",NA,NA,0.083,0.3155) %>%
+  ggplot(mapping = aes(x = gdp_share_welfare, y = oecd_poverty, na.rm = T)) +
+  geom_point(size = 3, mapping = aes(color = 'other_oecd'), na.rm = T) +
+  geom_smooth(method = 'lm', fill = 'limegreen', alpha = .20, color = 'limegreen', na.rm = T) +
+  geom_point(size = 3, mapping = aes(color = 'US', y = (us_poverty), na.rm = T)) +
+  geom_point(size = 3, mapping = aes(color = 'Japan', y = (japan_poverty), na.rm = T)) +
+  labs(title = 'One reason people are poor: They have less money',
+       y = 'Poverty rate',
+       x = 'Share of GDP spent on social welfare') +
+  theme_fivethirtyeight() +
+  theme(legend.title = element_blank(),
+        axis.title = element_text())
+  
+
+
+```
+

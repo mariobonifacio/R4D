@@ -91,8 +91,9 @@ fixed_cpl %>%
   scale_color_manual(values = 'black') +
   labs(y = NULL,
        x = 'Year couple met',
-       title = 'Couples shift from traditional to modern ways to meet',
-       fill = 'How couple met')
+       title = 'Singles shift from traditional to modern ways to meet partners',
+       fill = 'How couple met') +
+  theme(line = element_line(size = 2))
 ```
 
 
@@ -123,5 +124,74 @@ fixed_cpl %>%
        title = 'Increasingly, we find partners among strangers rather than via introductions',
        fill = 'How couple met') +
   facet_wrap(facets = ~meeting_place, ncol = 3)
+```
+
+
+```{r}
+fixed_cpl %>%
+  mutate(pre_college = Church + Family + Neighbors + School,
+         college_plus = Friends + College + Work,
+         strangers = Bar_rest + Online,
+         e_ratio = Online) %>%
+  select(Year, pre_college, college_plus, strangers, e_ratio) %>%
+  gather(-Year, -e_ratio, key = 'meeting_place', value = 'share') %>%
+  mutate(meeting_place = as_factor(meeting_place)) %>%
+  arrange(Year, meeting_place) %>%
+  ggplot(mapping = aes(x = Year, y = share, fill = meeting_place, color = e_ratio)) +
+  geom_col(size = 1) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  scale_fill_manual(values=c('dodgerblue', 'forestgreen', 'orange'),
+                    labels = c('Church, family,\nneighbors, or school',
+                               'Friends, work,\nor university',
+                               'Online, bar,\nor restaurant')) +
+  # scale_fill_discrete(labels = c('Church, family,\nneighbors, or school',
+  #                              'University,\nwork or friends',
+  #                              'Bar or restaurant',
+  #                              'Online')) +
+  # 
+  scale_color_gradient(low = 'black', high = 'darkorange') +
+  labs(y = NULL,
+       x = 'Year couple met',
+       title = 'Singles shift from traditional to modern ways to meet partners',
+       fill = 'How couple met') +
+  theme(line = element_line(size = 2),
+        axis.ticks = element_blank())
+```
+
+
+
+
+```{r}
+gun_data <- read.csv('c:\\Users\\Mario\\Desktop\\guns_deaths.csv')
+  
+gun_data %>%
+  filter(deaths_pc < 0.0001) %>%
+  ggplot(mapping = aes(x = guns_pc, y = deaths_pc, size = guns_pc)) +
+  geom_point() +
+  geom_smooth(method = 'lm')
+  
+```
+
+
+```{r}
+# https://www.washingtonpost.com/news/wonk/wp/2015/04/27/the-disturbing-differences-in-what-men-want-in-their-wives-and-their-daughters/
+tribble(~'quality', ~'wife', ~'daughter',
+        'Intelligent', 72, 81,
+        'Attractive',45, 10,
+        'Independent', 34, 66,
+        'Sweet', 34, 19,
+        'Strong', 30, 48,
+        'Principled', 0, 35) %>%
+  gather(-quality, key = 'woman', value = 'percent') %>%
+  mutate(quality = as.factor(quality),
+         woman = as.factor(woman)) %>%
+  arrange(desc(percent)) %>%
+  ggplot() +
+  geom_col(aes(x = quality, y = percent, fill = woman), position = 'dodge', color = 'black', size = 1) +
+  scale_fill_manual(values = c('dodgerblue', 'orange')) +
+  labs(fill = 'Percent of men who say this quality is important in their:',
+       x = NULL,
+       y = NULL) +
+  theme(legend.position = 'bottom')
 ```
 

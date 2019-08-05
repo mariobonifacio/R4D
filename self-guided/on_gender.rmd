@@ -6,12 +6,18 @@ output: html_notebook
 
 
 ```{r}
-library(tidyverse); library(lubridate); library(ggthemes)
+library(tidyverse); library(lubridate); library(ggthemes); library(extrafont)
 ```
 
 ```{r}
 test <- read_csv('exit_gender.csv', col_types = 'iiiiiiiic')
+```
 
+
+
+
+
+```{r}
 test %>%
   filter(year > 1976) %>%
   mutate(y_f = diff / 2,
@@ -21,27 +27,188 @@ test %>%
          post_f = if_else(year >= 2006, diff / 2, NULL),
          pre_f = if_else(year <= 2006, diff / 2, NULL)) %>%
   ggplot(mapping = aes(x = year)) +
-  geom_point(mapping = aes(y = y_f, color = 'womens relative support for Dems over GOP'), size = 3) + 
-  geom_smooth(mapping = aes(y = pre_f), color = 'orange', method = 'lm', fill = 'orange', alpha = 0.3, na.rm = T) +
-  geom_smooth(mapping = aes(y = post_f), color = 'orange', method = 'lm', fill = 'orange', alpha = 0.3, na.rm = T) +
-  geom_point(mapping = aes(y = y_m, color = 'mens relative support for Dems over GOP'), size = 3) +
-  geom_smooth(mapping = aes(y = pre_m), color = 'dodgerblue', method = 'lm', fill = 'dodgerblue', alpha = 0.3, na.rm = T) +
-  geom_smooth(mapping = aes(y = post_m), color = 'dodgerblue', method = 'lm', fill = 'dodgerblue', alpha = 0.3, na.rm = T) +
+  geom_point(mapping = aes(y = y_f, color = 'relative female\nsupport for\nDems over\nGOP'), size = 3) + 
+  # geom_smooth(mapping = aes(y = pre_f), color = 'orange', method = 'lm', fill = 'orange', alpha = 0.3, na.rm = T) +
+  # geom_smooth(mapping = aes(y = post_f), color = 'orange', method = 'lm', fill = 'orange', alpha = 0.3, na.rm = T) +
+  geom_point(mapping = aes(y = y_m, color = 'relative male\nsupport for\nDemsover\nGOP'), size = 3) +
+  # geom_smooth(mapping = aes(y = pre_m), color = 'dodgerblue', method = 'lm', fill = 'dodgerblue', alpha = 0.3, na.rm = T) +
+  # geom_smooth(mapping = aes(y = post_m), color = 'dodgerblue', method = 'lm', fill = 'dodgerblue', alpha = 0.3, na.rm = T) +
   theme_fivethirtyeight() +
-  labs(title = 'The gender gap for Dem. support used to fluctuate',
-       subtitle = 'But it has only moved in one direction since 2006',
+  labs(title = 'Since 1980 women have voted more Dem. than men',
+       # subtitle = 'But it has only moved in one direction since the 2006 midterm elections',
        x = NULL,
        y =  "Diff. in women-men Dem-GOP differential, %",
        color = NULL) +
-  theme(panel.background = element_rect(
-    fill = "white",
-    colour = "white",
-    size = 0),
-        plot.background = element_rect(
-    fill = "white",
-    colour = "white",
-    size = 0)
-  )
+  theme(panel.background = element_rect(fill = "white", color = "white", size = 0),
+        plot.background = element_rect(fill = "white", color = "white", size = 0),
+        legend.position = 'right',
+        legend.background = element_rect(fill = 'white'),
+        strip.background = element_rect(fill = 'white'),
+        rect = element_rect(fill = 'white')) +
+  guides(color = guide_legend(nrow = 2, byrow = TRUE)) +
+  scale_color_manual(values = c("orange", "dodgerblue"))
+  
 ```
 
+
+
+```{r}
+test %>%
+  filter(year > 1976) %>%
+  mutate(y_f = diff / 2,
+         y_m = diff / -2,
+         post_m = if_else(year >= 2006, diff / -2, NULL),
+         pre_m = if_else(year <= 2006, diff / -2, NULL),
+         post_f = if_else(year >= 2006, diff / 2, NULL),
+         pre_f = if_else(year <= 2006, diff / 2, NULL)) %>%
+  ggplot(mapping = aes(x = year)) +
+  geom_point(mapping = aes(y = y_f, color = 'relative female\nsupport for\nDems over\nGOP'), size = 3) + 
+  geom_smooth(mapping = aes(y = pre_f), color = 'orange', method = 'lm', fill = 'orange', alpha = 0.3, na.rm = T) +
+  # geom_smooth(mapping = aes(y = post_f), color = 'orange', method = 'lm', fill = 'orange', alpha = 0.3, na.rm = T) +
+  geom_point(mapping = aes(y = y_m, color = 'relative male\nsupport for\nDemsover\nGOP'), size = 3) +
+  geom_smooth(mapping = aes(y = pre_m), color = 'dodgerblue', method = 'lm', fill = 'dodgerblue', alpha = 0.3, na.rm = T) +
+  # geom_smooth(mapping = aes(y = post_m), color = 'dodgerblue', method = 'lm', fill = 'dodgerblue', alpha = 0.3, na.rm = T) +
+  theme_fivethirtyeight() +
+  labs(title = 'This gender gap had fluctuated through the years',
+       # subtitle = 'But it has only moved in one direction since the 2006 midterm elections',
+       x = NULL,
+       y =  "Diff. in women-men Dem-GOP differential, %",
+       color = NULL) +
+  theme(panel.background = element_rect(fill = "white", color = "white", size = 0),
+        plot.background = element_rect(fill = "white", color = "white", size = 0),
+        legend.position = 'right',
+        legend.background = element_rect(fill = 'white'),
+        strip.background = element_rect(fill = 'white'),
+        rect = element_rect(fill = 'white')) +
+  guides(color = guide_legend(nrow = 2, byrow = TRUE)) +
+  scale_color_manual(values = c("orange", "dodgerblue"))
+  
+```
+
+
+
+```{r}
+test %>%
+  filter(year > 1976) %>%
+  mutate(y_f = diff / 2,
+         y_m = diff / -2,
+         post_m = if_else(year >= 2006, diff / -2, NULL),
+         pre_m = if_else(year <= 2006, diff / -2, NULL),
+         post_f = if_else(year >= 2006, diff / 2, NULL),
+         pre_f = if_else(year <= 2006, diff / 2, NULL)) %>%
+  ggplot(mapping = aes(x = year)) +
+  geom_point(mapping = aes(y = y_f, color = 'relative female\nsupport for\nDems over\nGOP'), size = 3) + 
+  # geom_smooth(mapping = aes(y = pre_f), color = 'orange', method = 'lm', fill = 'orange', alpha = 0.3, na.rm = T) +
+  geom_smooth(mapping = aes(y = post_f), color = 'orange', method = 'lm', fill = 'orange', alpha = 0.3, na.rm = T) +
+  geom_point(mapping = aes(y = y_m, color = 'relative male\nsupport for\nDemsover\nGOP'), size = 3) +
+  # geom_smooth(mapping = aes(y = pre_m), color = 'dodgerblue', method = 'lm', fill = 'dodgerblue', alpha = 0.3, na.rm = T) +
+  geom_smooth(mapping = aes(y = post_m), color = 'dodgerblue', method = 'lm', fill = 'dodgerblue', alpha = 0.3, na.rm = T) +
+  theme_fivethirtyeight() +
+  labs(title = 'But the gender gap has only trended up since 2006',
+       subtitle = 'And the biggest gaps ever came in 2016 and 2018',
+       x = NULL,
+       y =  "Diff. in women-men Dem-GOP differential, %",
+       color = NULL) +
+  theme(panel.background = element_rect(fill = "white", color = "white", size = 0),
+        plot.background = element_rect(fill = "white", color = "white", size = 0),
+        legend.position = 'right',
+        legend.background = element_rect(fill = 'white'),
+        strip.background = element_rect(fill = 'white'),
+        rect = element_rect(fill = 'white')) +
+  guides(color = guide_legend(nrow = 2, byrow = TRUE)) +
+  scale_color_manual(values = c("orange", "dodgerblue"))
+  
+```
+
+
+```{r}
+
+```
+
+```{r}
+tribble(~'Year', ~'Brown_rat_population',1900	,	825000	,
+1910	,	1144000	,
+1920	,	1349000	,
+1930	,	1663000	,
+1940	,	1789000	,
+1950	,	1894000	,
+1960	,	1868000	,
+1970	,	1895000	,
+1980	,	1697000	,
+1990	,	1757000	,
+2000	,	1922000	,
+2010	,	1962000	,
+2011	,	1986000	,
+2012	,	2004000	,
+2013	,	2016000	,
+2014	,	2025000	,
+2015	,	2032000	,
+2016	,	2034000	,
+2017	,	2025000	,
+2018	,	2016000	,
+2019	,	2045000	,
+2020	,	2051000) %>%
+  mutate(brown_rat_population_in_millions = Brown_rat_population / 1000000) %>%
+  ggplot(mapping = aes(x = Year, y = brown_rat_population_in_millions)) +
+  geom_line(size = 1.5, color = 'dodgerblue') +
+  xlim(1900,2020) +
+  theme_fivethirtyeight() +
+  labs(title = 'The brown rat population (shown here in millions)',
+       subtitle = 'Rat levels are at 2.05 million which is the highest that it has EVER been')
+
+        
+        
+        
+        
+        
+        
+
+
+```
+
+```{r}
+library(extrafont)
+   font_import()
+ 
+
+
+tribble(~year, ~price,
+        "2008-05-07", 7.29,
+        "2019-07-18", 9.99,
+        "2018-03-09", 8.99,
+        "2014-06-29", 7.89,
+        "2010-08-27", 6.99,
+        "2016-08-19", 8.59,
+        "2018-12-13", 8.49,
+        "2016-12-25", 9.39,
+        "2017-02-04", 8.59) %>%
+  rbind(tribble(~year, ~price,
+                "2005-01-01", 7.29 * 190.800 / 213.967,
+                "2000-01-01", 7.29 * 167.200 / 213.967,
+                "1995-01-01", 7.29 * 147.400 / 213.967)) %>%
+  mutate(year = ymd(year)) %>%
+  ggplot(mapping = aes(x = year, y = price)) +
+  theme_bw() +
+  geom_point(color = '#B32E30', size = 2) +
+  geom_smooth(color = '#EE3338', size = 1, fill = "#EE3338", alpha = 0.5, method = 'lm') +
+  theme_bw() +
+    labs(title = 'An order of Moons Over My Hammy at Dennys',
+       subtitle = 'is at its highest price...EVER!',
+       y = "Menu price in $",
+       x = NULL) +
+  theme(panel.background = element_rect(fill = '#FFDE24'),
+        panel.grid = element_line(color = '#FEC02D', size = 1.5),
+        panel.border = element_rect(color = '#FEC02D', size = 2),
+        plot.title = element_text(family = "Bernard MT Condensed", color = '#B32E30', size = 22, hjust = 0.4),
+        plot.subtitle = element_text(family = "Bernard MT Condensed", color = '#B32E30', size = 16, hjust = 0.4),
+        plot.background = element_rect(fill = '#FFDE24'),
+        axis.text = element_text(color = '#EE3338', family = "Arial"),
+        axis.title = element_text(color = '#B32E30', family = "Arial", size = 12),
+        axis.ticks = element_line(color = '#FEC02D', size = 1.5)) 
+
+
+  windowsFonts()
+ # 
+ # library(extrafont)
+```
 

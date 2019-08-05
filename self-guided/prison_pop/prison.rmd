@@ -1,0 +1,90 @@
+---
+title: "Politics and incarceration"
+output: html_notebook
+---
+
+After every decennial census, the United States prison population is counted as part of the state which incarcerates them rather than as part of their home state.  Because the incarcerated cannot vote under any circumstance in 48 of the 50 states, this gives free citizens in those states with the highest rates of incarceration more per capita political power.
+
+```{r}
+library(tidyverse); library(ggthemes); library(lubridate); library(scales)
+```
+
+To start
+
+```{r}
+eli <- read_csv('elections_2016.csv') %>%
+  mutate(diff_pres = (r_pres - d_pres) / (r_pres + d_pres),
+         diff_sen = -as.numeric(str_remove(diff_sen, '%')) / 100) %>%
+  select(state = 1, 2:4, 10, 7) %>%
+  arrange(diff_pres)
+eli
+```
+
+
+Then load data on the incarceration rate by state
+
+```{r}
+
+incarc <- read_csv('incarc_rate.csv') %>%
+  mutate(incar_adults = incar_adults/100000,
+         incar_all = incar_all/100000) %>%
+  arrange(desc(incar_adults))
+incarc
+```
+
+Finally, graph the two against each other
+
+```{r}
+inner_join(eli, incarc, by = 'state') %>%
+  arrange(state) %>%
+  ggplot(mapping = aes(y = diff_pres, x = incar_adults)) +
+  geom_point(aes(size = ev), color = 'dodgerblue') +
+  geom_smooth(method = 'lm', alpha = 0.2, color = 'orange', fill = 'orange', linetype = 'dashed') +
+  theme_fivethirtyeight(base_size = 8) +
+  theme(axis.title = element_text(color = 'dodgerblue4'),
+        legend.position = 'NULL' ) +
+  scale_y_continuous(labels = percent_format(accuracy = 1), limits = c(-.52, .52)) +
+  scale_x_continuous(labels = percent_format(accuracy = .1)) +
+  labs(title = 'GOP states are likely to have higher incarceration rates',
+       subtitle = 'Prisoner populations boost the electoral power of states that incarcerate them',
+       y = 'Relative GOP support in 2016',
+       x = 'Adult incarceration rate',
+       caption = 'Sources: fec.gov, bjs.gov')
+
+```
+
+
+If this stinks of the three-fifths compromise, you're not far off.
+
+Let's load Census data for 1860 including slave population
+
+```{r}
+slave_rate <- read_csv('slave_rate_1860.csv') %>%
+  mutate(slave_rate = slave_pop / total_pop) %>%
+  arrange(desc(slave_rate))
+slave_rate
+```
+
+```{r}
+inner_join(slave_rate, incarc, by = 'state') %>%
+  inner_join(eli, by = 'state') %>%
+  select(state, slave_rate, incar_adults, diff_pres, ev) %>%
+  ggplot(mapping = aes(y = slave_rate, x = incar_adults)) +
+  geom_point(color = 'dodgerblue', mapping = aes(size = ev)) +
+  geom_smooth(method = 'loess', na.rm = T, alpha = 0, color = 'orange', linetype = 'dashed') +
+  xlim(-0.01,0.6) +
+  ylim(0,.015) +
+  scale_y_continuous(labels = percent_format(accuracy = 1)) +
+  theme_fivethirtyeight(base_size = 8) +
+  scale_x_continuous(labels = percent_format(accuracy = .1)) +
+  labs(title = 'States with high slave rates in 1860 have higher incarceration rates today',
+       x = 'Incarcerated adults as percent of total in 2017',
+       y = 'Slave population as percent of total in 1860',
+       caption = 'Sources: census.gov, bjs.gov') +
+  theme(axis.title = element_text(color = 'dodgerblue4'),
+        legend.position = 'NULL',
+        #panel.background =  element_blank(),
+        plot.background = element_blank())
+
+```
+
