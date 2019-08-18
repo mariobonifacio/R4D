@@ -8,7 +8,7 @@ This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute
 Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
 
 ```{r}
-library(tidyverse); library(ggthemes); library(lubridate); library(scales)
+library(tidyverse); library(ggthemes); library(lubridate); library(scales); library(ggrepel)
 ```
 
 
@@ -26,26 +26,169 @@ demo_pop <- tribble(~'victim_race', ~'population',
         'White', 233657078L - 35684777L)
 
 homicides %>%
- filter(victim_sex == 'Male' & victim_race %in% c('White', 'Black')) %>%
+  filter(victim_sex %in% c('Male', 'Female') & victim_race %in% c('White', 'Black')) %>%
   mutate(arrest = (disposition == 'Closed by arrest')) %>%
-  group_by(victim_race) %>%
+  group_by(victim_race, victim_sex) %>%
+  summarize(arrest_rate = mean(arrest),
+            count = n()) %>%
+  ggplot(mapping = aes(x = victim_race, y = victim_sex)) +
+  geom_point(color = 'gray', aes(size = arrest_rate)) +
+  labs(x = 'Race of victim',
+       y = 'Sex of victim',
+       title = 'Murders of black, male victims are less likely to lead to an arrest') +
+  # (labels = percent_format(accuracy = 2)) +
+  theme(plot.background = element_rect(fill = 'black'),
+        panel.background = element_rect(fill = 'black'),
+        panel.grid = element_line(linetype = 'dashed'),
+        text = element_text(color = 'white'),
+        axis.text = element_text(color = 'white'),
+        axis.title = element_text(color = 'orange', face = 'bold.italic'),
+        rect = element_blank(),
+        legend.title = element_blank())
+  
+```
+
+```{r}
+
+homicides %>%
+  filter(!(victim_race %in% c("Other", "Unknown", 'Asian'))) %>%
+  filter(victim_sex %in% c('Male', 'Female') 
+         # & victim_race %in% c('White', 'Black')
+         ) %>%
+  mutate(arrest = (disposition == 'Closed by arrest')) %>%
+  group_by(victim_race, victim_sex) %>%
   summarize(arrest_rate = mean(arrest),
             count = n()) %>%
   inner_join(demo_pop, by = 'victim_race') %>%
   mutate(murder_rate = 10000 * count/population) %>%
   arrange(arrest_rate) %>%
-  ggplot(mapping = aes(x = victim_race, y = arrest_rate)) +
-  geom_col(fill = 'orange', color = 'gray') +
+  ggplot(mapping = aes(x = victim_race, y = victim_sex)) +
+  geom_point(fill = 'orange', color = 'gray', mapping = aes(size = arrest_rate)) +
   labs(x = 'Race of victim',
-       y = 'Arrest ratio',
-       title = 'Murders of black victims are less likely to lead to an arrest') +
-  scale_y_continuous(labels = percent_format(accuracy = 2)) +
+       y = 'Gender of victim',
+       title = 'Murders of black and Hispanic men are less likely to lead to an arrest') +
+  # scale_y_continuous(labels = percent_format(accuracy = 2)) +
   theme(plot.background = element_rect(fill = 'black'),
         panel.background = element_rect(fill = 'black'),
-        panel.grid = element_line(color = 'darkgray'),
+        panel.grid = element_line(color = 'darkgray',linetype = 'dotted'),
         text = element_text(color = 'white'),
         axis.text = element_text(color = 'white'),
         axis.title = element_text(color = 'orange', face = 'bold.italic'),
-        rect = element_blank())
+        rect = element_blank(),
+        legend.position = 'none') +
+  geom_label_repel(data = filter(homicides %>%
+                                   filter(victim_sex %in% c('Male', 'Female') 
+                                          & !(victim_race %in% c('Other', 'Unknown', 'Asian'))
+                                          ) %>%
+                                   mutate(arrest = (disposition == 'Closed by arrest')) %>%
+                                   group_by(victim_race, victim_sex) %>%
+                                   summarize(arrest_rate = mean(arrest),
+                                             count = n()),
+                                 victim_sex %in% c('Male', 'Female') 
+                                 & !(victim_race %in% c('Other', 'Unknown', 'Asian'))
+                                 ),
+                   mapping = aes(label = percent(arrest_rate, accuracy = 1)), na.rm = T,
+                   box.padding   = 0.35,
+                   point.padding = 0.5,
+                   segment.color = 'orange')
+```
+
+
+
+
+
+```{r}
+raw_crime_2017 <- read_csv('offenses_by_city_2017.csv')
+```
+
+```{r}
+elec_2016 <- select(read_csv('elections_2016.csv'), state, d_pres, r_pres) %>%
+  mutate(pres_diff = (r_pres - d_pres) / (r_pres + d_pres))
+```
+
+
+
+```{r}
+raw_crime_2017 <- raw_crime_2017 %>%
+  select(-(X14:X19)) %>%
+  mutate(murder_rate = murder_nn_manslaughter / population)
+
+```
+
+
+
+```{r}
+# Load strictness ranking
+
+strict_law <- read_csv('gun_laws_2018.csv') %>% arrange(desc(strict_grade)) %>%
+  mutate(strict_num = case_when(strict_grade == 'A' ~ 95,
+                                strict_grade == 'A-' ~ 91,
+                                strict_grade == 'B+' ~ 88,
+                                strict_grade == 'B' ~ 85,
+                                strict_grade == 'B-' ~ 81,
+                                strict_grade == 'C+' ~ 78,
+                                strict_grade == 'C' ~ 75,
+                                strict_grade == 'C-' ~ 71,
+                                strict_grade == 'D+' ~ 68,
+                                strict_grade == 'D' ~ 65,
+                                strict_grade == 'D-' ~ 61,
+                                strict_grade == 'F' ~ 55))
+```
+
+
+```{r}
+crime_elec <- raw_crime_2017 %>%
+  arrange(desc(murder_rate)) %>%
+  select(state = 1, 2:3,murslaughter = 5,14) %>% 
+  # top_n(1000) %>%
+  filter(population > 99999) %>%
+  inner_join(elec_2016, by = 'state') %>%
+  inner_join(strict_law, by = 'state')
+```
+
+
+
+```{r}
+crime_elec %>%
+  group_by(pres_diff) %>%
+  summarize(murder_rate = weighted.mean(x = sample(murder_rate,100,replace = T), w = sample(population,100,replace = T)),
+            population = sum(population, na.rm = T)) %>%
+  arrange(desc(pres_diff)) %>%
+  ggplot() +
+  geom_point(size = 3,  mapping = aes(x = pres_diff, y = murder_rate, na.rm = T), color = 'black') +
+  geom_smooth(method = 'lm', mapping = aes(x = pres_diff, y = murder_rate, na.rm = T))
+  
+  # geom_label_repel(data = filter(crime_elec, murder_rate > 0.0003),
+  #                  mapping = aes(label = state, na.rm = T),
+  #                  box.padding   = 0.35,
+  #                  point.padding = 0.5,
+  #                  segment.color = 'darkgray') +
+  #geom_smooth(method = 'lm', color = 'dodgerblue4',
+  #            fill = 'dodgerblue4',linetype = 'dashed')
+  
+```
+
+
+
+
+
+```{r}
+crime_elec %>%
+  filter(population > 49999) %>%
+  filter(murder_rate < 360) %>%
+  ggplot(mapping = aes(x = murder_rate, y = murder_rate, na.rm = T)) +
+  geom_point(size = 3, mapping = aes(color = population)) +
+  geom_label_repel(data = filter(crime_elec, murder_rate_rank < 289 & population > 99999),
+                   mapping = aes(label = City), na.rm = T,
+                   box.padding   = 0.35,
+                   point.padding = 0.5,
+                   segment.color = 'dodgerblue') +
+  labs(title = 'Many cities have homicide rates higher than Chicago',
+       subtitle = 'This plot includes medium and large cities and labels large cities',
+       x = 'Rank of homicide rate among all cities',
+       y = 'Homicides in 2017 per 100,000 residents') +
+  theme_fivethirtyeight() +
+  theme(legend.position = "none",
+        axis.title = element_text())
 ```
 

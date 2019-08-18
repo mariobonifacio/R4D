@@ -1,0 +1,75 @@
+num,body,lat,lon,type,acreage,locale
+44,Castaic Lake,,,Reservoir,2230,Castaic
+43,Sepulveda Flood Control Basin,,,Flood-Control Reservoir,2150,Los Angeles (Lake Balboa)
+42,Pyramid Lake,,,Reservoir,1360,Gorman
+41,Bouquet Reservoir,,,Reservoir,628,Angeles National Forest
+40,Lake Palmdale,,,Artificial,586,Palmdale
+39,San Gabriel Reservoir,,,Reservoir,525,Angeles National Forest
+38,Elderberry Forebay,,,Reservoir,450,Castaic
+37,Morris Reservoir,,,Reservoir,417,Angeles Natl. Forest
+36,Malibou Lake,,,Reservoir,350,Agoura Hills
+35,Puddingstone Reservoir,,,Reservoir,250,Angeles National Forest
+34,Los Angeles Reservoir (Upper Van Norman Lake),,,Reservoir,175,San Fernando
+33,Encino Reservoir,,,Reservoir,158,Los Angeles (Encino)
+32,Little Rock Reservoir,,,Reservoir,150,Palmdale
+31,Cogswell Reservoir,,,Reservoir,146,Angeles National Forest
+30,Westlake Lake,,,Artificial,125,Westlake Village
+29,Stone Canyon Reservoir,,,Former Reservoir,117,Los Angeles (Bel-Air/Beverly Glen)
+28,Quail Lake,34.7722,-118.7475,Reservoir,100,Angeles National Forest
+25,Big Tujunga Reservoir,,,Reservoir,83,Angeles National Forest
+24,Hollywood Reservoir,34.1198,-118.3309,Reservoir,82,Los Angeles (Hollywood)
+23,Peck Road Park Lake,,,Artificial,80,Arcadia
+22,Santa Fe Reservoir,,,Flood-Control Reservoir,70,Irwindale
+21,Pacoima Reservoir,,,Reservoir,68,Angeles Natl. Forest
+20,Eaton Wash Reservoir,,,Flood-Control Reservoir,54,Altadena
+26,Ivanhoe Reservoir,34.1032,-118.2655,Reservoir,48,Los Angeles (Silver Lake)
+27,Silverlake Reservoir,34.0978,-118.2655,Reservoir,48,Los Angeles (Silver Lake)
+19,Machado Lake,34.058611,-118.2775,Natural Lake,45,Los Angeles (Harbor City)
+18,Elizabeth Lake,34.6658,-118.4026,Natural Lake,35,Elizabeth Lake
+17,Lower Franklin Reservoir,,,Reservoir,32,Los Angeles (Beverly Crest)
+16,Lake Balboa,34.2011,-118.5011,Artificial,27,Los Angeles (Lake Balboa)
+15,Apollo Lake,34.7422,-118.1998,Artificial,26,Lancaster
+14,Santa Anita Reservoir,,,Reservoir,17,Sierra Madre
+13,Lake Hughes,34.6773,-118.4525,Natural Lake,15,"Lake Hughes, Angeles National Forest"
+12,Hansen Dam Park Lake,,,Flood-Control Reservoir,11,Los Angeles (Lake View Terrace)
+10,MacArthur Park Lake,34.05516645,-118.2731656,Natural Lake,8,Los Angeles (Westlake Area)
+11,Munz Lakes,34.6728,-118.4329,Natural Lake,8,Angeles Natl. Forest
+8,Crystal Lake,34.3261,-117.8326,Natural Lake,7,Angeles National Forest
+9,Jackson Lake,34.3921,-117.7265,Natural Lake,7,Angeles National Forest
+6,Hollenbeck Park Lake,,,Artificial,6,Los Angeles (East)
+7,Toluca Lake,34.1502,-118.355,Natural Lake,6,Universal City
+5,Rowena Reservoir,,,Reservoir,5,Los Angeles (Los Feliz)
+3,Baldwin Lake,34.2739,-116.8086,Natural Lake,4,Arcadia
+4,Malibu Reservoir,,,Reservoir,4,Malibu
+2,Upper Franklin Reservoir,,,Reservoir,3,Los Angeles (Beverly Crest)
+1,Lincoln Park Lake,,,Artificial,2,Los Angeles (Lincoln Park)
+45,Alondra Park Lake,33.8895,-118.3309,Artificial,1,Lawndale
+47,Belvedere Park Lake,,,Artificial,1,Los Angeles (East)
+49,Bouton Lake,,,Artificial,1,Lakewood
+51,Cerritos Park Lake,,,Artificial,1,Cerritos
+54,Downey Wilderness Park Lakes,,,Artificial,1,Downey
+58,El Dorado Park Lakes,,,Artificial,1,Long Beach
+60,Heavenly Pond,,,Artificial,1,Los Angeles (Beverly Crest)
+61,John Ford Park Lake,,,Artificial,1,Bell Gardens
+62,Kenneth Hahn Park Lake,,,Artificial,1,Baldwin Hills
+63,La Mirada Park Lake,,,Artificial,1,La Mirada
+65,Lake Lindero,34.1484,-118.7899,Artificial,1,Agoura Hills
+68,Legg Lake,,,Artificial,1,Whittier Narrows
+69,Magic Johnson Park Lake,,,Artificial,1,Willowbrook
+74,Whittier Narrows Reservoir,,,Flood-Control Reservoir,1,Montebello
+46,Baldwin Hills Reservoir,34.0063,-118.3714,Former Reservoir,1,Baldwin Hills
+52,Chatsworth Reservoir,,,Former Reservoir,1,Los Angeles (Chatsworth)
+57,Echo Park Lake,,,Former Reservoir,1,Los Angeles (Echo Park)
+72,Stone Canyon Reservoir (Upper),,,Former Reservoir,1,Los Angeles (Bel-Air/Beverly Glen)
+50,Caldwell Lake,34.4143,-117.7791,Natural Lake,1,Angeles National Forest
+73,Una Lake,34.5502317,-118.1114718,Natural Lake,1,Palmdale
+71,Rosamond Lake*,,,Natural Lake (Dry),1,Edwards AF Base
+48,Big Dalton Reservoir,,,Reservoir,1,Angeles National Forest
+53,Devil’s Gate Reservoir,,,Reservoir,1,La Cañada Flintridge
+55,Dry Canyon Reservoir,,,Reservoir,1,Santa Clarita
+56,Eagle Rock Reservoir,,,Reservoir,1,Los Angeles (Eagle Rock)
+59,Fairmont Reservoir #2,,,Reservoir,1,Fairmont Area
+64,Lake Enchanto,,,Reservoir,1,Malibu
+66,Las Virgenes Reservoir,,,Reservoir,1,Westlake Village
+67,Lees Lake,,,Reservoir,1,Los Angeles (West Hills)
+70,Piute Ponds,,,Reservoir,1,Edwards AF Base

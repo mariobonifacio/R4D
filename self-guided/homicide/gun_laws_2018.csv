@@ -1,0 +1,51 @@
+﻿strict_rank,state,strict_grade,gun_death_rt
+1,California,A,7.8
+2,New Jersey,A,5.3
+3,Connecticut,A-,5.1
+4,Maryland,A-,12.3
+5,Massachusetts,A-,3.7
+6,New York,A-,3.7
+7,Hawaii,A-,2.4
+8,Illinois,B+,12.1
+9,Rhode Island,B+,3.8
+10,Washington,B+,11.1
+11,Delaware,B,11.6
+12,Pennsylvania,C+,12.4
+13,Minnesota,C+,8.2
+14,Oregon,C+,12.1
+15,Colorado,C,13.4
+16,Iowa,C,9
+16,Michigan,C,11.2
+18,Wisconsin,C-,10.5
+19,Florida,C-,12.3
+20,Nebraska,C-,8.3
+21,Vermont,D+,11.8
+22,Ohio,D,13.7
+22,Virginia,D,11.9
+24,North Carolina,D,13.6
+25,Nevada,D,16.7
+26,Indiana,D-,15.2
+27,Tennessee,D-,18.4
+28,Utah,D-,14
+29,Oklahoma,F,17.2
+30,Louisiana,F,21.6
+30,New Mexico,F,18.5
+30,South Carolina,F,17.6
+33,New Hampshire,F,10.3
+34,Georgia,F,15.4
+34,Texas,F,12.4
+36,Maine,F,11.6
+37,Alabama,F,22.9
+38,Montana,F,22.6
+38,North Dakota,F,13.2
+38,West Virginia,F,18.6
+41,Arkansas,F,20.2
+42,South Dakota,F,11.8
+43,Kentucky,F,16.2
+44,Alaska,F,24.5
+45,Kansas,F,15.9
+46,Arizona,F,15.7
+47,Missouri,F,21.3
+48,Idaho,F,16.4
+48,Wyoming,F,18.7
+50,Mississippi,F,21.5

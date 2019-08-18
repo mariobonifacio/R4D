@@ -6,11 +6,14 @@ output: html_notebook
 
 
 ```{r}
-library(tidyverse); library(lubridate); library(ggthemes); library(extrafont)
+library(tidyverse); library(lubridate); library(ggthemes); library(extrafont); library(scales); library(ggalt)
 ```
 
 ```{r}
-test <- read_csv('exit_gender.csv', col_types = 'iiiiiiiic')
+test <- read_csv('exit_gender.csv', col_types = 'iiiiiiiic') %>%
+  full_join(read_csv('turnout_gender.csv'), by = 'year') %>%
+  arrange(year)
+
 ```
 
 
@@ -107,7 +110,7 @@ test %>%
   labs(title = 'But the gender gap has only trended up since 2006',
        subtitle = 'And the biggest gaps ever came in 2016 and 2018',
        x = NULL,
-       y =  "Diff. in women-men Dem-GOP differential, %",
+       y =  NULL,
        color = NULL) +
   theme(panel.background = element_rect(fill = "white", color = "white", size = 0),
         plot.background = element_rect(fill = "white", color = "white", size = 0),
@@ -119,6 +122,46 @@ test %>%
   scale_color_manual(values = c("orange", "dodgerblue"))
   
 ```
+
+
+```{r}
+test %>%
+  filter(year > 1976) %>%
+  mutate(y_f = diff,
+         y_m = NULL,
+         post_m = if_else(year >= 2006, NULL, NULL),
+         pre_m = if_else(year <= 2006, NULL, NULL),
+         post_f = if_else(year >= 2006, diff, NULL),
+         pre_f = if_else(year <= 2006, diff, NULL)) %>%
+  ggplot(mapping = aes(x = year)) +
+  geom_point(mapping = aes(y = diff, na.rm = T, fill = 'Percent difference in Democratic vote between men and women'), size = 3, color = 'forestgreen') +
+  geom_col(mapping = aes(y = turnout_diff, na.rm = T, color = 'Difference in voter turnout between women and men'), size = 1, fill = 'salmon') +
+  geom_smooth(mapping = aes(y = pre_f), color = 'forestgreen', fill = 'forestgreen', method = 'lm', alpha = 0.3, na.rm = T, linetype = 'dashed', size = 0) +
+  geom_smooth(mapping = aes(y = post_f), color = 'forestgreen', fill = 'forestgreen', method = 'lm', alpha = 0.3, na.rm = T, linetype = 'dashed', size = 0) +
+  # geom_point(mapping = aes(y = y_m, color = 'relative male\nsupport for\nDemsover\nGOP'), size = 3) +
+  # geom_smooth(mapping = aes(y = pre_m), color = 'dodgerblue4', method = 'lm', fill = 'dodgerblue', alpha = 0.3, na.rm = T) +
+  # geom_smooth(mapping = aes(y = post_m), color = 'dodgerblue4', method = 'lm', fill = 'dodgerblue', alpha = 0.3, na.rm = T) +
+  theme_fivethirtyeight(base_size = 10) +
+  labs(title = 'Women have voted Democratic at higher rates than men since 1980',
+       subtitle = 'The difference fluctuated until 2006 when it started trending upward to its highest points in 2016 and 2018',
+       x = NULL,
+       y =  "Diff. in women-men Dem-GOP differential, %",
+       color = NULL,
+       fill = NULL) +
+  theme(panel.background = element_rect(fill = "white", color = "white", size = 0),
+        plot.background = element_rect(fill = "white", color = "white", size = 0),
+        legend.position = 'bottom',
+        legend.text = element_text(),
+        legend.background = element_rect(fill = 'white'),
+        strip.background = element_rect(fill = 'white'),
+        rect = element_rect(fill = 'white')) +
+  scale_color_manual(values = 'black') +
+  scale_fill_manual(labels = "Percent difference in Democratic vote between men and women", values = "forestgreen") +
+  # guides(color = guide_legend(nrow = 2, byrow = TRUE)) +
+  ylim(0, 25)
+  
+```
+
 
 
 ```{r}
