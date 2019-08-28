@@ -192,3 +192,25 @@ crime_elec %>%
         axis.title = element_text())
 ```
 
+```{r}
+# library(nycflights13)
+
+flights %>%
+  mutate(maxi = max(dep_delay)) %>%
+  ggplot(aes(dep_delay, na.rm = T)) +
+  geom_histogram() +
+  geom_vline(aes(xintercept = max(dep_delay, na.rm = T)), linetype = 'dashed') +
+  ggtitle(paste('No filter. max = ', flights %>% summarize(max = max(dep_delay, na.rm = T))      ))
+```
+
+
+```{r}
+flights %>%
+  filter(dep_delay <= 1000) %>%
+  mutate(maxi = max(dep_delay)) %>%
+  ggplot(aes(dep_delay, na.rm = T)) +
+  geom_histogram() +
+  geom_vline(aes(xintercept = 1000), linetype = 'dashed') +
+  ggtitle(paste('Filtered to only include <= 1000'))
+```
+

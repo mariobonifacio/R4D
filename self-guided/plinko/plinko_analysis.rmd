@@ -1,0 +1,33 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Study of a plinko board.
+
+Load some packages
+
+```{r message=FALSE}
+library(ggalt); library(tidyverse); library(lubridate); library(stringr); library(scales)
+```
+
+
+Import some data
+
+```{r message=FALSE}
+results <- read_csv('results.csv', col_types = 'iiii')
+```
+
+
+```{r}
+results %>%
+  # group_by(adj_start) %>%
+  # summarize(mean_end = mean(adj_end, na.rm = T),
+  #           std_end = sd(adj_end, na.rm = T)) %>%
+  ggplot(mapping = aes(x = adj_start, y = adj_end)) +
+  geom_point(size = 3) +
+  geom_jitter(width = .5, height = .5) 
+   # geom_smooth(method = 'lm')
+  # geom_crossbar(mapping = aes(x = adj_start, ymin = mean_end - std_end, ymax = mean_end + std_end))
+```
+
