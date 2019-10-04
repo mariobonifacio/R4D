@@ -1,5 +1,5 @@
 ---
-title: "R Notebook"
+title: "The demographics of suicide by firearm"
 output: html_notebook
 ---
 
@@ -13,11 +13,31 @@ library(tidyverse); library(ggthemes); library(lubridate); library(scales); libr
 
 
 ```{r}
-homicides <- read_csv('homicide-data.csv')
+
+```
+
+
+
+```{r}
+suic_cdc <- read_tsv('deaths_97-17.txt')
 ```
 
 
 ```{r}
+suic_cdc %>%
+  filter(!is.na(as.numeric(Population))) %>%
+  mutate(pop = as.integer(Population)) %>%
+  select(st = 2, age = 5, sex = 7, ethnic = 8, Race, Deaths, pop) %>%
+  
+  
+
+```
+
+
+
+```{r}
+
+
 demo_pop <- tribble(~'victim_race', ~'population',
         'Asian', 16614625L,
         'Black', 40241818L,

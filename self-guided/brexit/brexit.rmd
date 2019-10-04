@@ -25,7 +25,7 @@ my_data <- select(read_csv('^FTSE.csv'), 1, ftse = 6) %>%
 ```
 
 
-```{r message=FALSE, warning=FALSE, include=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 my_data %>%
   filter(Date > ymd('2010-01-01') & Date < ymd('2018-01-01')) %>%
   mutate(cac_up = (my_data[[1, 3]] / cac - 1) / (my_data[[1, 2]] / ftse - 1),
@@ -44,9 +44,9 @@ my_data %>%
             all_up = mean(all_up)) %>%
   arrange(desc(eu_up)) %>%
   ggplot(mapping = aes(x = rd_date)) +
-  geom_line(mapping = aes(y = log(cac_up)), na.rm = T, size = 2, color = 'orange') +
-  geom_line(mapping = aes(y = log(dax_up)), na.rm = T, size = 2, color = 'dodgerblue') +
-  geom_line(mapping = aes(y = log(sp_up)), na.rm = T, size = 2, color = 'forestgreen')
+  geom_line(mapping = aes(y = log(cac_up), na.rm = T), size = 2, color = 'orange') +
+  geom_line(mapping = aes(y = log(dax_up), na.rm = T), size = 2, color = 'dodgerblue') +
+  geom_line(mapping = aes(y = log(sp_up), na.rm = T), size = 2, color = 'forestgreen')
     
 ```
 

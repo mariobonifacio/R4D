@@ -21,13 +21,29 @@ results <- read_csv('results.csv', col_types = 'iiii')
 
 ```{r}
 results %>%
-  # group_by(adj_start) %>%
-  # summarize(mean_end = mean(adj_end, na.rm = T),
-  #           std_end = sd(adj_end, na.rm = T)) %>%
-  ggplot(mapping = aes(x = adj_start, y = adj_end)) +
-  geom_point(size = 3) +
-  geom_jitter(width = .5, height = .5) 
-   # geom_smooth(method = 'lm')
+  group_by(adj_start) %>%
+  # filter(adj_start %in% c(1,8)) %>%
+  summarize(ct = n(),
+            mean_end = mean(adj_end, na.rm = T),
+            std_end = sd(adj_end, na.rm = T)) %>%
+  ggplot(mapping = aes(x = adj_start, y = std_end)) +
+  geom_point(mapping = aes(size = ct)) +
+  # geom_count() +
+  geom_smooth(method = 'loess')
   # geom_crossbar(mapping = aes(x = adj_start, ymin = mean_end - std_end, ymax = mean_end + std_end))
 ```
 
+
+```{r}
+results %>%
+  group_by(adj_start) %>%
+  summarize(stddev = sd(adj_end),
+            mean_end = mean(adj_end)) %>%
+  # summarize(mean_end = mean(adj_end, na.rm = T),
+  #           std_end = sd(adj_end, na.rm = T)) %>%
+  ggplot(mapping = aes(x = adj_start, y = stddev)) +
+  geom_point() +
+  # geom_count() +
+  geom_smooth(method = 'lm')
+  # geom_crossbar(mapping = aes(x = adj_start, ymin = mean_end - std_end, ymax = mean_end + std_end))
+```
