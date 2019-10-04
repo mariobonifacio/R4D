@@ -1,0 +1,107 @@
+---
+title: "simulations_by_allocation"
+output: html_notebook
+---
+
+Load some packages
+
+```{r}
+library(tidyverse); library(ggalt); library(scales); library(lubridate); library(ggthemes); library(wesanderson); library(stringr); library(xml2)
+```
+
+Load some data
+
+```{r}
+histo <- read_csv('st-bond.csv') %>%
+    mutate(mo = mdy(Date),
+           r_st = (sp5 - lag(sp5))/lag(sp5),
+           r_bo = (fbndx - lag(fbndx))/lag(fbndx)) %>%
+    select(mo, r_st, r_bo, stk = sp5, bo = fbndx) 
+    
+```
+
+Set up vars
+```{r}
+
+eq_alloc <- vector(mode = 'double')
+mean_r <- vector(mode = 'double')
+sd_r <- vector(mode = 'double')
+q01 <- vector(mode = 'double')
+q05 <- vector(mode = 'double')
+q10 <- vector(mode = 'double')
+q25 <- vector(mode = 'double')
+q50 <- vector(mode = 'double')
+q75 <- vector(mode = 'double')
+
+super_results <- tibble(eq_alloc, mean_r, sd_r, q01, q05, q10, q25, q50, q75)
+
+tot_return <- vector(mode = 'double')
+
+sims <- tibble(eq_alloc, tot_return)
+
+histo_bo <- histo %>% filter(!is.na(r_bo)) ## Removes na entries from table
+
+```
+
+
+Run the simulations
+```{r}
+
+
+for(alloc_stock in (1:10)/10) {
+    
+    results <- vector(mode = 'double')
+
+for(i in 1:1000) {
+    
+    seed <- round(runif(n = 360, min = 1, max = nrow(histo_bo)), 0)
+    
+    results[i] <- tibble(r_st = histo_bo$r_st[seed], r_bo = histo_bo$r_bo[seed]) %>%
+        mutate(fctr_st = 1 + r_st, fctr_bo = 1 + r_bo) %>%
+        summarize(test_result = (alloc_stock * prod(fctr_st) + (1 - alloc_stock) * prod(fctr_bo)) ^ (1/30) - 1) %>%
+        pull(test_result)
+
+ro <- nrow(sims) + 1
+
+sims[ro, 1] <- alloc_stock
+sims[ro, 2] <- results[i]
+
+}
+
+ro <- alloc_stock * 10
+
+super_results[ro, 1] <- alloc_stock
+super_results[ro, 2] <- round(mean(results), 3)
+super_results[ro, 3] <- round(sd(results), 3)
+
+
+
+qs <- round(quantile(results,probs = c(0.01, 0.05, 0.1, 0.25, 0.5, 0.75)), 3)
+
+super_results[ro, 4] <- qs[1]
+super_results[ro, 5] <- qs[2]
+super_results[ro, 6] <- qs[3]
+super_results[ro, 7] <- qs[4]
+super_results[ro, 8] <- qs[5]
+super_results[ro, 9] <- qs[6]
+
+}
+
+super_results
+
+```
+
+
+
+```{r}
+sims[1001:1014,]
+
+
+
+    sample(size = 100, replace = T) %>%
+    ggplot(mapping = aes(x = tot_return, fill = eq_alloc)) +
+    geom_histogram()
+
+```
+
+```{r}
