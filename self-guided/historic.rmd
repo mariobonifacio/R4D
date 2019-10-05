@@ -5,13 +5,13 @@ output: html_notebook
 
 Load some packages
 
-```{r}
+```{r include=FALSE}
 library(tidyverse); library(ggalt); library(scales); library(lubridate); library(ggthemes); library(wesanderson); library(stringr); library(xml2)
 ```
 
 Load some data
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 histo <- read_csv('st-bond.csv') %>%
     mutate(mo = mdy(Date),
            r_st = (sp5 - lag(sp5))/lag(sp5),
@@ -47,12 +47,13 @@ histo_bo <- histo %>% filter(!is.na(r_bo)) ## Removes na entries from table
 Run the simulations
 ```{r}
 
+pre <- now()
 
 for(alloc_stock in (1:10)/10) {
     
     results <- vector(mode = 'double')
 
-for(i in 1:1000) {
+for(i in 1:20000) {
     
     seed <- round(runif(n = 360, min = 1, max = nrow(histo_bo)), 0)
     
@@ -87,21 +88,31 @@ super_results[ro, 9] <- qs[6]
 
 }
 
+post <- now()
+
 super_results
 
+difftime(post, pre, units = 'secs')
+
+
+paste(difftime(post, pre, units = 'secs') / nrow(sims) * 1000, 'per 1000 simulations')
+
+
 ```
 
 
 
 ```{r}
-sims[1001:1014,]
-
-
-
-    sample(size = 100, replace = T) %>%
-    ggplot(mapping = aes(x = tot_return, fill = eq_alloc)) +
-    geom_histogram()
+super_results %>%
+  ggplot(aes(x = eq_alloc)) +
+  geom_linerange(aes(ymin = q25, ymax = q75), size = 3, color = 'dodgerblue') +
+  geom_point(aes(y = q05), color = 'orange', size = 3) +
+  labs(title = 'Interquartile and 5th percentile by stock allocation') +
+  ylim(0,.15) +
+  theme_fivethirtyeight()
 
 ```
 
 ```{r}
+
+```
