@@ -53,7 +53,7 @@ for(alloc_stock in (1:10)/10) {
     
     results <- vector(mode = 'double')
 
-for(i in 1:20000) {
+for(i in 1:10000) {
     
     seed <- round(runif(n = 360, min = 1, max = nrow(histo_bo)), 0)
     
@@ -103,13 +103,25 @@ paste(difftime(post, pre, units = 'secs') / nrow(sims) * 1000, 'per 1000 simulat
 
 
 ```{r}
+
 super_results %>%
   ggplot(aes(x = eq_alloc)) +
-  geom_linerange(aes(ymin = q25, ymax = q75), size = 3, color = 'dodgerblue') +
-  geom_point(aes(y = q05), color = 'orange', size = 3) +
+  geom_linerange(aes(ymin = q25, ymax = q75), size = 2, color = 'dodgerblue') +
+  geom_point(aes(y = q05), color = 'orange', size = 4) +
+  geom_point(aes(y = q25), size = 5, color = 'dodgerblue') +
+  geom_point(aes(y = q50), size = 4, color = 'dodgerblue') +
+  geom_point(aes(y = q75), size = 5, color = 'dodgerblue') +
+  
+  geom_text(aes(x = eq_alloc, y = q05, label = signif(q05, 1), vjust = 2)) +
+  geom_text(aes(x = eq_alloc, y = q25, label = signif(q25, 1), hjust = -.4)) +
+  geom_text(aes(x = eq_alloc, y = q50, label = signif(q50, 1), hjust = -.4)) +
+  geom_text(aes(x = eq_alloc, y = q75, label = signif(q75, 1), hjust = -.4)) +
   labs(title = 'Interquartile and 5th percentile by stock allocation') +
-  ylim(0,.15) +
+  ylim(0, 0.11) +
+  xlim(0,0.95) +
   theme_fivethirtyeight()
+
+
 
 ```
 
