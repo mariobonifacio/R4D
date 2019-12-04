@@ -1,0 +1,74 @@
+School                                            From top 1 From bottom 60
+University of North Carolina, Chapel Hill         6                 20.7
+University of North Carolina at Wilmington        2.2               24.9
+North Carolina State University                   1.8               25.1
+Appalachian State University                      1.7               23.8
+University of North Carolina Asheville            1.8               28.5
+University of North Carolina School of the Arts   1.2               24.5
+East Carolina University                          1.2               30.6
+Western Carolina University                       <1                37.6
+University of North Carolina, Charlotte           <1                37.8
+University of North Carolina-Greensboro           <1                45.3
+Wake Technical Community College                  <1                51.5
+Cape Fear Community College                       <1                57.5
+Asheville Buncombe Technical Community College    <1                58.1
+University of North Carolina at Pembroke          <1                59.1
+Craven Community College                          <1                60.3
+South Piedmont Community College                  <1                61.1
+Central Piedmont Community College                <1                61.4
+Catawba Valley Community College                  <1                62.8
+Alamance Community College                        <1                63
+Forsyth Technical Community College               <1                63.1
+Coastal Carolina Community College                <1                63.4
+Stanly Community College                          <1                63.7
+Pitt Community College                            <1                64
+Gaston College                                    <1                64.2
+Mitchell Community College                        <1                64.6
+Rockingham Community College                      <1                65.3
+Davidson County Community College                 <1                65.7
+Rowan-Cabarrus Community College                  <1                65.9
+Carteret Community College                        <1                66.1
+Caldwell Community College & Technical Institute  <1                66.2
+Piedmont Community College                        <1                66.3
+Johnston Community College                        <1                66.5
+Blue Ridge Community College (N.C.)               <1                66.9
+Randolph Community College                        <1                67
+Surry Community College                           <1                67.2
+College of the Albemarle                          <1                67.3
+Haywood Community College                         <1                67.6
+Nash Community College                            <1                67.9
+North Carolina Agricultural & Technical State Univ<1                68.4
+Wayne Community College                           <1                68.6
+Sandhills Community College                       <1                68.9
+Southwestern Community College (N.C.)             <1                69.2
+Winston-Salem State University                    <1                69.8
+Fayetteville Technical Community College          <1                70.5
+Durham Technical Community College                <1                71.1
+Beaufort County Community College                 <1                71.3
+Guilford Technical Community College              <1                71.6
+Wilson Community College                          <1                72.4
+Wilkes Community College                          <1                72.7
+Montgomery Community College                      <1                72.7
+Martin Community College                          <1                73.3
+Sampson Community College                         <1                73.4
+Isothermal Community College                      <1                74.2
+Lenoir Community College                          <1                75
+Tri-County Community College                      <1                75.5
+North Carolina Central University                 <1                76.1
+Western Piedmont Community College                <1                76.2
+Vance-Granville Community College                 <1                76.3
+Bladen Community College                          <1                76.6
+Elizabeth City State University                   <1                76.7
+James Sprunt Community College                    <1                77.2
+Mayland Community College                         <1                77.3
+Cleveland Community College                       <1                78.3
+Fayetteville State University                     <1                79
+McDowell Technical Community College              <1                79.1
+Southeastern Community College (N.C.)             <1                79.1
+Central Carolina Technical College                <1                81.2
+Richmond Community College                        <1                81.3
+Halifax Community College                         <1                85.8
+Robeson Community College                         <1                86.4
+Edgecombe Community College                       <1                88
+Brunswick Community College                       n.a.              n.a.
+Roanoke Chowan Community College                  n.a.              n.a.
