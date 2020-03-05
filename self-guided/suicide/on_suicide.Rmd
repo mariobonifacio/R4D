@@ -19,19 +19,41 @@ library(tidyverse); library(ggthemes); library(lubridate); library(scales); libr
 
 
 ```{r}
-suic_cdc <- read_tsv('deaths_97-17.txt')
+cdc_raw <- read_tsv(n_max = 6116, file = 'deaths_97-17.txt')
 ```
 
 
 ```{r}
-suic_cdc %>%
-  filter(!is.na(as.numeric(Population))) %>%
-  mutate(pop = as.integer(Population)) %>%
-  select(st = 2, age = 5, sex = 7, ethnic = 8, Race, Deaths, pop) %>%
+suic_cdc <- cdc_raw %>%
+  select(st = 2, age = 5, sex = 7, hisp = 8, race = 10, deaths = 12, pop = 13) %>%
+  filter(!is.na(as.numeric(pop))) %>%
+  mutate(pop = as.integer(pop),
+         st = as.factor(st),
+         race = if_else(hisp == 'Hispanic or Latino' & race == 'White', 'Hispanic', race),
+         d_rate = deaths / pop,
+         d_permil = d_rate * 1000000,
+         is_male = (sex == 'M')) %>%
+  mutate(race = as.factor(race),
+         is_white = (race == 'White')) %>%
+  select(-4, -7)
   
-  
-
 ```
+
+```{r}
+
+
+suic_cdc %>%
+  lm(formula = d_permil ~ + age + sex + race, na.action = 'na.omit') %>%
+  summary()
+```
+
+```{r}
+suic_cdc %>%
+  # filter(sex == 'M') %>%
+  ggplot(mapping = aes(x = race, y = is_male, color = age, size = d_permil)) +
+  geom_smooth() 
+```
+
 
 
 
