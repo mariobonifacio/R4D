@@ -3,16 +3,149 @@ title: "R Notebook"
 output: html_notebook
 ---
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+ 
 
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
-
-```{r}
+```{r message=FALSE, include=FALSE}
 library(tidyverse)
 library(lubridate)
 ```
 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+```{r}
+my_sum <- read_csv(file = "summary.csv", col_types = ("cidiccc")) %>%
+  mutate(cases = as.integer(gsub(",", "", cases)),
+         male_rate = death / cases * 0.028414777	/ 0.02290025,
+         female_rate = death / cases * 0.017057766	/ 0.02290025)
+
+f_m_ratio <- my_sum %>% 
+  filter(!is.na(sex)) %>%
+  summarize(f_m_ratio = min(cases) / max(cases)) %>%
+  pull(f_m_ratio)
+
+f_m_id_ratio <- my_sum %>% 
+  filter(!is.na(sex)) %>%
+  summarize(f_m_id_ratio = min(death) / max(death)) %>%
+  pull(f_m_id_ratio)
+```
+
+```{r}
+my_pop <- read_csv("WORLD-2020.csv", col_types = "__iii_")
+```
+
+```{r}
+my_rates <- my_pop %>%
+  group_by(rg_mn>80) %>%
+  mutate(males_pop = if_else((rg_mn > 80), as.integer(sum(males, na.rm = T)), males),
+         females_pop = if_else((rg_mn > 80), as.integer(sum(females, na.rm = T)), females)) %>%
+  ungroup() %>%
+  filter(rg_mn < 90) %>%
+  select(1, 5, 6) %>%
+  inner_join(my_sum, by = c("rg_mn" = "age")) %>%
+  select(1:5) %>%
+  mutate(infect_rate = cases / sum(cases) / (males_pop + females_pop) * (sum(males_pop) + sum(females_pop)),
+         female_infect_rate = infect_rate * f_m_ratio,
+         male_infect_rate = infect_rate / f_m_ratio / min(female_infect_rate),
+         female_infect_rate = female_infect_rate / min(female_infect_rate),
+         infect_death_rate = death / sum(death) / (males_pop + females_pop) * (sum(males_pop) + sum(females_pop)),
+         female_infect_death_rate = infect_death_rate * f_m_id_ratio,
+         male_infect_death_rate = infect_death_rate / f_m_id_ratio / 0.03444341,
+         female_infect_death_rate = female_infect_death_rate / 0.03444341)
+```
+
+```{r}
+my_rates %>%
+  ggplot(mapping = aes(x = rg_mn)) +
+  geom_smooth(mapping = aes(y = male_infect_rate), color = "dodgerblue", fill = "azure3") +
+  geom_smooth(mapping = aes(y = female_infect_rate), color = "tomato", fill = "salmon") +
+  labs(x = "age",
+       y = "infection factor",
+       title = "Likelihood of Coronavirus infection peaks around 65",
+       caption = "Likelihood for least susceptible group, 0- to 9-year-old females, set to 1")
+```
+
+
+```{r}
+my_rates %>%
+  ggplot(mapping = aes(x = rg_mn)) +
+  geom_smooth(mapping = aes(y = male_infect_death_rate), color = "dodgerblue", fill = "azure3") +
+  geom_smooth(mapping = aes(y = female_infect_death_rate), color = "tomato", fill = "salmon") +
+  labs(x = "age",
+       y = "infection-death factor",
+       title = "Age is positively correlated with Coronavirus causing both infection and death",
+       caption = "Likelihood for 10- to 19-year-old females set to 1")
+```
+
+```{r}
+my_popc <- read_csv("China-2020.csv", col_types = "iii")
+
+my_ratesc <- my_popc %>%
+  inner_join(my_sum, by = c("agec" = "age")) %>%
+  select(1:5) %>%
+  mutate(infect_ratec = cases / sum(cases) / (male_popc + female_popc) * (sum(male_popc) + sum(female_popc)),
+         female_infect_ratec = infect_ratec * f_m_ratio,
+         male_infect_ratec = infect_ratec / f_m_ratio / min(female_infect_ratec),
+         female_infect_ratec = female_infect_ratec / min(female_infect_ratec),
+         infect_death_ratec = death / sum(death) / (male_popc + female_popc) * (sum(male_popc) + sum(female_popc)),
+         female_infect_death_ratec = infect_death_ratec * f_m_id_ratio,
+         male_infect_death_ratec = infect_death_ratec / f_m_id_ratio / 0.004785027,
+         female_infect_death_ratec = female_infect_death_ratec / 0.004785027)
+```
+
+
+
+```{r}
+my_ratesc %>%
+  ggplot(mapping = aes(x = agec)) +
+  geom_smooth(mapping = aes(y = male_infect_ratec), color = "dodgerblue", fill = "azure3") +
+  geom_smooth(mapping = aes(y = female_infect_ratec), color = "tomato", fill = "salmon") +
+  labs(x = "age",
+       y = "infection factor",
+       title = "Likelihood of Coronavirus infection peaks around 75",
+       caption = "Likelihood for least susceptible group, 0- to 9-year-old females, set to 1")
+```
+
+
+```{r}
+my_ratesc %>%
+  ggplot(mapping = aes(x = agec)) +
+  geom_smooth(mapping = aes(y = male_infect_death_ratec), color = "dodgerblue", fill = "azure3") +
+  geom_smooth(mapping = aes(y = female_infect_death_ratec), color = "tomato", fill = "salmon") +
+  labs(x = "age",
+       y = "infection-death factor",
+       title = "Age is positively correlated with Coronavirus causing both infection and death",
+       caption = "Likelihood for 10- to 19-year-old females set to 1")
+```
+
+
+
+```{r}
+my_sum %>%
+  ggplot(mapping = aes(x = age)) +
+  geom_line(mapping = aes(y = male_rate), na.rm = T, color = "dodgerblue", size = 2) +
+  geom_line(mapping = aes(y = female_rate), na.rm = T, color = "tomato", size = 2) +
+  labs(y = "mort_rate", title = "Coronavirus death rates correlate with age and gender")
+```
+```{r}
+my_sum %>%
+  filter(!is.na(job), !(job %in% c("other", "retired"))) %>% 
+  ggplot() +
+  geom_col(mapping = aes(x = job, y = death / cases, na.rm = T)) +
+  labs(x = "occupational_field", y = "mort_rate", title = "Coronavirus rates differ by occupation", caption = "Note: Retirees, those with other jobs, students, and those with no jobs removed")
+```
+
+
+```{r}
+my_sum %>%
+    filter(!is.na(comorbid), !(comorbid %in% c("unknown"))) %>% 
+  ggplot() +
+  geom_col(mapping = aes(x = comorbid, y = death / cases)) +
+  labs(x = "comorbidity", y = "mort_rate", title = "Comorbidity increases Coronavirus rates")
+```
+
+
+
+
+
 ```{r}
 my_data <- read_csv(file = "my_covid19.csv")
 ```
@@ -20,14 +153,24 @@ my_data <- read_csv(file = "my_covid19.csv")
 
 
 ```{r}
-my_data %>%
+my_clean <- my_data %>%
   select(-4,-6,-7) %>%
   mutate(symptom_date = dmy(date_onset_symptoms),
          hosp_date = dmy(date_admission_hospital),
          confirm_date = dmy(date_confirmation),
-         outcome_date = dmy(date_death_or_discharge)) %>%
-  select(-(5:8),-11)
+         outcome_date = dmy(date_death_or_discharge),
+         age = as.integer(age),
+         male = if_else(sex %in% c("male", "female"), if_else(sex == "male", 1, 0), NULL)) %>%
+  select(-1, -3, -(5:8), -11)
+```
 
 
+
+```{r}
+tiny_set <- my_clean %>%
+  filter(!is.na(outcome)) %>% 
+  mutate(died = ifelse(outcome %in% c("death", "died"), 1, 0))
+
+glm(data = tiny_set, died ~ age + male, family = "binomial")
 ```
 
