@@ -117,6 +117,19 @@ my_ratesc %>%
 ```
 
 
+```{r}
+my_sum %>% 
+  filter(!is.na(sex)) %>% 
+  summarize(all_rate = weighted.mean(death_rate, w = cases)) %>% 
+  plot()
+
+all_rate <- my_sum %>% 
+  filter(!is.na(sex)) %>% 
+  summarize(all_rate = weighted.mean(death_rate, w = cases)) %>% 
+  pull(all_rate)
+```
+
+
 
 ```{r}
 my_sum %>%
@@ -125,6 +138,9 @@ my_sum %>%
   geom_line(mapping = aes(y = female_rate), na.rm = T, color = "tomato", size = 2) +
   labs(y = "mort_rate", title = "Coronavirus death rates correlate with age and gender")
 ```
+
+
+
 ```{r}
 my_sum %>%
   filter(!is.na(job), !(job %in% c("other", "retired"))) %>% 
@@ -142,6 +158,9 @@ my_sum %>%
   labs(x = "comorbidity", y = "mort_rate", title = "Comorbidity increases Coronavirus rates")
 ```
 
+```{r}
+my_sum
+```
 
 
 
