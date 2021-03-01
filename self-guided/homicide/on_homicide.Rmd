@@ -26,10 +26,10 @@ demo_pop <- tribble(~'victim_race', ~'population',
         'White', 233657078L - 35684777L)
 
 homicides %>%
-  filter(victim_sex %in% c('Male', 'Female') & victim_race %in% c('White', 'Black')) %>%
+  filter(victim_sex %in% c('Male', 'Female'), !(victim_race %in% c('Other', 'Unknown'))) %>%
   mutate(arrest = (disposition == 'Closed by arrest')) %>%
   group_by(victim_race, victim_sex) %>%
-  summarize(arrest_rate = mean(arrest),
+  summarize(arrest_rate = (mean(arrest) %>% round(2)),
             count = n()) %>%
   ggplot(mapping = aes(x = victim_race, y = victim_sex)) +
   geom_point(color = 'gray', aes(size = arrest_rate)) +

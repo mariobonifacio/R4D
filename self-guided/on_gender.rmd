@@ -17,6 +17,20 @@ test <- read_csv('exit_gender.csv', col_types = 'iiiiiiiic') %>%
 ```
 
 
+```{r}
+test %>% 
+  mutate(election_year = ymd(str_c(year, "0630")),
+         gender_gap = diff/100) %>% 
+  select(election_year, gender_gap) %>% 
+  ggplot(mapping = aes(x = election_year, y = gender_gap, na.rm = TRUE)) +
+  geom_smooth(method = "loess", span = 1.1, fill = "orange", color = "darkorange", alpha = .2, linetype = "dashed") +
+  geom_point(color = "dodgerblue") +
+  # theme_fivethirtyeight() +
+  labs(x = "election year",
+       y = "diff. in net support for Dem candidates by gender",
+       title = "The gap between party support by gender has trended upward since the 1980s",
+       subtitle = "Women's net vote percentage for Dem candidates in federal elections less that of men")
+```
 
 
 
@@ -135,7 +149,7 @@ test %>%
          pre_f = if_else(year <= 2006, diff, NULL)) %>%
   ggplot(mapping = aes(x = year)) +
   geom_point(mapping = aes(y = diff, na.rm = T, fill = 'Percent difference in Democratic vote between men and women'), size = 3, color = 'forestgreen') +
-  geom_col(mapping = aes(y = turnout_diff, na.rm = T, color = 'Difference in voter turnout between women and men'), size = 1, fill = 'salmon') +
+  # geom_col(mapping = aes(y = turnout_diff, na.rm = T, color = 'Difference in voter turnout between women and men'), size = 1, fill = 'salmon') +
   geom_smooth(mapping = aes(y = pre_f), color = 'forestgreen', fill = 'forestgreen', method = 'lm', alpha = 0.3, na.rm = T, linetype = 'dashed', size = 0) +
   geom_smooth(mapping = aes(y = post_f), color = 'forestgreen', fill = 'forestgreen', method = 'lm', alpha = 0.3, na.rm = T, linetype = 'dashed', size = 0) +
   # geom_point(mapping = aes(y = y_m, color = 'relative male\nsupport for\nDemsover\nGOP'), size = 3) +
