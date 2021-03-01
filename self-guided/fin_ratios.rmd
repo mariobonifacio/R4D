@@ -1,0 +1,118 @@
+---
+title: "Financial ratios in R"
+output:
+  html_notebook:
+    fig_height: 8
+    fig_width: 12
+    number_sections: no
+    toc: yes
+    toc_depth: 1
+    toc_float: yes
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_depth: '1'
+---
+
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+## LOAD LIBRARIES
+
+library(RODBC)
+library(tidyverse)
+library(dplyr)
+library(lubridate)
+library(data.table)
+library(stringr)
+library(timeDate)
+library(ggrepel)
+
+options(scipen = 999)
+set.seed(seed = 1000)
+```
+
+# Max drawdown
+
+## Definition
+
+The max drawdown project seeks to finds statistics surrounding the **max drawdown** of a security -- defined as the drop of greatest relative magnitude from a preceding local peak -- for a given list of funds.
+
+Max drawdown for a vector of return values, $r$, corresponding to times within a finite period may be defined using the equation $$f(r) = \underset{i,j \in r}{min}  (\frac{cr_j - cr_i}{1 + cr_i})$$
+
+where $i$ and $j$ are times within $r$ and $j$ occurs later than $i$
+
+## Example
+
+```{r echo=FALSE, warning=FALSE}
+fake_data <- data.table(month_ending = ymd(19991201) + months(1:37),
+           one_month_return = c(rnorm(n = 36, mean = 0.01, sd = 0.03), 0.08))[
+             ,cum_return := cumprod(one_month_return + 1)][
+               ,cum_return := cum_return - 1][
+                 order(desc(month_ending))][
+                   ,min_after := cummin(cum_return)][
+                     ,local_drawdown := if_else(one_month_return > 0,
+                                                (min_after - cum_return) / (1 + cum_return), NULL)][
+                       ,max_drawdown := if_else(local_drawdown == min(local_drawdown, na.rm = TRUE), local_drawdown, NULL)][
+                         ,prior_peak := if_else(local_drawdown == min(local_drawdown, na.rm = TRUE), cum_return, NULL)]
+
+fake_data  
+
+```
+
+
+```{r include=FALSE}
+fake_data[,min_after_date := if_else(cum_return == fake_data[local_drawdown == max_drawdown, min_after], month_ending, NULL)]
+
+fake_data  
+
+```
+
+
+```{r include=FALSE}
+fake_data[,min_after_date := if_else(cum_return == fake_data[local_drawdown == max_drawdown, min_after], month_ending, NULL)][
+  ,recovery_date := if_else(month_ending > min(min_after_date, na.rm = TRUE) & cum_return > min(prior_peak, na.rm = TRUE), month_ending, NULL)][
+    ,recovery_date := if_else(recovery_date == min(recovery_date, na.rm = TRUE), recovery_date, NULL)][order(month_ending)]
+
+fake_data  
+
+```
+
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(fake_data, aes(month_ending)) +
+  
+  geom_line(aes(y = cum_return), size = 1, color = "darkgray") +
+  
+  geom_text(data = fake_data[max_drawdown == local_drawdown], mapping = aes(x = month_ending, y = min_after, label = "trough"), size = 4, color = "red4", position = position_nudge(180,-0.01)) +
+
+    geom_text(data = fake_data[max_drawdown == local_drawdown], mapping = aes(x = month_ending, y = cum_return, label = "prior peak"), size = 4, color = "black", position = position_nudge(50,0.01)) +  
+  
+  geom_vline(data = fake_data[max_drawdown == local_drawdown], mapping = aes(xintercept = month_ending), size = 1, color = "black", linetype = "dotted") +
+  
+  geom_vline(data = fake_data[!is.na(min_after_date)], mapping = aes(xintercept = min_after_date), size = 1, color = "red4", linetype = "dotted") +
+  
+  geom_text(data = fake_data[max_drawdown == local_drawdown], mapping = aes(x = month_ending, y = cum_return, label = "drawdown\nstart\ndate"), size = 4, hjust = "left", color = "black", position = position_nudge(5, .15)) +
+  
+  geom_text(data = fake_data[!is.na(min_after_date)], mapping = aes(x = min_after_date, y = cum_return, label = "max\ndrawdown\ndate"), size = 4, hjust = "right", color = "red4", position = position_nudge(-10, .15)) +
+  
+  geom_hline(data = fake_data[local_drawdown == max_drawdown,], aes(yintercept = min_after), linetype = "dashed", color = "red4", size = 1) +
+  
+
+  
+  geom_hline(data = fake_data[local_drawdown == max_drawdown,], aes(yintercept = cum_return), linetype = "dashed", color = "black", size = 1) +
+  
+  geom_vline(data = fake_data[!is.na(recovery_date)], mapping = aes(xintercept = recovery_date), size = 1, color = "black", linetype = "dotted") +
+  
+  geom_text(data = fake_data[!is.na(recovery_date)], mapping = aes(x = recovery_date, y = cum_return, label = "recovery\ndate"), size = 4, hjust = "left", color = "black", position = position_nudge(5, .15)) +
+  
+  xlim(ymd(20000601), ymd(20011201)) +
+  labs(title = "The illustrated components of max drawdown",
+       x = NULL,
+       y = "Relative change",
+       caption = "fig. 1") +
+  theme_bw()
+```
+
+In this example, the max drawdown is `fake_data[local_drawdown == max_drawdown, max_drawdown]`, drawdown start date is `fake_data[local_drawdown == max_drawdown, month_ending]`, max drawdown date is `fake_data[!is.na(min_after_date),min_after_date]`, and recovery date is `fake_data[!is.na(recovery_date),recovery_date]`
+
