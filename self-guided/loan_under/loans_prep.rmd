@@ -1,0 +1,56 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+The prompt:
+
+Your client is a bank looking to improve its underwriting practices.
+
+They’ve shared some loan application and performance data in the attached spreadsheet. For the first meeting with the bank’s president, you are to 
+
+coordinate a ~20-minute presentation 
+
+highlighting any insights you can draw from the data about the current state of the business (5 minutes max).
+
+You are also to develop a proposed implementation plan for going live with Zest AI and 
+share any questions you and the team would have that will enable to you to help the client use our software to go live with our AI driven underwriting. 
+
+You have access to the following internal resources:
+a customer success team that includes
+an account manager, 
+a data scientist, 
+a backend software engineer (focused on deployment);
+
+you also have access to the following external resources:
+a credit bureau representative (can be used to source credit data),
+a representative from the bank's loan origination system, with whom we can get the customer live scoring with their algorithm. 
+
+Be sure to document any assumptions you’ve made along the way in creating the plan,
+and what resources you would consult for the actual answers.
+
+
+
+```{r}
+library(tidyverse)
+
+library(lubridate)
+library(ggalluvial)
+library(ggthemes)
+library(moments)
+library(ggcorrplot)
+library(scales)
+library(knitr)
+library(ggalt)
+library(data.table)
+library(dtplyr)
+library(stringr)
+
+opts_chunk$set(message = FALSE, warning = FALSE)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
