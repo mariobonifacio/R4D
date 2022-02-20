@@ -215,8 +215,15 @@ pre code {
 
 
 <!-- rnb-text-begin -->
-<p>This is an <a href="http://rmarkdown.rstudio.com">R Markdown</a> Notebook. When you execute code within the notebook, the results appear beneath the code.</p>
-<p>Try executing this chunk by clicking the <em>Run</em> button within the chunk or by placing your cursor inside it and pressing <em>Ctrl+Shift+Enter</em>.</p>
+<p>The prompt:</p>
+<p>Your client is a bank looking to improve its underwriting practices.</p>
+<p>They’ve shared some loan application and performance data in the attached spreadsheet. For the first meeting with the bank’s president, you are to</p>
+<p>coordinate a ~20-minute presentation</p>
+<p>highlighting any insights you can draw from the data about the current state of the business (5 minutes max).</p>
+<p>You are also to develop a proposed implementation plan for going live with Zest AI and share any questions you and the team would have that will enable to you to help the client use our software to go live with our AI driven underwriting.</p>
+<p>You have access to the following internal resources: a customer success team that includes an account manager, a data scientist, a backend software engineer (focused on deployment);</p>
+<p>you also have access to the following external resources: a credit bureau representative (can be used to source credit data), a representative from the bank’s loan origination system, with whom we can get the customer live scoring with their algorithm.</p>
+<p>Be sure to document any assumptions you’ve made along the way in creating the plan, and what resources you would consult for the actual answers.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeSh0aWR5dmVyc2UpO1xuYGBgIn0= -->
@@ -342,12 +349,16 @@ The following object is masked from ‘package:purrr’:
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>Add a new chunk by clicking the <em>Insert Chunk</em> button on the toolbar or by pressing <em>Ctrl+Alt+I</em>.</p>
-<p>When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the <em>Preview</em> button or press <em>Ctrl+Shift+K</em> to preview the HTML file).</p>
-<p>The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike <em>Knit</em>, <em>Preview</em> does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmVhZFxuYGBgIn0= -->
+<pre class="r"><code>read</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpUaGlzIGlzIGFuIFtSIE1hcmtkb3duXShodHRwOi8vcm1hcmtkb3duLnJzdHVkaW8uY29tKSBOb3RlYm9vay4gV2hlbiB5b3UgZXhlY3V0ZSBjb2RlIHdpdGhpbiB0aGUgbm90ZWJvb2ssIHRoZSByZXN1bHRzIGFwcGVhciBiZW5lYXRoIHRoZSBjb2RlLiANCg0KVHJ5IGV4ZWN1dGluZyB0aGlzIGNodW5rIGJ5IGNsaWNraW5nIHRoZSAqUnVuKiBidXR0b24gd2l0aGluIHRoZSBjaHVuayBvciBieSBwbGFjaW5nIHlvdXIgY3Vyc29yIGluc2lkZSBpdCBhbmQgcHJlc3NpbmcgKkN0cmwrU2hpZnQrRW50ZXIqLiANCg0KYGBge3J9DQpsaWJyYXJ5KHRpZHl2ZXJzZSkNCg0KbGlicmFyeShsdWJyaWRhdGUpDQpsaWJyYXJ5KGdnYWxsdXZpYWwpDQpsaWJyYXJ5KGdndGhlbWVzKQ0KbGlicmFyeShtb21lbnRzKQ0KbGlicmFyeShnZ2NvcnJwbG90KQ0KbGlicmFyeShzY2FsZXMpDQpsaWJyYXJ5KGtuaXRyKQ0KbGlicmFyeShnZ2FsdCkNCmxpYnJhcnkoZGF0YS50YWJsZSkNCmxpYnJhcnkoZHRwbHlyKQ0KbGlicmFyeShzdHJpbmdyKQ0KDQpvcHRzX2NodW5rJHNldChtZXNzYWdlID0gRkFMU0UsIHdhcm5pbmcgPSBGQUxTRSkNCmBgYA0KDQpBZGQgYSBuZXcgY2h1bmsgYnkgY2xpY2tpbmcgdGhlICpJbnNlcnQgQ2h1bmsqIGJ1dHRvbiBvbiB0aGUgdG9vbGJhciBvciBieSBwcmVzc2luZyAqQ3RybCtBbHQrSSouDQoNCldoZW4geW91IHNhdmUgdGhlIG5vdGVib29rLCBhbiBIVE1MIGZpbGUgY29udGFpbmluZyB0aGUgY29kZSBhbmQgb3V0cHV0IHdpbGwgYmUgc2F2ZWQgYWxvbmdzaWRlIGl0IChjbGljayB0aGUgKlByZXZpZXcqIGJ1dHRvbiBvciBwcmVzcyAqQ3RybCtTaGlmdCtLKiB0byBwcmV2aWV3IHRoZSBIVE1MIGZpbGUpLg0KDQpUaGUgcHJldmlldyBzaG93cyB5b3UgYSByZW5kZXJlZCBIVE1MIGNvcHkgb2YgdGhlIGNvbnRlbnRzIG9mIHRoZSBlZGl0b3IuIENvbnNlcXVlbnRseSwgdW5saWtlICpLbml0KiwgKlByZXZpZXcqIGRvZXMgbm90IHJ1biBhbnkgUiBjb2RlIGNodW5rcy4gSW5zdGVhZCwgdGhlIG91dHB1dCBvZiB0aGUgY2h1bmsgd2hlbiBpdCB3YXMgbGFzdCBydW4gaW4gdGhlIGVkaXRvciBpcyBkaXNwbGF5ZWQuDQo=</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpUaGUgcHJvbXB0Og0KDQpZb3VyIGNsaWVudCBpcyBhIGJhbmsgbG9va2luZyB0byBpbXByb3ZlIGl0cyB1bmRlcndyaXRpbmcgcHJhY3RpY2VzLg0KDQpUaGV54oCZdmUgc2hhcmVkIHNvbWUgbG9hbiBhcHBsaWNhdGlvbiBhbmQgcGVyZm9ybWFuY2UgZGF0YSBpbiB0aGUgYXR0YWNoZWQgc3ByZWFkc2hlZXQuIEZvciB0aGUgZmlyc3QgbWVldGluZyB3aXRoIHRoZSBiYW5r4oCZcyBwcmVzaWRlbnQsIHlvdSBhcmUgdG8gDQoNCmNvb3JkaW5hdGUgYSB+MjAtbWludXRlIHByZXNlbnRhdGlvbiANCg0KaGlnaGxpZ2h0aW5nIGFueSBpbnNpZ2h0cyB5b3UgY2FuIGRyYXcgZnJvbSB0aGUgZGF0YSBhYm91dCB0aGUgY3VycmVudCBzdGF0ZSBvZiB0aGUgYnVzaW5lc3MgKDUgbWludXRlcyBtYXgpLg0KDQpZb3UgYXJlIGFsc28gdG8gZGV2ZWxvcCBhIHByb3Bvc2VkIGltcGxlbWVudGF0aW9uIHBsYW4gZm9yIGdvaW5nIGxpdmUgd2l0aCBaZXN0IEFJIGFuZCANCnNoYXJlIGFueSBxdWVzdGlvbnMgeW91IGFuZCB0aGUgdGVhbSB3b3VsZCBoYXZlIHRoYXQgd2lsbCBlbmFibGUgdG8geW91IHRvIGhlbHAgdGhlIGNsaWVudCB1c2Ugb3VyIHNvZnR3YXJlIHRvIGdvIGxpdmUgd2l0aCBvdXIgQUkgZHJpdmVuIHVuZGVyd3JpdGluZy4gDQoNCllvdSBoYXZlIGFjY2VzcyB0byB0aGUgZm9sbG93aW5nIGludGVybmFsIHJlc291cmNlczoNCmEgY3VzdG9tZXIgc3VjY2VzcyB0ZWFtIHRoYXQgaW5jbHVkZXMNCmFuIGFjY291bnQgbWFuYWdlciwgDQphIGRhdGEgc2NpZW50aXN0LCANCmEgYmFja2VuZCBzb2Z0d2FyZSBlbmdpbmVlciAoZm9jdXNlZCBvbiBkZXBsb3ltZW50KTsNCg0KeW91IGFsc28gaGF2ZSBhY2Nlc3MgdG8gdGhlIGZvbGxvd2luZyBleHRlcm5hbCByZXNvdXJjZXM6DQphIGNyZWRpdCBidXJlYXUgcmVwcmVzZW50YXRpdmUgKGNhbiBiZSB1c2VkIHRvIHNvdXJjZSBjcmVkaXQgZGF0YSksDQphIHJlcHJlc2VudGF0aXZlIGZyb20gdGhlIGJhbmsncyBsb2FuIG9yaWdpbmF0aW9uIHN5c3RlbSwgd2l0aCB3aG9tIHdlIGNhbiBnZXQgdGhlIGN1c3RvbWVyIGxpdmUgc2NvcmluZyB3aXRoIHRoZWlyIGFsZ29yaXRobS4gDQoNCkJlIHN1cmUgdG8gZG9jdW1lbnQgYW55IGFzc3VtcHRpb25zIHlvdeKAmXZlIG1hZGUgYWxvbmcgdGhlIHdheSBpbiBjcmVhdGluZyB0aGUgcGxhbiwNCmFuZCB3aGF0IHJlc291cmNlcyB5b3Ugd291bGQgY29uc3VsdCBmb3IgdGhlIGFjdHVhbCBhbnN3ZXJzLg0KDQoNCg0KYGBge3J9DQpsaWJyYXJ5KHRpZHl2ZXJzZSkNCg0KbGlicmFyeShsdWJyaWRhdGUpDQpsaWJyYXJ5KGdnYWxsdXZpYWwpDQpsaWJyYXJ5KGdndGhlbWVzKQ0KbGlicmFyeShtb21lbnRzKQ0KbGlicmFyeShnZ2NvcnJwbG90KQ0KbGlicmFyeShzY2FsZXMpDQpsaWJyYXJ5KGtuaXRyKQ0KbGlicmFyeShnZ2FsdCkNCmxpYnJhcnkoZGF0YS50YWJsZSkNCmxpYnJhcnkoZHRwbHlyKQ0KbGlicmFyeShzdHJpbmdyKQ0KDQpvcHRzX2NodW5rJHNldChtZXNzYWdlID0gRkFMU0UsIHdhcm5pbmcgPSBGQUxTRSkNCmBgYA0KDQoNCmBgYHtyfQ0KcmVhZA0KYGBgDQoNCg==</div>
 
 
 
