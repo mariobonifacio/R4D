@@ -1,0 +1,144 @@
+---
+title: "Classification practice with penguins"
+output: html_notebook
+---
+
+# Introduction
+
+I'll demonstrate a classification model using the Palmer Penguins dataset. The Palmer Penguins data include size measurements, clutch observations, and blood isotope ratios for adult foraging Adélie, Chinstrap, and Gentoo penguins observed on islands in the Palmer Archipelago near Palmer Station, Antarctica. Data were collected and made available by Dr. Kristen Gorman and the Palmer Station Long Term Ecological Research (LTER) Program. More information about the data set is on [Github here](https://allisonhorst.github.io/palmerpenguins/index.html)
+
+A classification model uses training data to predict class for new data. In this notebook, I'll use the Palmer data to predict penguin sex.
+
+Because the Palmer data are unorganized by design, I'll also demonstrate data cleaning
+
+
+# Preparing for analysis
+
+## Define the problem
+
+I'll define the problem
+
+## Define a null hypothesis
+
+I'll set as my alternate hypothesis that differences in penguin size, clutch, or blood isotope ratios are associated with one penguin sex.
+
+Thus, my null hypothesis is that differences in penguin size, clutch, or blood isotope ratios are not associated with one penguin sex.
+
+## Load packages and set options
+
+```{r}
+library(tidymodels)
+library(tidyverse)
+library(dtplyr)
+library(palmerpenguins)
+library(readr)
+library(broom.mixed)
+library(dotwhisker)
+library(data.table)
+library(glmnet)
+
+```
+
+## View data
+```{r}
+penguins_raw
+```
+There are 344 entries and 17 columns. 
+
+1. "studyName"
+2. "Sample Number"       
+3. "Species"             
+4. "Region"              
+5. "Island"              
+6. "Stage"              
+7. "Individual ID"
+8. "Clutch Completion"
+9. "Date Egg"
+10. "Culmen Length (mm)"
+11. "Culmen Depth (mm)"
+12. "Flipper Length (mm)"
+13. "Body Mass (g)"
+14. "Sex"
+15. "Delta 15 N (o/oo)"
+16. "Delta 13 C (o/oo)"
+17. "Comments"
+
+Of these,
+
+* Sex will be the dependent variable
+* Region and Stage only have one value: "Anvers" and "Adult, 1 Egg Stage," respectively, so I'll leave them out
+* Intuitively, studyName, Sample Number, Individual ID, Clutch Completion, Date Egg, and Comments would not be connected to penguin sex so I'll leave all of them out except Individual ID, which could be useful for ensuring I don't count the same penguin twice
+* Individual ID can be repeated, which I interpret to mean multiple measurements of the same penguin, so I'll combine those entries and take averages of the measurements
+* Sex is missing for some penguins so those entries should be removed
+
+```{r}
+penguin_clean <- penguins_raw %>%
+  filter(!is.na(Sex)) %>%
+  rename(species = Species, penguin_id = `Individual ID`, sex = Sex) %>%
+  mutate(species = case_when(species == "Adelie Penguin (Pygoscelis adeliae)" ~ "Adelie",
+                             species == "Gentoo penguin (Pygoscelis papua)" ~ "Gentoo",
+                             TRUE ~ "Chinstrap"),
+         sex = as_factor(sex)) %>%
+  group_by(species, penguin_id, sex) %>%
+  summarize(bill_length = mean(`Culmen Length (mm)`, na.rm = TRUE),
+            bill_depth = mean(`Culmen Depth (mm)`, na.rm = TRUE),
+            flipper_length = mean(`Flipper Length (mm)`, na.rm = TRUE),
+            mass = mean(`Body Mass (g)`, na.rm = TRUE),
+            D15N = mean(`Delta 15 N (o/oo)`, na.rm = TRUE),
+            D13C = mean(`Delta 13 C (o/oo)`, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  select(-penguin_id)
+```
+
+In order to retain some data for testing, I'll split the data
+```{r}
+set.seed(seed = 9999) ## Setting a seed for randomization ensures that my findings will be reproducible
+
+penguin_split <- initial_split(data = penguin_clean, prop = 3/4, strata = species)
+penguin_train <- training(penguin_split)
+penguin_test <- testing(penguin_split)
+```
+
+Tidymodels allows users to build the workflow in steps. 
+```{r}
+penguin_recipe <- recipe(sex ~ ., data = penguin_train) %>% 
+  step_dummy(all_nominal()) %>% 
+  step_normalize(all_predictors())
+
+
+log_reg <- logistic_reg() %>% 
+  set_engine("glm")
+
+penguin_flow <- workflow() %>% 
+  add_model(log_reg) %>% 
+  add_formula(sex ~ .)
+```
+
+
+```{r}
+lr_fit <- fit(penguin_flow, data = penguin_train)
+```
+
+
+```{r}
+
+cbind(species = penguin_test$species,sex = penguin_test$sex, predict(lr_fit, penguin_test)) %>% 
+  mutate(outcome = (sex == .pred_class)) %>% 
+  summarize(result = sum(outcome, na.rm = TRUE) / length(outcome))
+
+```
+
+```{r}
+
+penguin_test %>% 
+  glm(formula = sex ~ species + bill_length + mass, family = "binomial") %>% 
+  summary()
+
+
+cbind(species = penguin_test$species,
+      sex = penguin_test$sex,
+      
+      predict(lr_fit, penguin_test)) %>% 
+  mutate(outcome = (sex == .pred_class))
+```
+

@@ -1,0 +1,115 @@
+---
+title: "Proposed client implementation"
+author: "Mario Bonifacio"
+output:
+  html_document:
+    df_print: paged
+    toc: true
+---
+
+# Prompt
+
+Proposed implementation plan for going live with Zest AI
+
+Share any questions you and the team would have that will enable to you to help the client use our software to go live with our AI driven underwriting. 
+
+Internal resources: 
+
+* a customer success team that includes 
+
+1. an account manager,
+2. a data scientist, 
+3. a backend software engineer (focused on deployment)
+
+External resources:
+
+* a credit bureau representative (can be used to source credit data),
+* a representative from the bank's loan origination system, with whom we can get the customer live scoring with their algorithm.
+
+Be sure to document any assumptions you’ve made along the way in creating the plan, and what resources you would consult for the actual answers.
+
+This first chunk loads packages
+
+```{r Setup, message=FALSE, warning=FALSE, include=FALSE}
+library(tidymodels)
+library(tidyverse)
+library(lubridate)
+library(stringr)
+library(dtplyr)
+library(data.table)
+library(optiRum)
+library(readxl)
+```
+
+
+Reads data from Excel spreadsheet
+```{r}
+app_orig <- readxl::read_xlsx("file.xlsx", sheet = 2)
+perf_orig <- readxl::read_xlsx("file.xlsx",sheet = 3)
+
+```
+
+
+Initial clean on app
+```{r message=FALSE, warning=FALSE, include=FALSE}
+app_data <- app_orig %>% 
+  filter(payment_amount_approved > 0,
+         amount_approved > 0,
+         num_payments * payment_amount_approved > amount_approved) %>% 
+  mutate(status_is_approved = (status == "Approved"),
+         email_duration = as_factor(email_duration),
+         residence_duration = as_factor(residence_duration),
+         bank_account_duration = as_factor(bank_account_duration),
+         payment_frequency = as_factor(payment_frequency),
+         annual_payments = case_when(payment_frequency == "Monthly" ~ 12,
+                                    payment_frequency == "Bi-weekly" ~ 26.09,
+                                    payment_frequency == "Semi-monthly" ~ 24,
+                                    TRUE ~ 52.18),
+         home_phone_type = as_factor(home_phone_type),
+         other_phone_type = as_factor(other_phone_type),
+         how_use_money = as_factor(how_use_money),
+         imputed_period_rate = optiRum::RATE(nper = num_payments, pmt = 0 - payment_amount_approved, pv = amount_approved),
+         implied_annual_rate = imputed_period_rate * annual_payments)
+
+
+
+
+```
+
+
+```{r}
+perf_data <- perf_orig %>% 
+  transmute(customer_id = substring(idLoan, 1, 10),
+         customer_loan = substring(idLoan, 12, 13),
+         is_good = (flgGood == "Good"))
+
+```
+
+
+
+```{r}
+app_data %>%
+  group_by()
+  lm(formula = implied_annual_rate ~ raw_l2c_score + raw_FICO_retail) %>% 
+  summary()
+
+```
+
+
+```{r}
+app_data %>%
+  mutate(app_month = floor_date(application_when, "months")) %>% 
+  filter(raw_FICO_retail > 223) %>% 
+  ggplot(mapping = aes(x = raw_FICO_retail, y = raw_l2c_score, color = implied_annual_rate, size = implied_annual_rate)) +
+  geom_jitter()
+  
+
+```
+
+
+```{r}
+
+
+
+```
+
